@@ -64,7 +64,18 @@ queries/
   compare.py               base vs indexed
 
 report/                    15 documents, one per step
+
+windows/                   Windows setup, fully isolated from the above
+  00..06 *.ps1             prerequisites -> build -> generate -> load -> run
+  run-all.ps1              everything in order
+  lib/Common.ps1           shared config; refuses to run on non-Windows
+  generated/               Windows-generated files stay here
 ```
+
+**Windows:** see [`windows/README.md`](windows/README.md). The scripts are
+additive — they only read the shared `sql/` and `queries/` folders, write
+generated files into `windows/generated/`, and hard-refuse to run on a
+non-Windows host.
 
 ---
 
