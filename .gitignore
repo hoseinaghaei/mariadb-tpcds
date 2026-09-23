@@ -1,0 +1,36 @@
+# ---------------------------------------------------------------------------
+# Generated TPC-DS data -- 1.2 GB at SF=1. Regenerate with:
+#   cd DSGen-software-code-4.0.0/tools && ./dsdgen -SCALE 1 -DIR ../data -FORCE
+# ---------------------------------------------------------------------------
+DSGen-software-code-4.0.0/data/
+
+# Build artifacts from `make` in DSGen-software-code-4.0.0/tools
+*.o
+DSGen-software-code-4.0.0/tools/dsdgen
+DSGen-software-code-4.0.0/tools/dsqgen
+DSGen-software-code-4.0.0/tools/distcomp
+DSGen-software-code-4.0.0/tools/mkheader
+DSGen-software-code-4.0.0/tools/checksum
+DSGen-software-code-4.0.0/tools/tpcds.idx
+DSGen-software-code-4.0.0/tools/y.output
+DSGen-software-code-4.0.0/tools/.ctags_updated
+DSGen-software-code-4.0.0/tools/tags
+
+# The original download archive -- get it from tpc.org instead
+*-TPC-DS-Tool.zip
+
+# Third-party reference implementation, cloned separately:
+#   git clone https://github.com/spetrunia/tpcds-run-tool.git
+tpcds-run-tool/
+
+# Query result dumps (regenerable; the .json timings ARE tracked)
+queries/results/*/*.out
+
+# macOS / editor noise
+.DS_Store
+*.swp
+
+# Unrelated personal files
+*.jpeg
+*.jpg
+*.png

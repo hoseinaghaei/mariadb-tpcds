@@ -1,0 +1,10 @@
+{
+ "query": 48,
+ "seconds": 14.6,
+ "tag": "indexed",
+ "rows": 1,
+ "ans": "48.ans",
+ "exp_rows": 1,
+ "match": false,
+ "status": "VALUES_DIFF"
+}

@@ -1,0 +1,8 @@
+{
+ "query": 72,
+ "seconds": 1298.0,
+ "tag": "indexed",
+ "status": "TIMEOUT_CAPPED",
+ "rows": null,
+ "detail": "killed after 1298s without completing. Baseline recorded 1259s, but that baseline run was itself contaminated by a duplicate concurrent execution, so the true uncontended baseline is lower. Very likely a regression. Lower bound, not a measurement."
+}

@@ -1,0 +1,9 @@
+{
+ "query": 96,
+ "seconds": 10.8,
+ "rows_returned": 1,
+ "answer_file": "96.ans",
+ "rows_expected": 1,
+ "match": false,
+ "status": "VALUE_DIFF"
+}

@@ -1,0 +1,10 @@
+--- mariadb/query49.sql	2026-09-23 19:55:01
++++ /tmp/autoadapt/query49.sql	2026-09-23 19:55:01
+@@ -121,6 +121,6 @@
+  or 
+  store.currency_rank <= 10
+  )
+- )
++ ) as TBL_1
+  order by 1,4,5,2
+  limit 100;

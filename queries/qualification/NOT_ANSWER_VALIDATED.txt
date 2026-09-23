@@ -1,0 +1,6 @@
+These queries use list-valued substitution parameters (ulist/dist) that cannot be
+pinned to the Appendix B qualification values by simple template substitution.
+They fall back to dsqgen's RNG parameters, so their results cannot be compared
+against the published answer sets.
+
+8 10 12 13 18 20 28 37 41 48 64 74 82 85

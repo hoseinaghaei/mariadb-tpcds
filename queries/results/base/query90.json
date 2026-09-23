@@ -1,0 +1,10 @@
+{
+ "query": 90,
+ "seconds": 9.0,
+ "tag": "base",
+ "rows": 1,
+ "ans": "90.ans",
+ "exp_rows": 1,
+ "match": false,
+ "status": "VALUES_DIFF"
+}

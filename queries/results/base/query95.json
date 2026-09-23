@@ -1,0 +1,8 @@
+{
+ "query": 95,
+ "seconds": 2059.0,
+ "tag": "base",
+ "status": "TIMEOUT_CAPPED",
+ "rows": null,
+ "detail": "killed after 2059s without completing; no index on ws_order_number makes this web_sales self-join quadratic. Lower bound, not a measurement."
+}
