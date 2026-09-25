@@ -1,0 +1,40 @@
+# ---------------------------------------------------------------------------
+#  TPC-DS observability settings
+#
+#  Drop-in for Homebrew MariaDB on macOS. Remove this file and restart to
+#  revert everything here:
+#     rm /opt/homebrew/etc/my.cnf.d/tpcds-observability.cnf
+#     brew services restart mariadb
+#
+#  None of these change query plans. They only record what happens.
+# ---------------------------------------------------------------------------
+[mariadb]
+
+# --- Usage statistics -------------------------------------------------------
+# Populates INFORMATION_SCHEMA.INDEX_STATISTICS / TABLE_STATISTICS /
+# USER_STATISTICS / CLIENT_STATISTICS. Settable at runtime, no restart.
+userstat                        = 1
+
+# --- Performance Schema (RESTART REQUIRED) ----------------------------------
+# Also what the sys schema views read from.
+performance_schema              = ON
+performance-schema-consumer-events-statements-history      = ON
+performance-schema-consumer-events-statements-history-long = ON
+# Optional, adds overhead: per-stage timing (where a query spends its time)
+# performance-schema-instrument = 'stage/%=ON'
+# performance-schema-consumer-events-stages-history-long = ON
+
+# --- Slow query log ---------------------------------------------------------
+# NOTE: the Linux default /var/log/mysql/ does not exist on Homebrew macOS.
+# The datadir is writable by the server, so the log lives there.
+slow_query_log                  = 1
+slow_query_log_file             = /opt/homebrew/var/mysql/slow.log
+log_output                      = FILE
+long_query_time                 = 0.5
+log_slow_verbosity              = query_plan,explain,innodb
+log_queries_not_using_indexes   = 1
+min_examined_row_limit          = 1000
+log_slow_admin_statements       = 1
+
+# --- InnoDB counters (INFORMATION_SCHEMA.INNODB_METRICS) --------------------
+innodb_monitor_enable           = all

@@ -2,27 +2,15 @@
 """Run one adapted TPC-DS query against MariaDB, time it, compare to the TPC answer set.
    usage: run_query.py <n> [tag]"""
 import subprocess, sys, os, json, re, time, glob
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _ansparse import norm, parse_ans, parse_out   # shared, fixed parser
 
 ROOT='/Users/hosseinaghaei/Desktop/projects/dw'
 QDIR=f'{ROOT}/queries/mariadb'; ADIR=f'{ROOT}/DSGen-software-code-4.0.0/answer_sets'
 PRE="SET SESSION sql_mode=CONCAT(@@sql_mode,',IGNORE_SPACE');"
-NUM=re.compile(r'^-?\d+(\.\d+)?$')
 
-def norm(c):
-    c=c.strip()
-    if c in ('NULL','','None'): return ''
-    return f"{round(float(c),2):.2f}" if NUM.match(c) else c
 
-def parse_ans(p):
-    ls=[l.rstrip('\n') for l in open(p,encoding='latin-1') if l.strip()]
-    if not ls: return []
-    if '|' in ls[0]: return [[norm(c) for c in l.split('|')] for l in ls[1:]]
-    body = ls[2:] if set(ls[1].strip())<=set('- ') else ls[1:]
-    return [[norm(c) for c in l.split()] for l in body]
 
-def parse_out(t):
-    ls=[l for l in t.split('\n') if l.strip()]
-    return [[norm(c) for c in l.split('\t')] for l in ls[1:]]
 
 def main():
     n=int(sys.argv[1]); tag=sys.argv[2] if len(sys.argv)>2 else 'base'

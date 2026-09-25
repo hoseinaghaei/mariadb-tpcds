@@ -24,6 +24,7 @@ Working directory: `/Users/hosseinaghaei/Desktop/projects/dw`
 | 12 | Qualification parameters and the answer sets | [12-qualification-parameters.md](12-qualification-parameters.md) |
 | 13 | Benchmark results: baseline vs. indexed | [13-benchmark-results.md](13-benchmark-results.md) |
 | — | Schema relationships reference | [14-schema-relationships.md](14-schema-relationships.md) |
+| 15 | Index usage statistics — 83 of 117 indexes never read | [15-index-statistics.md](15-index-statistics.md) |
 
 ## Result
 
@@ -39,6 +40,7 @@ of SF=1 data, and **all 99 TPC-DS queries running** against it.
 | Referential integrity | 107 / 107 relationships, **zero orphan rows** |
 | Indexed speedup, all 99 | **2.06x** (6418.7s -> 3119.8s) |
 | Queries made *slower* by indexing | **19** — the open problem |
+| Indexes never read by any query | **81 of 117** |
 
 ## Layout
 

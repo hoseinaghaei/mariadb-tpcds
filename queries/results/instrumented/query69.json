@@ -1,0 +1,10 @@
+{
+ "query": 69,
+ "seconds": 12.4,
+ "tag": "instrumented",
+ "rows": 100,
+ "ans": "69.ans",
+ "exp_rows": 101,
+ "match": false,
+ "status": "ROWS_DIFF"
+}

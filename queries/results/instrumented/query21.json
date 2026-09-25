@@ -1,0 +1,10 @@
+{
+ "query": 21,
+ "seconds": 62.0,
+ "tag": "instrumented",
+ "rows": 100,
+ "ans": "21_NULLS_FIRST.ans",
+ "exp_rows": 100,
+ "match": false,
+ "status": "VALUES_DIFF"
+}

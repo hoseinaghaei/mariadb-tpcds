@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Compare TPC-DS runs: base (no indexes) vs indexed, plus the repo's 83-query subset."""
 import glob, json, os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _ansparse import norm, parse_ans, parse_out   # shared, fixed parser
 
 ROOT='/Users/hosseinaghaei/Desktop/projects/dw/queries'
 def load(tag):
