@@ -130,8 +130,59 @@ emits NULL surrogate keys to exercise outer joins.
 
 ## What was deliberately not created
 
-- **No secondary indexes.** Clause 2.5.3 tightly restricts auxiliary data
-  structures. Only the primary keys exist.
-- **No `CHECK` constraints.** Clause 2.5.4.1 limits constraints to PK, FK and
-  NOT NULL.
-- **No partitioning, no views, no generated columns.**
+Two of these are choices; one is a requirement. They are separated here
+because an earlier draft of this document ran them together and implied the
+specification forbids all three. It does not.
+
+### Required by the specification
+
+- **No `CHECK` constraints.** Clause 2.5.4.1 is explicit: constraints "are
+  limited to primary key, foreign key, and NOT NULL constraints".
+- **No generated / computed columns on base tables.** Clause 2.5.2.9: "all
+  columns listed in the table definition shall be implemented and **there shall
+  be no columns added to the tables**." A generated column is an added column.
+
+### A choice, not a requirement
+
+- **No secondary indexes** *(beyond the primary keys)*. Clause 2.5.3 restricts
+  Explicit Auxiliary Data Structures but does not prohibit indexes — they are
+  named as an example of an EADS and are permitted subject to 2.5.3.2–2.5.3.8.
+  None were created initially so the baseline measurement would be clean; 117
+  were applied later in [step 11](11-reference-repo.md).
+
+- **No partitioning.** **Explicitly allowed** by Clause 2.5.3.8, not forbidden.
+  Horizontal partitioning of base tables and EADS is permitted (2.5.3.8.3)
+  provided that:
+  - only **primary keys, foreign keys, date columns and date surrogate keys**
+    are used as partitioning columns;
+  - explicit partition values rely on nothing but the column's minimum and
+    maximum and its declared datatype;
+  - partitions divide that range **equally** (date granularities of days,
+    weeks, months or years are permitted);
+  - values outside the range can still be inserted, per Clause 1.5;
+  - the DDL and directives are **disclosed**.
+
+  Vertical partitioning is allowed too (2.5.3.8.4), but only where it is *not*
+  driven by explicit DDL directives — SQL that explicitly partitions columns
+  across storage is prohibited.
+
+  Clause 3.3.3 confirms partitioning is expected to be a real option: if the
+  test database is horizontally partitioned, the qualification database must be
+  too. It was simply not used here.
+
+  MariaDB's `PARTITION BY RANGE` on `d_date_sk`, or on the fact tables'
+  `*_sold_date_sk`, would be specification-legal and is a reasonable next
+  experiment — partition pruning on date is exactly the access pattern TPC-DS
+  exercises.
+
+- **No views.** Also **permitted**, and in fact anticipated by the
+  specification. Clause 4.2.3 lists `CREATE VIEW` / `DROP VIEW` among the
+  statements whose names may be adjusted, allows subqueries to "be replaced
+  with semantically equivalent derived tables or views", and Clause 4.2.3's
+  notes cover dropping dependent views. A **non-materialized** view is only a
+  query rewrite and holds no data, so it is not an auxiliary data structure at
+  all. A **materialized** view is an EADS and falls under the 2.5.3
+  restrictions.
+
+  Views were not used because the queries are taken unmodified from `dsqgen`;
+  nothing here needed them.
