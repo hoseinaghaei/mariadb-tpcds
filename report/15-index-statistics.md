@@ -1,10 +1,9 @@
 # Step 15 — Index usage statistics
 
-> **Snapshot caveat:** query 72 had not finished when these counts were taken
-> (it was past 24 minutes and is the query that also had to be abandoned in the
-> timed run). Its contribution is missing, so the "unused" set is an upper
-> bound — it can only shrink. Re-run the queries at the end of this document to
-> refresh.
+> **query 72 is excluded.** It was abandoned after 1750 s (29 minutes) without
+> completing, having also failed to finish in the timed indexed run. Its index
+> usage is therefore absent, so the "unused" set below is an **upper bound** —
+> it can only shrink, never grow. 98 of 99 queries contributed.
 
 Observability was enabled (`userstat`, `performance_schema`, slow query log,
 all 179 InnoDB metrics) and all 99 queries re-run against the indexed database
@@ -30,6 +29,8 @@ restarting reverts everything.
 | Secondary indexes defined | **117** |
 | Secondary indexes actually read | **36** |
 | **Never touched by any of the 98 completed queries** | **81 (69%)** |
+
+*(query 72 abandoned; see the caveat above.)*
 
 Those 81 cost storage, cost time on every insert and update, and enlarge the
 optimizer's search space — for nothing. Whole groups are dead:
