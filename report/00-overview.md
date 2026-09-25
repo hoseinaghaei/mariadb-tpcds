@@ -24,7 +24,8 @@ Working directory: `/Users/hosseinaghaei/Desktop/projects/dw`
 | 12 | Qualification parameters and the answer sets | [12-qualification-parameters.md](12-qualification-parameters.md) |
 | 13 | Benchmark results: baseline vs. indexed | [13-benchmark-results.md](13-benchmark-results.md) |
 | — | Schema relationships reference | [14-schema-relationships.md](14-schema-relationships.md) |
-| 15 | Index usage statistics — 83 of 117 indexes never read | [15-index-statistics.md](15-index-statistics.md) |
+| 15 | Index usage statistics — 81 of 117 indexes never read | [15-index-statistics.md](15-index-statistics.md) |
+| 16 | Buffer pool, and the root cause of the regressions | [16-buffer-pool-and-root-cause.md](16-buffer-pool-and-root-cause.md) |
 
 ## Result
 
@@ -41,6 +42,8 @@ of SF=1 data, and **all 99 TPC-DS queries running** against it.
 | Indexed speedup, all 99 | **2.06x** (6418.7s -> 3119.8s) |
 | Queries made *slower* by indexing | **19** — the open problem |
 | Indexes never read by any query | **81 of 117** |
+| Regressions fixed by a 2 GB buffer pool | **15 of 19** |
+| Worst regression, root-caused and fixed | query 39: **146.5s → 1.7s** |
 
 ## Layout
 

@@ -1,0 +1,10 @@
+{
+ "query": 37,
+ "seconds": 27.5,
+ "tag": "pool2g",
+ "rows": 0,
+ "ans": "37.ans",
+ "exp_rows": 1,
+ "match": false,
+ "status": "ROWS_DIFF"
+}
