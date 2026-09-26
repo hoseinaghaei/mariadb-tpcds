@@ -1,10 +1,10 @@
 {
  "query": 22,
- "seconds": 15.3,
+ "seconds": 12.0,
  "tag": "base",
  "rows": 100,
  "ans": "22_NULLS_LAST.ans",
- "exp_rows": 101,
+ "exp_rows": 100,
  "match": false,
- "status": "ROWS_DIFF"
+ "status": "VALUES_DIFF"
 }

@@ -1,8 +1,8 @@
 {
  "query": 98,
- "seconds": 1.7,
+ "seconds": 1.3,
  "tag": "base",
- "rows": 2486,
+ "rows": 2507,
  "ans": "98_NULLS_FIRST.ans",
  "exp_rows": 2518,
  "match": false,

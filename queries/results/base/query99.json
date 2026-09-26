@@ -1,6 +1,6 @@
 {
  "query": 99,
- "seconds": 3.0,
+ "seconds": 4.0,
  "tag": "base",
  "rows": 90,
  "ans": "99_NULLS_FIRST.ans",

@@ -1,8 +1,8 @@
 {
  "query": 91,
- "seconds": 1.6,
+ "seconds": 0.4,
  "tag": "indexed",
- "rows": 4,
+ "rows": 6,
  "ans": "91.ans",
  "exp_rows": 1,
  "match": false,

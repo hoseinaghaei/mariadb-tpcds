@@ -182,7 +182,7 @@ with  cross_items as
                      from date_dim
                      where d_year = 1998 + 1
                        and d_moy = 12
-                       and d_dom = 16)
+                       and d_dom = 15)
  group by i_brand_id,i_class_id,i_category_id
  having sum(ss_quantity*ss_list_price) > (select average_sales from avg_sales)) this_year,
  (select 'store' channel, i_brand_id,i_class_id
@@ -197,7 +197,7 @@ with  cross_items as
                      from date_dim
                      where d_year = 1998
                        and d_moy = 12
-                       and d_dom = 16)
+                       and d_dom = 15)
  group by i_brand_id,i_class_id,i_category_id
  having sum(ss_quantity*ss_list_price) > (select average_sales from avg_sales)) last_year
  where this_year.i_brand_id= last_year.i_brand_id

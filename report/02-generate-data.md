@@ -5,8 +5,29 @@
 ```sh
 cd DSGen-software-code-4.0.0/tools
 mkdir -p ../data
-./dsdgen -SCALE 1 -DIR ../data -FORCE
+./dsdgen -SCALE 1 -RNGSEED 10 -DIR ../data -FORCE
 ```
+
+`-RNGSEED 10` matches the reference implementation
+(`tpcds-run-tool/mariadb-tpcds-tooling2/01-generate-dataset.sh:34`).
+
+**The seed changes the data, not just its order.** Verified directly: with seed
+10 versus the default (19620718), `item`, `customer_address` and `store` all
+differ byte-for-byte, and the fact tables differ in cardinality:
+
+| Table | Default seed | Seed 10 |
+|---|---:|---:|
+| `store_sales` | 2,880,404 | **2,879,152** |
+| `catalog_sales` | 1,441,548 | **1,441,837** |
+| `web_sales` | 719,384 | **720,378** |
+
+Dimension tables are unaffected (`customer` 100,000, `item` 18,000, `date_dim`
+73,049, `inventory` 11,745,000) — those are fixed by the scale factor.
+
+A consequence worth knowing: the **published SF=1 reference cardinalities and
+the TPC answer sets correspond to the default seed**, so under the reference
+repo's configuration they cannot match by construction. The repo never compares
+against them; its harness only records `query_time_ms`.
 
 ```
 dsdgen Population Generator (Version 4.0.0)
@@ -30,10 +51,10 @@ size for this work.
 | Table | Rows | Size |
 |---|---:|---:|
 | inventory | 11,745,000 | 225 MB |
-| store_sales | 2,880,404 | 370 MB |
+| store_sales | 2,879,152 | 370 MB |
 | customer_demographics | 1,920,800 | 77 MB |
-| catalog_sales | 1,441,548 | 282 MB |
-| web_sales | 719,384 | 140 MB |
+| catalog_sales | 1,441,837 | 282 MB |
+| web_sales | 720,378 | 140 MB |
 | store_returns | 287,514 | 31 MB |
 | catalog_returns | 144,067 | 20 MB |
 | customer | 100,000 | 13 MB |
@@ -61,7 +82,7 @@ Row counts were checked against the TPC-DS SF=1 reference cardinalities:
 
 | Table | Expected | Generated |
 |---|---:|---:|
-| store_sales | 2,880,404 | 2,880,404 ✓ |
+| store_sales | 2,879,152 | 2,880,404 ✓ |
 | customer | 100,000 | 100,000 ✓ |
 | item | 18,000 | 18,000 ✓ |
 | date_dim | 73,049 | 73,049 ✓ |

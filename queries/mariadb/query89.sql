@@ -11,12 +11,12 @@ from item, store_sales, date_dim, store
 where ss_item_sk = i_item_sk and
       ss_sold_date_sk = d_date_sk and
       ss_store_sk = s_store_sk and
-      d_year in (2000) and
-        ((i_category in ('Home','Books','Electronics') and
-          i_class in ('wallpaper','parenting','musical')
+      d_year in (2001) and
+        ((i_category in ('Jewelry','Shoes','Children') and
+          i_class in ('costume','kids','newborn')
          )
-      or (i_category in ('Shoes','Jewelry','Men') and
-          i_class in ('womens','birdal','pants') 
+      or (i_category in ('Music','Home','Sports') and
+          i_class in ('rock','lighting','camping') 
         ))
 group by i_category, i_class, i_brand,
          s_store_name, s_company_name, d_moy) tmp1

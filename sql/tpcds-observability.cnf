@@ -1,32 +1,33 @@
 # ---------------------------------------------------------------------------
-#  TPC-DS observability settings
+#  TPC-DS configuration
 #
-#  Drop-in for Homebrew MariaDB on macOS. Remove this file and restart to
-#  revert everything here:
-#     rm /opt/homebrew/etc/my.cnf.d/tpcds-observability.cnf
-#     brew services restart mariadb
+#  Performance settings match tpcds-run-tool/setup-server/setup-mariadb-current.sh,
+#  whose my.cnf contains exactly ONE performance line: innodb_buffer_pool_size=8G.
+#  Everything else in that file is plumbing (datadir, socket, port, server-id).
 #
-#  None of these change query plans. They only record what happens.
+#  Observability settings below are ours and are deliberately kept.
+#
+#  Revert everything: rm this file and `brew services restart mariadb`.
 # ---------------------------------------------------------------------------
 [mariadb]
 
-# --- Usage statistics -------------------------------------------------------
-# Populates INFORMATION_SCHEMA.INDEX_STATISTICS / TABLE_STATISTICS /
-# USER_STATISTICS / CLIENT_STATISTICS. Settable at runtime, no restart.
+# --- Performance: matches the reference repo -------------------------------
+innodb_buffer_pool_size         = 8G
+
+# --- Guard (not in the repo) -----------------------------------------------
+# Query 72 previously consumed 21 and 29 minutes without completing. This
+# bounds any single statement so a run cannot stall indefinitely.
+max_statement_time              = 300
+
+# --- Usage statistics ------------------------------------------------------
 userstat                        = 1
 
-# --- Performance Schema (RESTART REQUIRED) ----------------------------------
-# Also what the sys schema views read from.
+# --- Performance Schema ----------------------------------------------------
 performance_schema              = ON
 performance-schema-consumer-events-statements-history      = ON
 performance-schema-consumer-events-statements-history-long = ON
-# Optional, adds overhead: per-stage timing (where a query spends its time)
-# performance-schema-instrument = 'stage/%=ON'
-# performance-schema-consumer-events-stages-history-long = ON
 
-# --- Slow query log ---------------------------------------------------------
-# NOTE: the Linux default /var/log/mysql/ does not exist on Homebrew macOS.
-# The datadir is writable by the server, so the log lives there.
+# --- Slow query log --------------------------------------------------------
 slow_query_log                  = 1
 slow_query_log_file             = /opt/homebrew/var/mysql/slow.log
 log_output                      = FILE
@@ -36,5 +37,5 @@ log_queries_not_using_indexes   = 1
 min_examined_row_limit          = 1000
 log_slow_admin_statements       = 1
 
-# --- InnoDB counters (INFORMATION_SCHEMA.INNODB_METRICS) --------------------
+# --- InnoDB counters -------------------------------------------------------
 innodb_monitor_enable           = all

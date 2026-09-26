@@ -17,7 +17,7 @@ from
   ,call_center
   ,date_dim
 where
-    d_month_seq between 1212 and 1212 + 11
+    d_month_seq between 1176 and 1176 + 11
 and cs_ship_date_sk   = d_date_sk
 and cs_warehouse_sk   = w_warehouse_sk
 and cs_ship_mode_sk   = sm_ship_mode_sk

@@ -1,8 +1,7 @@
 {
  "query": 72,
- "seconds": 1298.0,
+ "seconds": 300.1,
  "tag": "indexed",
- "status": "TIMEOUT_CAPPED",
- "rows": null,
- "detail": "killed after 1298s without completing. Baseline recorded 1259s, but that baseline run was itself contaminated by a duplicate concurrent execution, so the true uncontended baseline is lower. Very likely a regression. Lower bound, not a measurement."
+ "status": "ERROR",
+ "detail": "ERROR 1969 (70100) at line 1: Query was interrupted: execution time limit 300.0 sec exceeded"
 }

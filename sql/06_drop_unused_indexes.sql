@@ -18,8 +18,6 @@
 --  CAVEAT: "unused" means unused BY THESE 99 QUERIES AT SCALE FACTOR 1 with
 --  this parameter set. A different scale factor, different substitution
 --  parameters, or the data-maintenance workload could use some of them.
---  This is safe for query-only benchmarking, not a general recommendation.
--- ---------------------------------------------------------------------------
 
 USE tpcds;
 
@@ -37,14 +35,12 @@ ALTER TABLE catalog_returns DROP INDEX idx_cr_refunded_customer_sk;
 ALTER TABLE catalog_returns DROP INDEX idx_cr_refunded_hdemo_sk;
 ALTER TABLE catalog_returns DROP INDEX idx_cr_returned_date_sk;
 ALTER TABLE catalog_returns DROP INDEX idx_cr_returned_time_sk;
-ALTER TABLE catalog_returns DROP INDEX idx_cr_returning_addr_sk;
 ALTER TABLE catalog_returns DROP INDEX idx_cr_returning_cdemo_sk;
 ALTER TABLE catalog_returns DROP INDEX idx_cr_returning_hdemo_sk;
 ALTER TABLE catalog_returns DROP INDEX idx_cr_ship_mode_sk;
 ALTER TABLE catalog_returns DROP INDEX idx_cr_warehouse_sk;
 ALTER TABLE catalog_sales DROP INDEX idx_cs_bill_addr_sk;
 ALTER TABLE catalog_sales DROP INDEX idx_cs_bill_cdemo_sk;
-ALTER TABLE catalog_sales DROP INDEX idx_cs_bill_hdemo_sk;
 ALTER TABLE catalog_sales DROP INDEX idx_cs_call_center_sk;
 ALTER TABLE catalog_sales DROP INDEX idx_cs_catalog_page_sk;
 ALTER TABLE catalog_sales DROP INDEX idx_cs_item_sk;
@@ -55,10 +51,12 @@ ALTER TABLE catalog_sales DROP INDEX idx_cs_ship_hdemo_sk;
 ALTER TABLE catalog_sales DROP INDEX idx_cs_ship_mode_sk;
 ALTER TABLE catalog_sales DROP INDEX idx_cs_sold_date_sk;
 ALTER TABLE catalog_sales DROP INDEX idx_cs_sold_time_sk;
+ALTER TABLE catalog_sales DROP INDEX idx_cs_warehouse_sk;
 ALTER TABLE customer DROP INDEX idx_c_current_cdemo_sk;
 ALTER TABLE customer DROP INDEX idx_c_first_sales_date_sk;
 ALTER TABLE customer DROP INDEX idx_c_first_shipto_date_sk;
 ALTER TABLE customer_demographics DROP INDEX idx_customer_demographics_1;
+ALTER TABLE inventory DROP INDEX idx_inv_date_sk;
 ALTER TABLE promotion DROP INDEX idx_p_end_date_sk;
 ALTER TABLE promotion DROP INDEX idx_p_item_sk;
 ALTER TABLE promotion DROP INDEX idx_p_start_date_sk;
@@ -70,6 +68,8 @@ ALTER TABLE store_returns DROP INDEX idx_sr_returned_date_sk;
 ALTER TABLE store_returns DROP INDEX idx_sr_return_time_sk;
 ALTER TABLE store_returns DROP INDEX idx_sr_ticket_number;
 ALTER TABLE store_sales DROP INDEX idx_ss_cdemo_sk;
+ALTER TABLE store_sales DROP INDEX idx_ss_hdemo_sk;
+ALTER TABLE store_sales DROP INDEX idx_ss_item_sk;
 ALTER TABLE store_sales DROP INDEX idx_ss_promo_sk;
 ALTER TABLE store_sales DROP INDEX idx_ss_sold_time_sk;
 ALTER TABLE store_sales DROP INDEX idx_ss_store_sk;
@@ -85,7 +85,6 @@ ALTER TABLE web_returns DROP INDEX idx_wr_refunded_customer_sk;
 ALTER TABLE web_returns DROP INDEX idx_wr_refunded_hdemo_sk;
 ALTER TABLE web_returns DROP INDEX idx_wr_returned_date_sk;
 ALTER TABLE web_returns DROP INDEX idx_wr_returned_time_sk;
-ALTER TABLE web_returns DROP INDEX idx_wr_returning_addr_sk;
 ALTER TABLE web_returns DROP INDEX idx_wr_returning_cdemo_sk;
 ALTER TABLE web_returns DROP INDEX idx_wr_returning_hdemo_sk;
 ALTER TABLE web_returns DROP INDEX idx_wr_web_page_sk;
@@ -97,10 +96,9 @@ ALTER TABLE web_sales DROP INDEX idx_ws_item_sk;
 ALTER TABLE web_sales DROP INDEX idx_ws_promo_sk;
 ALTER TABLE web_sales DROP INDEX idx_ws_ship_cdemo_sk;
 ALTER TABLE web_sales DROP INDEX idx_ws_ship_customer_sk;
-ALTER TABLE web_sales DROP INDEX idx_ws_ship_hdemo_sk;
 ALTER TABLE web_sales DROP INDEX idx_ws_ship_mode_sk;
 ALTER TABLE web_sales DROP INDEX idx_ws_sold_date_sk;
 ALTER TABLE web_sales DROP INDEX idx_ws_sold_time_sk;
-ALTER TABLE web_sales DROP INDEX idx_ws_warehouse_sk;
+ALTER TABLE web_sales DROP INDEX idx_ws_web_site_sk;
 ALTER TABLE web_site DROP INDEX idx_web_close_date_sk;
 ALTER TABLE web_site DROP INDEX idx_web_open_date_sk;

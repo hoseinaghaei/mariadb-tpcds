@@ -1,8 +1,7 @@
 {
  "query": 95,
- "seconds": 2059.0,
+ "seconds": 300.1,
  "tag": "base",
- "status": "TIMEOUT_CAPPED",
- "rows": null,
- "detail": "killed after 2059s without completing; no index on ws_order_number makes this web_sales self-join quadratic. Lower bound, not a measurement."
+ "status": "ERROR",
+ "detail": "ERROR 1969 (70100) at line 1: Query was interrupted: execution time limit 300.0 sec exceeded"
 }

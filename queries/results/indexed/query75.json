@@ -1,6 +1,6 @@
 {
  "query": 75,
- "seconds": 2.3,
+ "seconds": 2.0,
  "tag": "indexed",
  "rows": 100,
  "ans": "75.ans",

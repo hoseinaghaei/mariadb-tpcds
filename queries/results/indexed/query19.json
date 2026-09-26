@@ -2,9 +2,9 @@
  "query": 19,
  "seconds": 0.1,
  "tag": "indexed",
- "rows": 100,
+ "rows": 81,
  "ans": "19.ans",
- "exp_rows": 101,
+ "exp_rows": 100,
  "match": false,
  "status": "ROWS_DIFF"
 }

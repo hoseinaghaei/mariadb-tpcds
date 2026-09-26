@@ -4,10 +4,10 @@ from
    ,item 
    ,date_dim
 where
-i_manufact_id = 269
+i_manufact_id = 202
 and i_item_sk = cs_item_sk 
-and d_date between '1998-03-18' and 
-        (cast('1998-03-18' as date) + 90 days)
+and d_date between '1998-02-13' and 
+        (cast('1998-02-13' as date) + 90 days)
 and d_date_sk = cs_sold_date_sk 
 and cs_ext_discount_amt  
      > ( 
@@ -18,8 +18,8 @@ and cs_ext_discount_amt
            ,date_dim
          where 
               cs_item_sk = i_item_sk 
-          and d_date between '1998-03-18' and
-                             (cast('1998-03-18' as date) + 90 days)
+          and d_date between '1998-02-13' and
+                             (cast('1998-02-13' as date) + 90 days)
           and d_date_sk = cs_sold_date_sk 
       ) 
 limit 100;

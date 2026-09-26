@@ -1,7 +1,0 @@
-{
- "query": 5,
- "seconds": 300.2,
- "tag": "pool2g",
- "status": "ERROR",
- "detail": "ERROR 1969 (70100) at line 1: Query was interrupted: execution time limit 300.0 sec exceeded"
-}

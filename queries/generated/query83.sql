@@ -11,7 +11,7 @@ with sr_items as
 	where d_week_seq in 
 		(select d_week_seq
 		from date_dim
-	  where d_date in ('1998-01-02','1998-10-15','1998-11-10')))
+	  where d_date in ('1998-04-06','1998-08-06','1998-11-22')))
  and   sr_returned_date_sk   = d_date_sk
  group by i_item_id),
  cr_items as
@@ -27,7 +27,7 @@ with sr_items as
 	where d_week_seq in 
 		(select d_week_seq
 		from date_dim
-	  where d_date in ('1998-01-02','1998-10-15','1998-11-10')))
+	  where d_date in ('1998-04-06','1998-08-06','1998-11-22')))
  and   cr_returned_date_sk   = d_date_sk
  group by i_item_id),
  wr_items as
@@ -43,7 +43,7 @@ with sr_items as
 	where d_week_seq in 
 		(select d_week_seq
 		from date_dim
-		where d_date in ('1998-01-02','1998-10-15','1998-11-10')))
+		where d_date in ('1998-04-06','1998-08-06','1998-11-22')))
  and   wr_returned_date_sk   = d_date_sk
  group by i_item_id)
   select  sr_items.item_id

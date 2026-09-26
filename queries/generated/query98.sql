@@ -12,10 +12,10 @@ from
     	,date_dim
 where 
 	ss_item_sk = i_item_sk 
-  	and i_category in ('Jewelry', 'Sports', 'Books')
+  	and i_category in ('Music', 'Children', 'Men')
   	and ss_sold_date_sk = d_date_sk
-	and d_date between cast('2001-01-12' as date) 
-				and (cast('2001-01-12' as date) + 30 days)
+	and d_date between cast('2002-02-23' as date) 
+				and (cast('2002-02-23' as date) + 30 days)
 group by 
 	i_item_id
         ,i_item_desc 

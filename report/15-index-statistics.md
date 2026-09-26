@@ -1,9 +1,12 @@
 # Step 15 — Index usage statistics
 
-> **query 72 is excluded.** It was abandoned after 1750 s (29 minutes) without
-> completing, having also failed to finish in the timed indexed run. Its index
-> usage is therefore absent, so the "unused" set below is an **upper bound** —
-> it can only shrink, never grow. 98 of 99 queries contributed.
+> **Re-measured** against the current configuration: dataset generated with
+> `-rngseed 10`, 8 GB buffer pool, statistics reset by a server restart, all 99
+> queries run serially. Query 72 was killed at the 300s cap, so its index usage
+> is absent and the "unused" set is an upper bound.
+>
+> The counts reproduced almost exactly across a completely different dataset
+> (81 unused both times), which is a useful consistency check.
 
 Observability was enabled (`userstat`, `performance_schema`, slow query log,
 all 179 InnoDB metrics) and all 99 queries re-run against the indexed database
@@ -54,8 +57,8 @@ many times the equivalent of the whole table was pulled through that index.
 
 | Table | Index | Rows read | Table rows | Amplification |
 |---|---|---:|---:|---:|
-| `inventory` | `idx_inv_warehouse_sk` | 58,725,000 | 11,745,000 | **5.0x** |
-| `store_sales` | `idx_ss_addr_sk` | 15,221,436 | 2,880,404 | **5.3x** |
+| `store_sales` | `idx_ss_addr_sk` | 23,305,757 | 2,879,152 | **6.2x** |
+| `inventory` | `idx_inv_warehouse_sk` | 64,279,786 | 11,745,000 | **4.9x** |
 | `item` | `idx_item_2` | 89,957 | 18,000 | 5.0x |
 | `item` | `idx_item_1` | 54,973 | 18,000 | 3.1x |
 | `store_sales` | `idx_ss_hdemo_sk` | 8,505,124 | 2,880,404 | 3.0x |
@@ -63,7 +66,7 @@ many times the equivalent of the whole table was pulled through that index.
 | `web_returns` | `idx_wr_item_sk` | 143,510 | 71,763 | 2.0x |
 | `catalog_returns` | `idx_cr_item_sk` | 287,355 | 144,067 | 2.0x |
 
-`idx_inv_warehouse_sk` pulled **58.7 million rows out of an 11.7 million row
+`idx_inv_warehouse_sk` pulled **64.3 million rows out of an 11.7 million row
 table** — five complete passes, every one of them as random index lookups
 rather than a sequential scan.
 

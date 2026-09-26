@@ -1,8 +1,0 @@
-{
- "query": 72,
- "seconds": 1750.0,
- "tag": "instrumented",
- "status": "TIMEOUT_CAPPED",
- "rows": null,
- "detail": "abandoned after 1750s without completing. Also failed to complete in the timed indexed run (capped at 1298s). Its index usage is therefore absent from INDEX_STATISTICS, so the 'unused index' set in report/15 is an upper bound."
-}

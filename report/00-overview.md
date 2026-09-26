@@ -25,7 +25,7 @@ Working directory: `/Users/hosseinaghaei/Desktop/projects/dw`
 | 13 | Benchmark results: baseline vs. indexed | [13-benchmark-results.md](13-benchmark-results.md) |
 | — | Schema relationships reference | [14-schema-relationships.md](14-schema-relationships.md) |
 | 15 | Index usage statistics — 81 of 117 indexes never read | [15-index-statistics.md](15-index-statistics.md) |
-| 16 | Buffer pool, and the root cause of the regressions | [16-buffer-pool-and-root-cause.md](16-buffer-pool-and-root-cause.md) |
+| 16 | What the buffer pool was hiding — a method correction | [16-buffer-pool-and-root-cause.md](16-buffer-pool-and-root-cause.md) |
 
 ## Result
 
@@ -39,11 +39,13 @@ of SF=1 data, and **all 99 TPC-DS queries running** against it.
 | Queries running on MariaDB | **99 / 99** (reference repo: 83 / 99) |
 | SQL errors | **0** in both the baseline and indexed runs |
 | Referential integrity | 107 / 107 relationships, **zero orphan rows** |
-| Indexed speedup, all 99 | **2.06x** (6418.7s -> 3119.8s) |
-| Queries made *slower* by indexing | **19** — the open problem |
+| Indexed speedup, 97 clean queries | **1.01x** (1276.8s -> 1262.8s) |
+| Queries made *slower* by indexing | **18** — two of them serious |
 | Indexes never read by any query | **81 of 117** |
-| Regressions fixed by a 2 GB buffer pool | **15 of 19** |
-| Worst regression, root-caused and fixed | query 39: **146.5s → 1.7s** |
+| Worst regression, root-caused and fixed | query 39: **92.5s → 1.7s** |
+| Biggest index win | query 95: **>300s → 0.1s** |
+| Buffer pool | **8 GB**, matching the reference repo |
+| Dataset seed | **10**, matching the reference repo |
 
 ## Layout
 
@@ -89,7 +91,7 @@ dw/
 ```sh
 cd DSGen-software-code-4.0.0/tools
 make                                     # builds dsdgen, dsqgen, distcomp, tpcds.idx
-./dsdgen -SCALE 1 -DIR ../data -FORCE    # writes 25 .dat files
+./dsdgen -SCALE 1 -RNGSEED 10 -DIR ../data -FORCE   # 25 .dat files
 cd ../..
 mariadb < sql/01_schema.sql              # creates database tpcds
 mariadb --local-infile=1 < sql/04_load_data.sql   # loads 19.5M rows

@@ -27,8 +27,11 @@ no embedded newlines, and every row has the expected field count.
 
 ## Result
 
-Exit 0, **zero warnings, zero errors**. 19,557,376 rows across 25 tables;
-3.2 GB on disk.
+Exit 0, **zero warnings, zero errors**. 19,557,000-odd rows across 25 tables;
+3.2 GB on disk. With the 8 GB buffer pool the load takes about **2 minutes**.
+
+Row counts below are for the `-rngseed 10` dataset (see
+[step 2](02-generate-data.md) — the seed changes fact-table cardinality).
 
 Every table's loaded row count equals its source file's line count, and the
 fact-table counts match the published SF=1 cardinalities:
@@ -36,10 +39,10 @@ fact-table counts match the published SF=1 cardinalities:
 | Table | Rows | | Table | Rows |
 |---|---:|---|---|---:|
 | inventory | 11,745,000 | | catalog_returns | 144,067 |
-| store_sales | 2,880,404 | | customer | 100,000 |
+| store_sales | 2,879,152 | | customer | 100,000 |
 | customer_demographics | 1,920,800 | | time_dim | 86,400 |
-| catalog_sales | 1,441,548 | | date_dim | 73,049 |
-| web_sales | 719,384 | | web_returns | 71,763 |
+| catalog_sales | 1,441,837 | | date_dim | 73,049 |
+| web_sales | 720,378 | | web_returns | 71,763 |
 | store_returns | 287,514 | | customer_address | 50,000 |
 
 ## Verification
@@ -49,8 +52,8 @@ fact-table counts match the published SF=1 cardinalities:
 The thing most likely to go wrong silently:
 
 ```
-store_sales: 2,880,404 rows
-  ss_sold_date_sk IS NULL : 130,093  (4.52%)
+store_sales: 2,879,152 rows
+  ss_sold_date_sk IS NULL : 129,306  (4.49%)
   ss_sold_date_sk = 0     : 0
   ss_customer_sk  = 0     : 0
   ss_store_sk     = 0     : 0
