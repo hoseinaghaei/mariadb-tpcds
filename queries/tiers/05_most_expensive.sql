@@ -1533,13 +1533,7 @@ select /*+ JOIN_PREFIX(d1, catalog_sales, household_demographics, customer_demog
      , sum(IF(p_promo_sk is not null, 1, 0)) promo
      , count(*)                              total_cnt
 from catalog_sales
-         join date_dim d1 on (cs_sold_date_sk = d1.d_date_sk and cs_sold_date_sk between (select min(cs_sold_date_sk)
-                                                                                          from catalog_sales cs
-                                                                                                   join date_dim d1 on (cs_sold_date_sk = d1.d_date_sk)
-                                                                                          where d_year = 1999) and (select max(cs_sold_date_sk)
-                                                                                                                    from catalog_sales cs
-                                                                                                                             join date_dim d1 on (cs_sold_date_sk = d1.d_date_sk)
-                                                                                                                    where d_year = 1999))
+         join date_dim d1 on (cs_sold_date_sk = d1.d_date_sk)
 
          join inventory on (cs_item_sk = inv_item_sk)
          join warehouse on (w_warehouse_sk = inv_warehouse_sk)

@@ -186,3 +186,73 @@ justifying for an audited result. Fine for optimisation work.
   indexes, which is a different lever.
 - Whether `idx_dd_week_seq` helps other queries is unmeasured. Several TPC-DS
   queries correlate dates on `d_week_seq`.
+
+---
+
+## Seven indexes duplicate their own PRIMARY KEY — 470 MB wasted
+
+Prompted by noticing that `date_dim(d_week_seq, d_date_sk)` named the primary
+key redundantly, the whole index set was audited for the same mistake.
+
+InnoDB appends the primary key to every secondary index leaf. So an index whose
+columns are a **leading prefix of the PRIMARY KEY** indexes nothing the
+clustered index does not already index, in the same order.
+
+Seven of the 124 are exactly that:
+
+| Table | Index | Index cols | PRIMARY KEY | Pages | Size |
+|---|---|---|---|---:|---:|
+| `inventory` | `idx_inv_date_sk` | `inv_date_sk` | `(inv_date_sk, inv_item_sk, inv_warehouse_sk)` | 21,759 | **340 MB** |
+| `store_sales` | `idx_ss_item_sk` | `ss_item_sk` | `(ss_item_sk, ss_ticket_number)` | 4,135 | 65 MB |
+| `catalog_sales` | `idx_cs_item_sk` | `cs_item_sk` | `(cs_item_sk, cs_order_number)` | 2,212 | 35 MB |
+| `web_sales` | `idx_ws_item_sk` | `ws_item_sk` | `(ws_item_sk, ws_order_number)` | 1,123 | 18 MB |
+| `store_returns` | `idx_sr_item_sk` | `sr_item_sk` | `(sr_item_sk, sr_ticket_number)` | 481 | 8 MB |
+| `catalog_returns` | `idx_cr_item_sk` | `cr_item_sk` | `(cr_item_sk, cr_order_number)` | 225 | 4 MB |
+| `web_returns` | `idx_wr_item_sk` | `wr_item_sk` | `(wr_item_sk, wr_order_number)` | 161 | 3 MB |
+
+**470 MB total**, plus write amplification on every insert.
+
+### Proof
+
+```
+SELECT COUNT(*) FROM store_sales WHERE ss_item_sk = 100
+
+  with idx_ss_item_sk :  key=idx_ss_item_sk   key_len=8   rows=129
+  with it IGNORED     :  key=PRIMARY          key_len=8   rows=129
+```
+
+Identical access path, key length and row estimate. For `inventory` the
+optimizer **already** prefers `PRIMARY` and never touches `idx_inv_date_sk` —
+which is why that index turned up in the never-read set in
+[step 15](15-index-statistics.md).
+
+### Why this differs from the "never read" set
+
+[Step 17](17-unused-indexes-are-not-safe-to-drop.md) showed that "no query read
+it" is a weak basis for dropping an index — an index can shape a plan without
+being read.
+
+This is a **structural** argument instead: a leading prefix of the primary key
+is redundant by definition, on any workload, because InnoDB's clustered index
+already provides exactly that ordering. It does not depend on which queries
+happen to run.
+
+`sql/12_drop_redundant_indexes.sql`.
+
+### Indexes that are *not* redundant
+
+An index on a **non-leading** primary key column is not redundant — the
+clustered index cannot serve a lookup that skips its first column. So
+`idx_ss_ticket_number`, `idx_inv_item_sk`, `idx_inv_warehouse_sk`,
+`idx_cs_order_number` and the rest are all legitimate, even though every one of
+their columns appears in a primary key.
+
+That distinction matters: `idx_inv_item_sk` and `idx_inv_warehouse_sk` are the
+two indexes causing the worst regressions in
+[step 13](13-benchmark-results.md), and they are *not* structurally redundant —
+they are genuinely useful access paths that the optimizer mis-costs.
+
+### General rule
+
+Never name primary key columns in a secondary index on InnoDB, and never create
+a secondary index on a leading prefix of the primary key.
