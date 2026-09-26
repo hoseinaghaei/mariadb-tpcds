@@ -1523,9 +1523,9 @@ limit 100;
 -- --------------------------------------------------------------------------
 -- query72   indexed 300.1s   base 300.1s   capped (*)
 -- --------------------------------------------------------------------------
-# explain
-    ANALYZE FORMAT = JSON
-select /*+ JOIN_PREFIX(d1, catalog_sales) */
+explain
+#     ANALYZE FORMAT = JSON
+select /*+ JOIN_PREFIX(d1, catalog_sales, household_demographics, customer_demographics) */
     i_item_desc
      , w_warehouse_name
      , d1.d_week_seq

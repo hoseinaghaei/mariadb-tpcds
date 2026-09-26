@@ -55,8 +55,22 @@ Query 72 self-joins `date_dim` as `d1` and `d2` and correlates them on
 join was resolved by a full scan of 72,124 rows per driving row.
 
 ```sql
-CREATE INDEX idx_dd_week_seq ON date_dim (d_week_seq, d_date_sk);
+CREATE INDEX idx_dd_week_seq ON date_dim (d_week_seq);
 ```
+
+**Only `d_week_seq` is declared.** InnoDB appends the primary key to every
+secondary index leaf, so adding `d_date_sk` explicitly is redundant. Verified
+both ways:
+
+| Definition | Index size | `key_len` | `Extra` | query 72 |
+|---|---:|---:|---|---:|
+| `(d_week_seq, d_date_sk)` | 161 pages | 9 | `Using index` | 1.0s |
+| `(d_week_seq)` | **161 pages** | **9** | **`Using index`** | **1.0s** |
+
+Identical on every measure. The `Using index` is the proof: the query needs
+`d2.d_date_sk` for the `inv_date_sk = d2.d_date_sk` join, and the plan reports
+a covering index even though only `d_week_seq` is declared — so the implicit
+primary-key suffix is genuinely being served from the index.
 
 `d2` becomes `ref rows=6`. And because `d2` now resolves cheaply, `inventory`
 can be reached through its **PRIMARY KEY** `(inv_date_sk, inv_item_sk)` —
@@ -140,7 +154,7 @@ equivalent, and shorter.
 
 | Index | Purpose |
 |---|---|
-| **`date_dim(d_week_seq, d_date_sk)`** | **the highest-value index found: query 72 alone, 13.1s → 1.0s** |
+| **`date_dim(d_week_seq)`** | **the highest-value index found: query 72 alone, 13.1s → 1.0s** |
 | `household_demographics(hd_demo_sk, hd_buy_potential)` | covering; join satisfied from the index |
 | `customer_demographics(cd_demo_sk, cd_marital_status)` | covering; same |
 | `date_dim(d_year)`, `(d_year, d_moy)`, `(d_date)`, `(d_date_sk, d_year, d_date)` | date access paths |

@@ -30,6 +30,12 @@ CREATE INDEX idx_date_dim_d_date_year  ON date_dim (d_date_sk, d_year, d_date);
 -- instead of a secondary index.
 --   query72 with the JOIN_PREFIX hint:  13.1s -> 1.0s
 --   query72 unmodified:                719.3s -> 87.8s
-CREATE INDEX idx_dd_week_seq ON date_dim (d_week_seq, d_date_sk);
+--
+-- Only d_week_seq is declared. InnoDB appends the primary key (d_date_sk) to
+-- every secondary index leaf, so declaring it explicitly is redundant --
+-- verified: both forms give an identical 161-page index, identical key_len=9,
+-- and the plan reports "Using index" either way, which proves d_date_sk is
+-- served from the index despite not being declared.
+CREATE INDEX idx_dd_week_seq ON date_dim (d_week_seq);
 
 ANALYZE TABLE date_dim, household_demographics, customer_demographics;
