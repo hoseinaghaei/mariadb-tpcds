@@ -27,6 +27,7 @@ Working directory: `/Users/hosseinaghaei/Desktop/projects/dw`
 | 15 | Index usage statistics — 81 of 117 indexes never read | [15-index-statistics.md](15-index-statistics.md) |
 | 16 | What the buffer pool was hiding — a method correction | [16-buffer-pool-and-root-cause.md](16-buffer-pool-and-root-cause.md) |
 | 17 | Hiding the unused indexes — and a retracted finding | [17-unused-indexes-are-not-safe-to-drop.md](17-unused-indexes-are-not-safe-to-drop.md) |
+| 18 | Query optimisation log — query 72: **719x** | [18-query-optimization.md](18-query-optimization.md) |
 
 ## Result
 
@@ -45,6 +46,7 @@ of SF=1 data, and **all 99 TPC-DS queries running** against it.
 | Indexes never read by any query | **81 of 117** — hiding all 80 changes runtime by **−0.8%** ([step 17](17-unused-indexes-are-not-safe-to-drop.md)) |
 | Worst regression, root-caused and fixed | query 39: **92.5s → 1.7s** |
 | Biggest index win | query 95: **>300s → 0.1s** |
+| Biggest hand optimisation | query 72: **719.3s → 1.0s** ([step 18](18-query-optimization.md)) |
 | Buffer pool | **8 GB**, matching the reference repo |
 | Dataset seed | **10**, matching the reference repo |
 
