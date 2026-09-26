@@ -26,6 +26,7 @@ Working directory: `/Users/hosseinaghaei/Desktop/projects/dw`
 | — | Schema relationships reference | [14-schema-relationships.md](14-schema-relationships.md) |
 | 15 | Index usage statistics — 81 of 117 indexes never read | [15-index-statistics.md](15-index-statistics.md) |
 | 16 | What the buffer pool was hiding — a method correction | [16-buffer-pool-and-root-cause.md](16-buffer-pool-and-root-cause.md) |
+| 17 | "Never read" does not mean "safe to drop" | [17-unused-indexes-are-not-safe-to-drop.md](17-unused-indexes-are-not-safe-to-drop.md) |
 
 ## Result
 
@@ -41,7 +42,7 @@ of SF=1 data, and **all 99 TPC-DS queries running** against it.
 | Referential integrity | 107 / 107 relationships, **zero orphan rows** |
 | Indexed speedup, 97 clean queries | **1.01x** (1276.8s -> 1262.8s) |
 | Queries made *slower* by indexing | **18** — two of them serious |
-| Indexes never read by any query | **81 of 117** |
+| Indexes never read by any query | **81 of 117** — but see [step 17](17-unused-indexes-are-not-safe-to-drop.md), not all are safe to drop |
 | Worst regression, root-caused and fixed | query 39: **92.5s → 1.7s** |
 | Biggest index win | query 95: **>300s → 0.1s** |
 | Buffer pool | **8 GB**, matching the reference repo |

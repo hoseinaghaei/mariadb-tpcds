@@ -19,6 +19,21 @@
 --  this parameter set. A different scale factor, different substitution
 --  parameters, or the data-maintenance workload could use some of them.
 
+-- ###########################################################################
+-- ##  WARNING - DO NOT RUN THIS WITHOUT READING report/17.
+-- ##
+-- ##  Hiding these indexes with ALTER INDEX ... IGNORED was tested, and
+-- ##  query 78 went from 73s to not completing within 300s. The indexes it
+-- ##  needs are never READ -- they appear only in possible_keys -- but their
+-- ##  availability changes the optimizer's cost estimates and join order.
+-- ##
+-- ##  ROWS_READ does not measure whether an index influences a plan.
+-- ##
+-- ##  Test with sql/09_ignore_unused_indexes.sql first (reversible in 17s),
+-- ##  run the WHOLE query set, and check every query individually -- the
+-- ##  aggregate moved only -0.8% while query 78 blew up 12x.
+-- ###########################################################################
+
 USE tpcds;
 
 ALTER TABLE call_center DROP INDEX idx_cc_closed_date_sk;

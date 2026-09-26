@@ -1,0 +1,10 @@
+{
+ "query": 71,
+ "seconds": 7.2,
+ "tag": "ignored80",
+ "rows": 1005,
+ "ans": "71_NULLS_FIRST.ans",
+ "exp_rows": 1018,
+ "match": false,
+ "status": "ROWS_DIFF"
+}
