@@ -20,18 +20,20 @@
 --  parameters, or the data-maintenance workload could use some of them.
 
 -- ###########################################################################
--- ##  WARNING - DO NOT RUN THIS WITHOUT READING report/17.
+-- ##  TEST BEFORE YOU DROP.
 -- ##
--- ##  Hiding these indexes with ALTER INDEX ... IGNORED was tested, and
--- ##  query 78 went from 73s to not completing within 300s. The indexes it
--- ##  needs are never READ -- they appear only in possible_keys -- but their
--- ##  availability changes the optimizer's cost estimates and join order.
+-- ##  Hiding all 80 of these with ALTER INDEX ... IGNORED was measured and
+-- ##  changes total runtime by -0.8% across the query set -- no query
+-- ##  regressed on re-test. See report/17.
 -- ##
--- ##  ROWS_READ does not measure whether an index influences a plan.
+-- ##  Still: use sql/09_ignore_unused_indexes.sql first. It is reversible in
+-- ##  17 seconds; dropping an index on an 11.7M-row table is not. ROWS_READ
+-- ##  is also a narrow measure -- it counts rows read THROUGH an index, not
+-- ##  whether the index influenced a plan.
 -- ##
--- ##  Test with sql/09_ignore_unused_indexes.sql first (reversible in 17s),
--- ##  run the WHOLE query set, and check every query individually -- the
--- ##  aggregate moved only -0.8% while query 78 blew up 12x.
+-- ##  Check queries individually, not just the total: a query killed by
+-- ##  max_statement_time is excluded from aggregates, so a real regression
+-- ##  could hide inside a flat headline.
 -- ###########################################################################
 
 USE tpcds;
