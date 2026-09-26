@@ -106,19 +106,45 @@ query22  ->  inventory.idx_inv_item_sk
 query31  ->  store_sales.idx_ss_addr_sk        <- different index
 ```
 
-Making the three `inventory` indexes `IGNORED` and re-running:
+Making the three `inventory` indexes `IGNORED` and re-running.
 
-| Query | Base | Indexed | **inventory indexes ignored** |
+This was re-measured as a **controlled three-pass test** — visible, ignored,
+visible again — so that a single anomalous reading could not be mistaken for a
+finding (as happened in [step 17](17-unused-indexes-are-not-safe-to-drop.md)):
+
+| Query | Base | A: visible | **B: inventory ignored** | C: visible again |
+|---|---:|---:|---:|---:|
+| **39** | 1.7s | 58.3s | **1.1s** | 58.9s |
+| **21** | 0.4s | 14.3s | **0.2s** | 14.5s |
+| **22** | 12.0s | 14.3s | **7.5s** | 12.9s |
+| 31 | 14.8s | 18.1s | 17.6s | 17.8s |
+
+**A and C agree closely** (within 1–10%), and B is dramatically different for
+39, 21 and 22. The effect is the indexes, not drift.
+
+Queries 39 and 21 return to their pre-index baselines; query 22 ends up
+*faster* than its baseline. Query 31 is unchanged across all three passes —
+correctly predicted, since its plan uses `store_sales.idx_ss_addr_sk` rather
+than an inventory index. That the experiment discriminates between the two is
+what makes the diagnosis credible rather than coincidental.
+
+### These absolute numbers drifted from the main run
+
+The A/C readings above are **1.45–1.65x faster** than the same queries in the
+indexed run tabulated earlier in this document:
+
+| Query | indexed run | A/C re-measure | ratio |
 |---|---:|---:|---:|
-| **39** | 1.7s | 92.5s | **1.7s** — exactly back to baseline |
-| **21** | 0.4s | 23.7s | **0.3s** — better than baseline |
-| **22** | 12.0s | 19.8s | **11.8s** — better than baseline |
-| 31 | 14.8s | 26.0s | 27.0s — unchanged, as predicted |
+| 39 | 92.5s | 58.3 / 58.9s | 1.58x |
+| 21 | 23.7s | 14.3 / 14.5s | 1.65x |
+| 22 | 19.8s | 14.3 / 12.9s | 1.46x |
+| 31 | 26.0s | 18.1 / 17.8s | 1.45x |
 
-Query 31 was correctly predicted *not* to improve: its plan uses
-`store_sales.idx_ss_addr_sk`, not an inventory index. That the experiment
-separated the two is what makes the diagnosis credible rather than
-coincidental.
+The re-measurements were taken after many further runs had warmed the 8 GB
+buffer pool, while the indexed run began closer to cold. **Absolute timings in
+this project carry roughly ±50% depending on cache state**, and should be read
+as such. Ratios measured within a single controlled pass — A vs B vs C above —
+are the trustworthy part.
 
 **Three indexes on one table cause 74% of all regression time.**
 
