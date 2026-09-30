@@ -38,4 +38,21 @@ CREATE INDEX idx_date_dim_d_date_year  ON date_dim (d_date_sk, d_year, d_date);
 -- served from the index despite not being declared.
 CREATE INDEX idx_dd_week_seq ON date_dim (d_week_seq);
 
+-- Covering index for query 59's weekly store aggregation: the CTE sums
+-- ss_sales_price grouped by (d_week_seq, ss_store_sk), and this serves the
+-- whole scan from the index with no row lookups.
+--   query59: 7.3s -> 3.0s
+CREATE INDEX idx_ss_sold_date_sk_store_sales_price
+    ON store_sales (ss_sold_date_sk, ss_store_sk, ss_sales_price);
+
+-- ---------------------------------------------------------------------------
+--  REJECTED: date_dim(d_month_seq)
+--
+--  Looks obviously useful -- several queries filter on d_month_seq ranges --
+--  but it makes query 59 TEN TIMES SLOWER. Confirmed by three-pass:
+--      visible  12.7s  |  IGNORED  1.2s  |  visible again  12.6s
+--  Do not add it without re-measuring the whole query set.
+-- ---------------------------------------------------------------------------
+-- CREATE INDEX idx_dd_month_seq ON date_dim (d_month_seq);   -- DO NOT
+
 ANALYZE TABLE date_dim, household_demographics, customer_demographics;

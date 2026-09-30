@@ -256,3 +256,97 @@ they are genuinely useful access paths that the optimizer mis-costs.
 
 Never name primary key columns in a secondary index on InnoDB, and never create
 a secondary index on a leading prefix of the primary key.
+
+---
+
+## query 59 — 7.3s → 1.2s (**6.1x**)
+
+### Result
+
+| Version | Time | Output |
+|---|---:|---|
+| Original | **7.3s** | — |
+| + covering index *(contributed)* | 3.0s | identical |
+| **+ CTE date-range filter** | **1.2s** | **identical** |
+
+Measured three times at 1.2–1.3s. All variants byte-identical to the original's
+100 rows.
+
+### What the contributed index does
+
+```sql
+CREATE INDEX idx_ss_sold_date_sk_store_sales_price
+    ON store_sales (ss_sold_date_sk, ss_store_sk, ss_sales_price);
+```
+
+Query 59's CTE sums `ss_sales_price` grouped by `(d_week_seq, ss_store_sk)`.
+This index carries all three columns the CTE touches, so the scan is satisfied
+entirely from the index — `Using index`, no row lookups. **7.3s → 3.0s.**
+
+The query text was unchanged; the whole gain is the index.
+
+### What was left on the table
+
+`EXPLAIN` showed two problems:
+
+1. **The CTE is materialised twice** — two `DERIVED` entries, each scanning
+   `store_sales`.
+2. **It scans all 2,879,152 rows** when only **1,101,383** are needed. The
+   outer query only uses weeks in `d_month_seq` 1192–1215, which is 105 of the
+   10,436 week values in `date_dim`.
+
+Restricting the CTE fixes both copies at once:
+
+```sql
+where d_date_sk = ss_sold_date_sk
+  and ss_sold_date_sk between
+      (select min(d_date_sk) from date_dim
+        where d_week_seq in (select d_week_seq from date_dim
+                             where d_month_seq between 1192 and 1192 + 23))
+  and (select max(d_date_sk) from date_dim
+        where d_week_seq in (select d_week_seq from date_dim
+                             where d_month_seq between 1192 and 1192 + 23))
+```
+
+**Why this is safe.** It selects *whole weeks*, so every surviving week's
+aggregate is computed over all of its sales, exactly as before. Weeks outside
+the range were going to be discarded by the outer join's month filter anyway.
+Filtering on the sales' own `d_month_seq` instead would **not** be safe — a
+week straddling a month boundary would lose part of its total.
+
+### Variants that lost
+
+| Variant | Time | Why |
+|---|---:|---|
+| `d_week_seq IN (...)` instead of a date range | 2.1s | set membership, not a range — the covering index cannot range-scan |
+| `d_month_seq between 1191 and 1216` (wider, no subquery) | 1.9s | simpler and still safe, but the plan applies the filter *after* scanning `store_sales` |
+| the above + `JOIN_PREFIX(date_dim)` | 1.6s | the hint reached only one of the two CTE copies |
+
+The wide-month form is the most readable and only 0.7s behind. It is safe
+because a week spans 7 days and a month at least 28, so any week touching
+months 1192–1215 lies entirely inside 1191–1216.
+
+### An index that looked obvious and was 10x wrong
+
+`date_dim` has no index on `d_month_seq`, and several queries filter on it, so
+adding one seemed clearly right:
+
+```sql
+CREATE INDEX idx_dd_month_seq ON date_dim (d_month_seq);
+```
+
+Query 59 went from **1.2s to 12.7s**. Three-pass confirmed:
+
+| | query 59 |
+|---|---:|
+| index visible | 12.7s |
+| **IGNORED** | **1.2s** |
+| visible again | 12.6s |
+
+Dropped. It is recorded as rejected in `sql/11_optimizer_indexes.sql` so nobody
+adds it again on the same reasoning.
+
+This is the third time in this project that an index has made things
+dramatically worse — see also the two `inventory` indexes in
+[step 13](13-benchmark-results.md). On this workload, adding an index is about
+as likely to hurt as to help, and only measurement distinguishes the cases.
