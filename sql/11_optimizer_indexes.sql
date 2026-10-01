@@ -45,8 +45,18 @@ CREATE INDEX idx_dd_week_seq ON date_dim (d_week_seq);
 CREATE INDEX idx_ss_sold_date_sk_store_sales_price
     ON store_sales (ss_sold_date_sk, ss_store_sk, ss_sales_price);
 
+-- Covering index for query 22: carries every inventory column the aggregation
+-- reads, so the scan runs "Using index" with no row lookups.
+--   query22: 23.0s -> 4.3s (with the query rewrite; see report/18)
+CREATE INDEX idx_inv_item_date_sk
+    ON inventory (inv_item_sk, inv_date_sk, inv_quantity_on_hand);
+
+-- Serves query 22's min/max date-range subqueries. NOTE the COMPOSITE form --
+-- a plain date_dim(d_month_seq) is rejected below.
+CREATE INDEX idx_date_dim_d_month_seq ON date_dim (d_date_sk, d_month_seq);
+
 -- ---------------------------------------------------------------------------
---  REJECTED: date_dim(d_month_seq)
+--  REJECTED: date_dim(d_month_seq)   -- the PLAIN single-column form
 --
 --  Looks obviously useful -- several queries filter on d_month_seq ranges --
 --  but it makes query 59 TEN TIMES SLOWER. Confirmed by three-pass:

@@ -350,3 +350,85 @@ This is the third time in this project that an index has made things
 dramatically worse — see also the two `inventory` indexes in
 [step 13](13-benchmark-results.md). On this workload, adding an index is about
 as likely to hurt as to help, and only measurement distinguishes the cases.
+
+---
+
+## query 22 — 23.0s → 4.3s (**5.3x**)
+
+### What it must do
+
+Appendix B.22: *"For each product name, brand, class, category, calculate the
+average quantity on hand. Rollup data by product name, brand, class and
+category."*
+
+`WITH ROLLUP` over four columns yields five levels — ~36,000 output rows from
+8,957 detail groups.
+
+**A redundancy that cannot be removed.** `i_product_name` has 17,957 distinct
+values across 18,000 `item` rows, so it is effectively unique. That makes the
+`L3` subtotal level (name+brand+class) identical to the `L4` detail level —
+8,957 rows each, computed twice. Reordering the `GROUP BY` to put the
+low-cardinality columns first would eliminate it, but `ROLLUP` collapses
+right-to-left, so the column order *is* the specification. Reversing it would
+produce ~10 category subtotals instead of ~9,000 product-name subtotals — a
+different answer.
+
+The reference repo cannot run this query at all; it stubs it with
+`MARIADB-EXPECTED-ERROR: rollup+order by`.
+
+### The ablation matrix
+
+Three ingredients were contributed together — an optimizer hint, a date-range
+filter, and a covering index. Measured separately and in combination:
+
+| Variant | index IGNORED | index VISIBLE |
+|---|---:|---:|
+| original | **23.0s** | 11.5s |
+| range filter only | 11.9s | 16.1s |
+| hint only | **29.6s** | 19.2s |
+| hint + range | 18.0s | **5.4s** |
+
+**No ingredient is independently good.** The hint alone makes things *worse*
+(23.0 → 29.6s). Range-plus-index is worse than index alone (16.1 vs 11.5s).
+Only all three together win.
+
+This is the opposite of query 72, where ablation showed one ingredient (the
+hint) carried 55x and the other almost nothing. The lesson generalises in only
+one direction: **measure combinations, never assume contributions add up.**
+
+### Deleting a join entirely
+
+Once `inv_date_sk` is bounded by the date range, the `date_dim` join does no
+filtering:
+
+```
+dates with d_date_sk between 2450815 and 2451179 : 365
+of which d_month_seq between 1176 and 1187        : 365
+```
+
+All of them. `d_month_seq` is contiguous in `d_date_sk` order, so the
+`[min, max]` window covers exactly those months. And referential integrity
+guarantees every `inv_date_sk` exists in `date_dim` (107/107 relationships,
+zero orphans — [step 9](09-load-data.md)), while `d_date_sk` being the primary
+key means the join cannot duplicate rows either.
+
+Removing it eliminates **2,385,000 `eq_ref` probes**: 4.9s → 4.3s.
+
+**This depends on two data properties**, both guaranteed by the TPC-DS schema
+but worth stating explicitly: `d_month_seq` contiguity, and clean referential
+integrity on `inventory.inv_date_sk`.
+
+With `date_dim` gone the hint becomes unnecessary — the optimizer reaches the
+same plan unaided, so the final version carries no hint and is the simplest of
+all the variants tried.
+
+### Indexes
+
+```sql
+CREATE INDEX idx_inv_item_date_sk
+    ON inventory (inv_item_sk, inv_date_sk, inv_quantity_on_hand);
+CREATE INDEX idx_date_dim_d_month_seq ON date_dim (d_date_sk, d_month_seq);
+```
+
+The second is **composite**. The plain single-column `date_dim(d_month_seq)`
+remains rejected — it makes query 59 ten times slower.

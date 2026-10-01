@@ -133,8 +133,7 @@ limit 100;
 -- --------------------------------------------------------------------------
 explain
 with wss as
-         (select
-              d_week_seq,
+         (select d_week_seq,
                  ss_store_sk,
                  sum(IF((d_day_name = 'Sunday'), ss_sales_price, null))    sun_sales,
                  sum(IF((d_day_name = 'Monday'), ss_sales_price, null))    mon_sales,
@@ -174,8 +173,7 @@ from (select s_store_name   s_store_name1
       where d.d_week_seq = wss.d_week_seq
         and ss_store_sk = s_store_sk
         and d_month_seq between 1192 and 1192 + 11) y,
-     (select
-          s_store_name   s_store_name2
+     (select s_store_name   s_store_name2
            , wss.d_week_seq d_week_seq2
            , s_store_id     s_store_id2
            , sun_sales      sun_sales2
@@ -199,7 +197,7 @@ select *
 from store;
 
 create index idx_ss_sold_date_sk_store_sales_price
-    on store_sales (ss_sold_date_sk, ss_store_sk ,ss_sales_price);
+    on store_sales (ss_sold_date_sk, ss_store_sk, ss_sales_price);
 
 -- --------------------------------------------------------------------------
 -- query67   indexed 12.6s   base 13.0s   1.03x
@@ -251,6 +249,7 @@ limit 100;
 -- --------------------------------------------------------------------------
 -- query22   indexed 19.8s   base 12.0s   0.61x (!)
 -- --------------------------------------------------------------------------
+explain
 select *
 from (select i_product_name
            , i_brand
@@ -270,6 +269,50 @@ from (select i_product_name
       with rollup) tpcds_rollup
 order by qoh, i_product_name, i_brand, i_class, i_category
 limit 100;
+
+explain
+select *
+from (select  /*+ JOIN_PREFIX(item, inventory, date_dim) */
+          i_product_name
+           , i_brand
+           , i_class
+           , i_category
+           , avg(inv_quantity_on_hand) qoh
+      from inventory
+         , date_dim
+         , item
+      where inv_date_sk = d_date_sk
+        and inv_item_sk = i_item_sk
+        and d_month_seq between 1176 and 1176 + 11
+        and inv_date_sk between (select min(d_date_sk)
+                                 from date_dim
+                                 where d_month_seq between 1176 and 1176 + 11) and (select max(d_date_sk)
+                                                                                    from date_dim
+                                                                                    where d_month_seq between 1176 and 1176 + 11)
+      group by i_product_name
+             , i_brand
+             , i_class
+             , i_category
+      with rollup) tpcds_rollup
+order by qoh, i_product_name, i_brand, i_class, i_category
+limit 100;
+
+
+select min(d_date_sk), max(d_date_sk)
+from date_dim
+where d_month_seq between 1176 and 1176 + 11;
+
+create index idx_inv_item_date_sk
+    on inventory (inv_item_sk, inv_date_sk, inv_quantity_on_hand);
+
+
+create index idx_date_dim_d_month_seq
+    on date_dim (d_date_sk, d_month_seq);
+
+alter table inventory
+    drop index idx_inv_date_item_sk;
+
+
 
 -- --------------------------------------------------------------------------
 -- query57   indexed 20.5s   base 20.8s   1.01x
