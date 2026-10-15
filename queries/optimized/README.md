@@ -3,6 +3,12 @@
 One sub-folder per query. Each holds every variant tried, plus a `README.md`
 with measured timings and the reasoning.
 
+Riccardo's separately measured Q4, Q5, Q31, Q39 and Q51 work is documented in
+[`experiments/README.md`](../../experiments/README.md), with evidence in
+[`experiments/evidence/riccio_sf1_20261014/`](../../experiments/evidence/riccio_sf1_20261014/).
+Those Linux/SF=1 measurements use their own baselines; the historical table below
+belongs to the original repository author.
+
 | Query | Original | Best | Speedup |
 |---|---:|---:|---:|
 | [`q72`](q72/) | 719.3s | **1.0s** | **719x** |

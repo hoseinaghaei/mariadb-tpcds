@@ -1,0 +1,84 @@
+diff --git a/.gitignore b/.gitignore
+index eb38104..ef7ba5d 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -30,6 +30,9 @@ queries/results/*/*.out
+ .DS_Store
+ *.swp
+ 
++# Python helper bytecode
++scripts/__pycache__/
++
+ # Unrelated personal files
+ *.jpeg
+ *.jpg
+diff --git a/DSGen-software-code-4.0.0/tools/makefile b/DSGen-software-code-4.0.0/tools/makefile
+index 2e955d6..16f5cee 100644
+--- a/DSGen-software-code-4.0.0/tools/makefile
++++ b/DSGen-software-code-4.0.0/tools/makefile
+@@ -56,7 +56,8 @@ CC		= $($(OS)_CC)
+ # CFLAGS
+ AIX_CFLAGS		= -q64 -O3 -D_LARGE_FILES
+ HPUX_CFLAGS		= -O3 -Wall
+-LINUX_CFLAGS	= -g -Wall
++# GCC 10+ defaults to -fno-common; the legacy toolkit shares tentative globals.
++LINUX_CFLAGS	= -g -Wall -fcommon
+ MACOS_CFLAGS	= -g -Wall -Wno-format -Wno-implicit-int -Wno-deprecated-non-prototype -Wno-error=implicit-function-declaration -Wno-error=int-conversion -Wno-error=incompatible-pointer-types
+ NCR_CFLAGS		= -g 
+ SOLARIS_CFLAGS	= -O3 -Wall
+@@ -236,6 +237,9 @@ DATE_STAMP	= `date '+%Y%m%d'`
+ #
+ all: .ctags_updated $(PROGS) $(IDX) 
+ 
++# Recompile existing objects when compiler settings in this makefile change.
++$(OBJ): makefile
++
+ $(PROG1): $(OBJ1) $(IDX)
+ 	$(CC) $(CFLAGS) $(LDFLAGS) -o $(PROG1) $(OBJ1) $(LIBS)
+ $(PROG2): $(OBJ2)
+diff --git a/README.md b/README.md
+index 1153b6a..130f74e 100644
+--- a/README.md
++++ b/README.md
+@@ -5,6 +5,12 @@
+ Running the complete **TPC-DS v4.0.0** benchmark schema and all **99 queries**
+ on **MariaDB 13.0.2** (Apple Silicon, macOS).
+ 
++**Current course work:** the headline results below describe the original
++repository author's environment. Riccio's independent experiments use MariaDB
++10.11.14 on Linux, SF=1 and data seed 10. See
++[`experiments/README.md`](experiments/README.md) for the isolated workflow,
++query candidates, measurement protocol and remaining submission work.
++
+ > **Performance results in this repository are NOT comparable to TPC Benchmark
+ > Results.** They were not audited, not produced at a publishable scale factor,
+ > and do not meet the requirements of any official TPC Benchmark Standard. They
+@@ -81,6 +87,11 @@ non-Windows host.
+ 
+ ## Reproducing
+ 
++On Linux, use `make OS=LINUX` for the build in step 1. The Linux target
++enables `-fcommon` for the toolkit's legacy shared global variables, which
++otherwise cause linker errors with GCC 10 and newer. Changes to the makefile
++automatically rebuild existing object files.
++
+ ```sh
+ # 1. build the toolkit (already patched for macOS in this tree)
+ cd DSGen-software-code-4.0.0/tools && make
+diff --git a/queries/optimized/README.md b/queries/optimized/README.md
+index faecbbc..a4c429c 100644
+--- a/queries/optimized/README.md
++++ b/queries/optimized/README.md
+@@ -3,6 +3,12 @@
+ One sub-folder per query. Each holds every variant tried, plus a `README.md`
+ with measured timings and the reasoning.
+ 
++Riccio's separately measured Q4, Q5, Q31, Q39 and Q51 work is documented in
++[`experiments/README.md`](../../experiments/README.md), with evidence in
++[`experiments/evidence/riccio_sf1_20261014/`](../../experiments/evidence/riccio_sf1_20261014/).
++Those Linux/SF=1 measurements use their own baselines; the historical table below
++belongs to the original repository author.
++
+ | Query | Original | Best | Speedup |
+ |---|---:|---:|---:|
+ | [`q72`](q72/) | 719.3s | **1.0s** | **719x** |

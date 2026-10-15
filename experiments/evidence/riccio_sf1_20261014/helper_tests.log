@@ -1,0 +1,20 @@
+START 1/3: trial0
+START 2/3: trial1
+STOP: trial1 failed; inspect its run.json and stderr.txt
+test_all_relationships_and_composite_null_rules (test_build_ri_check.RelationshipCoverage.test_all_relationships_and_composite_null_rules) ... ok
+test_empty_sql (test_query_trial.DiagnosticSafety.test_empty_sql) ... ok
+test_escaped_quotes_and_trailing_delimiters (test_query_trial.DiagnosticSafety.test_escaped_quotes_and_trailing_delimiters) ... ok
+test_invalid_or_executable_comments_are_rejected (test_query_trial.DiagnosticSafety.test_invalid_or_executable_comments_are_rejected) ... ok
+test_second_statement_is_detected (test_query_trial.DiagnosticSafety.test_second_statement_is_detected) ... ok
+test_semicolons_in_comments_and_literals (test_query_trial.DiagnosticSafety.test_semicolons_in_comments_and_literals) ... ok
+test_null_empty_duplicates_and_set_boundaries (test_query_trial.ExactResults.test_null_empty_duplicates_and_set_boundaries) ... ok
+test_failure_stops_later_trials (test_run_query_batch.BatchFailureSafety.test_failure_stops_later_trials) ... ok
+test_invalid_later_job_fails_before_any_trial (test_run_query_batch.BatchFailureSafety.test_invalid_later_job_fails_before_any_trial) ... usage: run_query_batch.py [-h] --database DATABASE --jobs JOBS --out OUT
+run_query_batch.py: error: Unknown job options: ['command']
+ok
+test_medians_exclude_probes_failures_and_other_configurations (test_summarize_experiments.MeasurementProtocol.test_medians_exclude_probes_failures_and_other_configurations) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.014s
+
+OK

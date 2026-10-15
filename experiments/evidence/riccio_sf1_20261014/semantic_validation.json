@@ -1,0 +1,161 @@
+[
+  {
+    "query": 4,
+    "strict_match": true,
+    "baseline_row_counts": [
+      1
+    ],
+    "cases": [
+      "unique business IDs",
+      "missing second-year group",
+      "NULL second-year measure",
+      "zero first-year denominator",
+      "NULL customer attributes",
+      "orphan customer"
+    ]
+  },
+  {
+    "query": 5,
+    "strict_match": true,
+    "baseline_row_counts": [
+      10
+    ],
+    "cases": [
+      "inclusive endpoints",
+      "return from an older sale",
+      "unmatched return",
+      "duplicate business IDs across store keys",
+      "NULL measures",
+      "rollup rows"
+    ]
+  },
+  {
+    "query": 31,
+    "strict_match": true,
+    "baseline_row_counts": [
+      2
+    ],
+    "cases": [
+      "missing quarters",
+      "NULL county and totals",
+      "duplicate county addresses",
+      "negative third-quarter total",
+      "out-of-year and orphan rows"
+    ]
+  },
+  {
+    "query": 39,
+    "strict_match": true,
+    "baseline_row_counts": [
+      3,
+      2
+    ],
+    "cases": [
+      "both coefficient-of-variation thresholds",
+      "missing month",
+      "zero/NULL mean",
+      "single observation",
+      "same warehouse name with different keys",
+      "orphans"
+    ]
+  },
+  {
+    "query": 51,
+    "strict_match": true,
+    "baseline_row_counts": [
+      3
+    ],
+    "cases": [
+      "channel-only dates",
+      "NULL daily totals",
+      "negative increments requiring MAX",
+      "multiple facts per day",
+      "outside-window rows",
+      "NULL item"
+    ]
+  },
+  {
+    "query": 39,
+    "variant": "v3",
+    "strict_match": true,
+    "baseline_row_counts": [
+      3,
+      2
+    ],
+    "cases": [
+      "both coefficient-of-variation thresholds",
+      "missing month",
+      "zero/NULL mean",
+      "single observation",
+      "same warehouse name with different keys",
+      "orphans"
+    ]
+  },
+  {
+    "query": 51,
+    "variant": "v1_zero_fixture",
+    "strict_match": true,
+    "baseline_row_counts": [
+      4
+    ],
+    "cases": [
+      "channel-only dates",
+      "NULL versus zero",
+      "negative increments requiring MAX",
+      "multiple facts per day",
+      "outside-window rows",
+      "NULL item"
+    ]
+  },
+  {
+    "query": 39,
+    "variant": "v4",
+    "strict_match": true,
+    "baseline_row_counts": [
+      3,
+      2
+    ],
+    "cases": [
+      "both coefficient-of-variation thresholds",
+      "missing month",
+      "zero/NULL mean",
+      "single observation",
+      "same warehouse name with different keys",
+      "orphans"
+    ]
+  },
+  {
+    "query": 39,
+    "variant": "v5",
+    "strict_match": true,
+    "baseline_row_counts": [
+      3,
+      2
+    ],
+    "cases": [
+      "both coefficient-of-variation thresholds",
+      "missing month",
+      "zero/NULL mean",
+      "single observation",
+      "same warehouse name with different keys",
+      "orphans"
+    ]
+  },
+  {
+    "query": 39,
+    "variant": "v6",
+    "strict_match": true,
+    "baseline_row_counts": [
+      3,
+      2
+    ],
+    "cases": [
+      "both coefficient-of-variation thresholds",
+      "missing month",
+      "zero/NULL mean",
+      "single observation",
+      "same warehouse name with different keys",
+      "orphans"
+    ]
+  }
+]

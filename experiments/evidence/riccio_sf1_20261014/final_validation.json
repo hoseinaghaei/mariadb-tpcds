@@ -1,0 +1,24 @@
+{
+  "checked_relationships": 107,
+  "orphan_rows": 0,
+  "all_25_table_counts_unchanged": true,
+  "total_rows_including_dbgen_version": 19558918,
+  "visible_secondary_indexes": 117,
+  "all_primary_keys_retained": true,
+  "data_generation": {
+    "columns": [
+      "dv_version",
+      "dv_create_date",
+      "dv_create_time",
+      "dv_cmdline_args"
+    ],
+    "rows": [
+      [
+        "4.0.0",
+        "2026-10-14",
+        "19:18:27",
+        "-SCALE 1 -RNGSEED 10 -DIR ../data/sf1_seed10 "
+      ]
+    ]
+  }
+}

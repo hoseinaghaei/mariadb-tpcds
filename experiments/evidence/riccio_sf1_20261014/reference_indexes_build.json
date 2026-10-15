@@ -1,0 +1,8 @@
+{
+  "database": "tpcds_riccio_sf1",
+  "index_count_expected": 117,
+  "sql_sha256": "b16c6a5205dac85854fb1f33c3724b1094f67545d8b3988c2d72d7df7b947690",
+  "started_utc": "2026-10-14T19:17:56.695654+00:00",
+  "seconds": 301.6197303329973,
+  "return_code": 0
+}
