@@ -2,10 +2,11 @@
 """Run one adapted TPC-DS query against MariaDB, time it, compare to the TPC answer set.
    usage: run_query.py <n> [tag]"""
 import subprocess, sys, os, json, re, time, glob
+from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _ansparse import norm, parse_ans, parse_out   # shared, fixed parser
 
-ROOT='/Users/hosseinaghaei/Desktop/projects/dw'
+ROOT=Path(__file__).resolve().parent.parent
 QDIR=f'{ROOT}/queries/mariadb'; ADIR=f'{ROOT}/DSGen-software-code-4.0.0/answer_sets'
 PRE="SET SESSION sql_mode=CONCAT(@@sql_mode,',IGNORE_SPACE');"
 

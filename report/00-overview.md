@@ -4,7 +4,7 @@
 > Results** — unaudited, scale factor 1, not meeting any official TPC Benchmark
 > Standard. See `DSGen-software-code-4.0.0/EULA.txt` clause 4.c(3).
 
-Working directory: `/Users/hosseinaghaei/Desktop/projects/dw`
+Working directory: the repository root, wherever the project is checked out.
 
 ## What was done
 
@@ -85,7 +85,7 @@ dw/
 |---|---|
 | Host | macOS 26.6.2 (Darwin 25.6.0), Apple Silicon arm64 |
 | Compiler | Apple clang 21.0.0 |
-| MariaDB | 13.0.2-MariaDB (Homebrew), datadir `/opt/homebrew/var/mysql/` |
+| MariaDB | 13.0.2-MariaDB (Homebrew); data directory is installation-specific (`SELECT @@datadir`) |
 | Toolkit | TPC-DS Tool v4.0.0 (`DSGen-software-code-4.0.0`) |
 | Date | 2026-09-23 |
 

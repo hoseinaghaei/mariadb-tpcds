@@ -30,7 +30,17 @@ queries/results/*/*.out
 .DS_Store
 *.swp
 
+# Python helper bytecode
+scripts/__pycache__/
+
 # Unrelated personal files
 *.jpeg
 *.jpg
 *.png
+
+.history/
+__pycache__/
+*.py[cod]
+
+# Packaged source snapshots; raw evidence archives remain tracked.
+/experiments/*.zip

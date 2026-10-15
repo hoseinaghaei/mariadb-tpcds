@@ -13,9 +13,12 @@ all 179 InnoDB metrics) and all 99 queries re-run against the indexed database
 so `INFORMATION_SCHEMA.INDEX_STATISTICS` would record which indexes actually
 get read.
 
-Configuration lives in `/opt/homebrew/etc/my.cnf.d/tpcds-observability.cnf`,
-a drop-in that the existing `!includedir` picks up. Deleting that one file and
-restarting reverts everything.
+The configuration source is `sql/tpcds-observability.cnf`. Install it in a
+directory included by your MariaDB configuration; on Homebrew, discover the
+prefix with `brew --prefix` and use its `etc/my.cnf.d/` directory if included.
+Deleting that drop-in and restarting reverts everything. The slow-log filename
+is `slow.log`, relative to MariaDB's configured data directory, as described in
+the [MariaDB documentation](https://mariadb.com/docs/server/server-management/server-monitoring-logs/slow-query-log/slow-query-log-overview).
 
 > Statistics were flushed to zero before the run, so the numbers below describe
 > exactly these 99 queries. The run used four parallel agents, so **wall times
