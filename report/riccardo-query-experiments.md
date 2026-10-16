@@ -30,8 +30,10 @@ optimizer. Their build took 301.620 seconds and added 4,010,737,664 index bytes
 justify them. ANALYZE TABLE succeeded for all 25 tables after the build.
 
 The generator scale of 1 is not the course's final normalized reference scale.
-The group has not selected its largest feasible dataset, four scale mapping or
-final Mac configuration. No extrapolated times are reported as measurements.
+The group plans final measurements on Hossein's computer following the
+15 October discussion. Its actual hardware/software configuration still needs
+recording; the largest feasible dataset and four-scale mapping remain to be
+selected. No extrapolated times are reported as measurements.
 
 ## Measurement and correctness method
 
@@ -102,6 +104,47 @@ and 117 visible secondary indexes. The dataset has 19,558,918 rows including
 one dbgen_version row. Customer business IDs remain unique and non-NULL.
 
 ## Query-specific reasoning
+
+### Development history and alternatives
+
+The following table retains intermediate and rejected attempts alongside the
+selected versions. Every numeric median uses three ordinary repetitions.
+Missing measurements are shown as missing, not inferred from another profile.
+For exact output comparisons, SQL excerpts, plan references and reproduction
+commands, use the linked step-by-step query documents.
+
+| Query | Version | Primary-key median (s) | Indexed median (s) | Change and decision |
+| --- | --- | ---: | ---: | --- |
+| [4](../queries/optimized/q4/README.md) | v0 | 99.778 | 54.866 | Original control |
+| 4 | v1 | — | — | Year filters only; single exploratory run, no repeated conclusion |
+| 4 | v2 | 16.942 | 15.209 | Two-year pivot and late customer join; selected |
+| [5](../queries/optimized/q5/README.md) | v0 | 145.402 | 112.735 | Original control |
+| 5 | v1 | 11.309 | 10.144 | Filter six union branches early; selected |
+| [31](../queries/optimized/q31/README.md) | v0 | 27.572 | 46.947 | Original control |
+| 31 | v1 | 23.508 | — | Period filters only; small gain with overlapping ranges |
+| 31 | v2 | 12.009 | 15.957 | Pivot quarterly totals; selected |
+| [39](../queries/optimized/q39/README.md) | v0 | 3.280 | 80.035 / 81.236 | Original controls for the initial / final indexed series |
+| 39 | v1 | 3.226 | — | Month filters; little difference |
+| 39 | v2 | 3.881 | — | Share temporary results with early dimension joins; slower |
+| 39 | v3 | 0.769 | — | Late dimension joins with shared results; unchanged-data alternative |
+| 39 | v4 | 0.818 | 44.234 | Independent statements; poor indexed plan |
+| 39 | v5 | — | 0.867 | v4 with inventory PRIMARY forced; successful correction |
+| 39 | v6 | — | 0.817 | v4 with grouped source first; selected correction |
+| [51](../queries/optimized/q51/README.md) | v0 | 77.282 | 60.528 | Original control |
+| 51 | v1 | 58.484 | 48.549 | Unified daily keys with preserved windows; selected |
+
+Q4 v1's **88.071 s** is a single exploratory execution, compared with a
+**123.880 s** original probe in that sequence; neither belongs in the repeated
+median table. Q39 v4 uses the **80.035 s** indexed control. v5/v6 use the fresh
+**81.236 s** control. v5 and v6 branch separately from v4; v6 does not also force
+the PRIMARY index. Temporary-result sharing and the five Q51 CTE stages are
+not assigned imaginary per-component speedups.
+
+The per-query documents compare all returned values, not only row counts.
+They include concrete matching output rows, nonempty fixture results, and the
+distinction between estimated EXPLAIN plans and actual ANALYZE observations.
+The [script guide](../experiments/README.md#what-the-scripts-do) explains how the
+code collects this evidence so the implementation can be reviewed and presented.
 
 ### Q4: aggregate both years before joining customer details
 
