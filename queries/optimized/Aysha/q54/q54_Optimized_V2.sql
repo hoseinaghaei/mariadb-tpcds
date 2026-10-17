@@ -1,3 +1,4 @@
+EXPLAIN
 with my_customers as (
  select straight_join c_customer_sk, c_current_addr_sk
  from (

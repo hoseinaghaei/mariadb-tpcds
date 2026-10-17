@@ -1,14 +1,15 @@
 -- Index added and mycustomers nnow first fikters sales and catalogeus seperately (time and item) and later joins(UNION ALL)
-
-create index idx_ws_date_item_cust on web_sales (ws_sold_date_sk, ws_item_sk, ws_bill_customer_sk);
-create index idx_cs_date_item_cust on catalog_sales (cs_sold_date_sk, cs_item_sk, cs_bill_customer_sk);
-create index idx_ss_cust_date_cover on store_sales (ss_customer_sk, ss_sold_date_sk, ss_ext_sales_price);
-
+-- 
+-- create index idx_ws_date_item_cust on web_sales (ws_sold_date_sk, ws_item_sk, ws_bill_customer_sk);
+-- create index idx_cs_date_item_cust on catalog_sales (cs_sold_date_sk, cs_item_sk, cs_bill_customer_sk);
+-- create index idx_ss_cust_date_cover on store_sales (ss_customer_sk, ss_sold_date_sk, ss_ext_sales_price);
+-- 
 -- DROP INDEX idx_ws_date_item_cust ON web_sales;
 -- DROP INDEX idx_cs_date_item_cust ON catalog_sales;
 -- DROP INDEX idx_ss_cust_date_cover ON store_sales;
+-- 
 
-
+explain
 with my_customers as (
  select distinct c_customer_sk
         , c_current_addr_sk
