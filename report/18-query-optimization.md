@@ -432,3 +432,65 @@ CREATE INDEX idx_date_dim_d_month_seq ON date_dim (d_date_sk, d_month_seq);
 
 The second is **composite**. The plain single-column `date_dim(d_month_seq)`
 remains rejected — it makes query 59 ten times slower.
+
+---
+
+## query 2 — 84s → 25.9s (**3.2x**)
+
+### What it must do
+
+Appendix B.2: *"Report the ratios of weekly web and catalog sales increases
+from one year to the next year for each week."*
+
+It unions `web_sales` and `catalog_sales` into one `(date, price)` stream,
+aggregates seven per-weekday totals per week, then self-joins 53 weeks apart.
+
+It returns **2,520 rows for 52 distinct weeks** — 49 per week. The
+`⋈ date_dim ON d_week_seq` join matches all 7 days of a week on both sides of
+the self-join, so each pair appears 7×7 times. Specified behaviour, preserved.
+
+### Where the time went
+
+The `wscs` union was scanned **twice**, each pass reading all of `web_sales`
+(720,378) and `catalog_sales` (1,441,837) — about **5.1M row scans** — when the
+query uses two years out of the six present.
+
+Pushing a whole-week date window into both arms cuts each pass to
+292,707 + 575,192: **84s → 32.1s**.
+
+Adding covering indexes takes it to **25.9s**:
+
+```sql
+CREATE INDEX idx_ws_sold_date_ext_price ON web_sales     (ws_sold_date_sk, ws_ext_sales_price);
+CREATE INDEX idx_cs_sold_date_ext_price ON catalog_sales (cs_sold_date_sk, cs_ext_sales_price);
+```
+
+Without them the filtered scan is still `ALL ... Using where`, because the
+existing single-column index cannot supply `ext_sales_price`. Three-pass:
+visible 25.8s, IGNORED 32.1s, visible again 26.0s — worth **~20%**.
+
+### Three ideas that did not pay
+
+**A `bounds` CTE to compute the window once** (28.6s). `EXPLAIN` showed the
+min/max subqueries materialised **eight times** — 2 subqueries × 2 union arms ×
+2 CTE copies. That looked like the obvious next target, and hoisting them
+changed nothing measurable. The overhead was not on the critical path.
+
+**Widening to whole years 1999–2002** (64.3s). Simpler SQL, no nested `IN`, but
+admits twice the data.
+
+**Restructuring so the union materialises once** (~29s). Carrying `d_year`
+through a combined CTE means `wswscs` is referenced once rather than twice —
+structurally the right fix for the actual problem, and it still did not win.
+Readings of 25.8s, 60.3s and 32.2s made it too unstable to prefer.
+
+### Two process notes
+
+**A header is output too.** The first restructure produced identical data rows
+but named its columns `round(y.sun_sales/z.sun_sales,2)` where the original
+said `round(sun_sales1/sun_sales2,2)`. The diff caught it. Preserving the
+original aliases was required for a genuine byte-identical comparison.
+
+**One reading is not a measurement.** That same variant first measured 25.8s,
+which would have made it the winner. Repeats gave 60.3s and 32.2s. Every figure
+in this section comes from at least two runs.

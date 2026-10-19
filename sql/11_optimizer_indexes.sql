@@ -55,6 +55,15 @@ CREATE INDEX idx_inv_item_date_sk
 -- a plain date_dim(d_month_seq) is rejected below.
 CREATE INDEX idx_date_dim_d_month_seq ON date_dim (d_date_sk, d_month_seq);
 
+-- Covering indexes for query 2. Its union of web_sales and catalog_sales reads
+-- only (sold_date_sk, ext_sales_price); the existing single-column
+-- idx_ws_sold_date_sk cannot serve it because ext_sales_price needs a row
+-- lookup, so the filtered scan stays ALL ... Using where. With these it
+-- becomes range ... Using index.
+--   query2: 32.1s -> 25.9s  (~20%, confirmed three-pass)
+CREATE INDEX idx_ws_sold_date_ext_price ON web_sales     (ws_sold_date_sk, ws_ext_sales_price);
+CREATE INDEX idx_cs_sold_date_ext_price ON catalog_sales (cs_sold_date_sk, cs_ext_sales_price);
+
 -- ---------------------------------------------------------------------------
 --  REJECTED: date_dim(d_month_seq)   -- the PLAIN single-column form
 --
