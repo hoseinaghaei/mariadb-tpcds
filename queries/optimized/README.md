@@ -9,6 +9,7 @@ with measured timings and the reasoning.
 | [`q59`](q59/) | 7.3s | **1.2s** | **6.1x** |
 | [`q22`](q22/) | 23.0s | **4.3s** | **5.3x** |
 | [`q2`](q2/) | 84s | **25.9s** | **3.2x** |
+| [`q88`](q88/) | 33s | **0.25s** | **~130x** |
 
 `query<N>_BEST.sql` in each folder is the version to use.
 

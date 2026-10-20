@@ -64,6 +64,16 @@ CREATE INDEX idx_date_dim_d_month_seq ON date_dim (d_date_sk, d_month_seq);
 CREATE INDEX idx_ws_sold_date_ext_price ON web_sales     (ws_sold_date_sk, ws_ext_sales_price);
 CREATE INDEX idx_cs_sold_date_ext_price ON catalog_sales (cs_sold_date_sk, cs_ext_sales_price);
 
+-- Fully-covering index for query 88. That query reads exactly three columns
+-- from store_sales -- ss_store_sk, ss_hdemo_sk, ss_sold_time_sk -- all join
+-- keys, with no measure column because the aggregate is count(*). The plan
+-- goes from store_sales ALL rows=3,910,824 to ref ... Using index rows=2,235,
+-- never touching the base table.
+--   query88: 4.2s -> 0.25s with the single-pass rewrite
+--            36.0s -> 1.4s even WITHOUT the rewrite
+CREATE INDEX idx_ss_store_hdemo_time
+    ON store_sales (ss_store_sk, ss_hdemo_sk, ss_sold_time_sk);
+
 -- ---------------------------------------------------------------------------
 --  REJECTED: date_dim(d_month_seq)   -- the PLAIN single-column form
 --

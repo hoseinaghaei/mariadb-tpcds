@@ -494,3 +494,63 @@ original aliases was required for a genuine byte-identical comparison.
 **One reading is not a measurement.** That same variant first measured 25.8s,
 which would have made it the winner. Repeats gave 60.3s and 32.2s. Every figure
 in this section comes from at least two runs.
+
+---
+
+## query 88 — 33s → 0.25s (**~130x**)
+
+### The shape of the problem
+
+Appendix B.88 asks for one row of eight half-hour sales counts. The query
+delivers it as **eight subqueries cross-joined**, each returning a single
+`count(*)`.
+
+Verified identical across all eight: tables, join conditions, the demographic
+predicate (`hd_dep_count` 0/1/4 with `hd_vehicle_count <= n+2`), and
+`s_store_name = 'ese'`. **Only the half-hour window differs.** So it makes
+eight passes over `store_sales` to compute eight numbers one pass can produce.
+
+### Two independent fixes, and they compose
+
+**1. Conditional aggregation.** Eight `sum(case when t_hour = ... then 1 else 0
+end)` expressions in a single scan, with `t_hour between 8 and 12` as a safe
+superset of the windows — rows outside them fall through every `CASE` and
+contribute 0. **36.0s → 4.2s**, close to the 8x the structure predicts.
+
+**2. A fully-covering index.** The query reads exactly three `store_sales`
+columns — `ss_store_sk`, `ss_hdemo_sk`, `ss_sold_time_sk` — all join keys, with
+no measure column because the aggregate is `count(*)`.
+
+```sql
+CREATE INDEX idx_ss_store_hdemo_time
+    ON store_sales (ss_store_sk, ss_hdemo_sk, ss_sold_time_sk);
+```
+
+`store_sales ALL rows=3,910,824` becomes `ref ... Using index rows=2,235`,
+driven from `store` (12 rows). The base table is never read.
+
+| Configuration | Time |
+|---|---:|
+| original, no index | 29.8–36.0s |
+| original + index | 1.4s |
+| single-pass, no index | 4.2s |
+| **both** | **0.2–0.3s** |
+
+Three-pass on the index: 0.3 / 0.2 / 0.2s visible, 4.2s IGNORED, 0.3s visible
+again.
+
+**8x from the rewrite, 25x from the index, ~130x together.** That is the
+opposite of [query 22](#query-22--230s--43s-53x), where no ingredient helped
+alone and only the combination did — further evidence that how optimisations
+interact has to be measured per query, never assumed.
+
+### Why no single-column index would have worked
+
+| Filter | Keeps |
+|---|---|
+| `s_store_name = 'ese'` | 3 of 12 stores |
+| demographic predicate | 1,800 of 7,200 |
+| `t_hour between 8 and 12` | 18,000 of 86,400 |
+
+Each is ~21–25% selective; together ~1.3%. The three-column covering index wins
+because it makes the *conjunction* cheap, not any one predicate.
