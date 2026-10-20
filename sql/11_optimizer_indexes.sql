@@ -74,6 +74,26 @@ CREATE INDEX idx_cs_sold_date_ext_price ON catalog_sales (cs_sold_date_sk, cs_ex
 CREATE INDEX idx_ss_store_hdemo_time
     ON store_sales (ss_store_sk, ss_hdemo_sk, ss_sold_time_sk);
 
+-- Covering index for query 78's store_sales CTE, which dominates that query
+-- (7.7s of its time, 489,557 groups). Seven columns -- everything the CTE
+-- reads -- so the aggregation never touches the base table.
+--   query78: 11.4s -> 8.5s (~25%).  Costs 153 MB; drop it if that is a bad
+--   trade, the query rewrite alone still gives 27.2s -> 11.4s.
+CREATE INDEX idx_ss_q78 ON store_sales
+  (ss_sold_date_sk, ss_item_sk, ss_customer_sk, ss_ticket_number,
+   ss_quantity, ss_wholesale_cost, ss_sales_price);
+
+-- ---------------------------------------------------------------------------
+--  REJECTED: catalog_sales(cs_sold_date_sk, cs_item_sk, cs_bill_customer_sk,
+--            cs_order_number, cs_quantity, cs_wholesale_cost, cs_sales_price)
+--
+--  The obvious counterpart to idx_ss_q78, for query 78's second-most expensive
+--  CTE. Contributes NOTHING -- on its own it is no better than no index, and
+--  combined with idx_ss_q78 it is marginally worse:
+--      neither 11.4s | ss only 8.5s | cs only 12.4s | both 8.9s
+--  Built, measured, dropped. 80 MB.
+-- ---------------------------------------------------------------------------
+
 -- ---------------------------------------------------------------------------
 --  REJECTED: date_dim(d_month_seq)   -- the PLAIN single-column form
 --

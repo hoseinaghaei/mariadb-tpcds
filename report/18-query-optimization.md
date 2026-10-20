@@ -554,3 +554,63 @@ interact has to be measured per query, never assumed.
 
 Each is ~21–25% selective; together ~1.3%. The three-column covering index wins
 because it makes the *conjunction* cheap, not any one predicate.
+
+---
+
+## query 78 — 27.2s → 8.5s (**3.2x**)
+
+### The rewrite
+
+Three CTEs (`ws`, `cs`, `ss`) each aggregate one sales channel by
+`(year, item, customer)`, excluding returned items via an anti-join. All three
+aggregate **every year** in the data (1998–2003), but the outer query keeps
+only 2001 — and `ws`/`cs` join on `ws_sold_year = ss_sold_year`, so only their
+2001 rows could ever match.
+
+Pushing `d_year = 2001` into all three is therefore safe: **27.2s → 11.4s.**
+
+### Where the rest of the time is
+
+| CTE | Time | Groups |
+|---|---:|---:|
+| **`ss`** | **7.7s** | 489,557 |
+| `cs` | 4.4s | 256,601 |
+| `ws` | 0.8s | 130,540 |
+
+### One index kept, its obvious twin rejected
+
+A seven-column covering index on `store_sales` — everything the `ss` CTE reads
+— takes it to **8.5s (~25%)** for **153 MB**.
+
+The identical idea applied to `catalog_sales`, the second-most expensive CTE,
+**contributes nothing**:
+
+| | Time |
+|---|---:|
+| neither | 11.4s |
+| **`ss` only** | **8.5s** |
+| `cs` only | 12.4s |
+| both | 8.9s |
+
+On its own it is no better than no index; combined with the `ss` index it is
+marginally worse. Built, measured, dropped — 80 MB reclaimed. Symmetry in the
+query did not imply symmetry in the payoff.
+
+### The three-pass control failed, and that mattered
+
+First attempt: visible 8.4s / 8.2s, ignored 10.6s / 9.9s, visible again
+**23.7s**. Since the two visible passes must agree, the comparison was invalid
+and was re-run interleaved:
+
+```
+VISIBLE  9.3s   IGNORED 11.3s
+VISIBLE  8.5s   IGNORED 11.3s
+VISIBLE  9.0s   IGNORED 11.5s
+```
+
+Consistent across all three pairs. The 23.7s was an environmental stall — the
+same artefact that produced a false regression for this very query in
+[step 17](17-unused-indexes-are-not-safe-to-drop.md).
+
+**Interleaving beats A/B/A on a noisy machine**, because drift shows up as
+disagreement within pairs rather than as a plausible-looking result.
