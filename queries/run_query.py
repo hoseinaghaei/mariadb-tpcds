@@ -8,7 +8,10 @@ from _ansparse import norm, parse_ans, parse_out   # shared, fixed parser
 
 ROOT=Path(__file__).resolve().parent.parent
 QDIR=f'{ROOT}/queries/mariadb'; ADIR=f'{ROOT}/DSGen-software-code-4.0.0/answer_sets'
-PRE="SET SESSION sql_mode=CONCAT(@@sql_mode,',IGNORE_SPACE');"
+# PIPES_AS_CONCAT: TPC-DS uses ANSI '||' for string concatenation (q5, q66,
+# q80, q84).  Without it MariaDB reads '||' as logical OR and those four
+# queries silently return 0/1 in place of the concatenated id.
+PRE="SET SESSION sql_mode=CONCAT(@@sql_mode,',IGNORE_SPACE,PIPES_AS_CONCAT');"
 
 
 

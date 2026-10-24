@@ -1,0 +1,10 @@
+{
+ "query": 80,
+ "seconds": 0.9,
+ "tag": "pipesfix",
+ "rows": 100,
+ "ans": "80_NULLS_LAST.ans",
+ "exp_rows": 100,
+ "match": false,
+ "status": "VALUES_DIFF"
+}

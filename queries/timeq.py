@@ -2,7 +2,7 @@
 """Time one SQL file against tpcds and save its output.
    usage: timeq.py <file.sql> <out-file> <label>"""
 import subprocess, sys, time
-PRE = ("SET SESSION sql_mode=CONCAT(@@sql_mode,',IGNORE_SPACE'); "
+PRE = ("SET SESSION sql_mode=CONCAT(@@sql_mode,',IGNORE_SPACE,PIPES_AS_CONCAT'); "
        "SET STATEMENT max_statement_time=1800 FOR ")
 sql = open(sys.argv[1]).read().strip().rstrip(';')
 t = time.time()
