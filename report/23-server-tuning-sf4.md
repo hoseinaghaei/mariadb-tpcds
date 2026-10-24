@@ -24,6 +24,34 @@ clauses that are not a total order and differ only in row order (q71 has 2160
 of 3948 rows tied; q65 has 7 of 100 tied plus a `LIMIT 100`, so even its row
 *set* is under-determined). Neither is an answer change.
 
+## T5: a smaller pool with bigger temp tables is worse
+
+Tested at the user's request: buffer pool **8G → 4G**, temp tables
+**1.5G → 4G**, items 2/3/4/6/7/9 unchanged.
+
+| | pool | tmp/heap | peak budget | total |
+|---|---:|---:|---:|---:|
+| T1 | 8G | 1.5G | ~10.8G | **829.8s** |
+| T5 | 4G | 4G | ~9.3G | 1097.1s |
+
+**32% slower.** 19 of 40 queries regressed, 7 improved, 14 unchanged.
+
+The buffer pool mattered more than the temp space. At SF=4 the database is
+32.5 GB, so the pool went from 25% of it to 12%, and the queries that suffered
+are the ones that re-read large amounts of data — q14 +56.8s, q23 +52.5s,
+q70 +25.8s, q74 +24.8s.
+
+Raising temp tables past 1.5G bought nothing: the queries that needed a large
+in-memory temp table were already served by 1.5G, so the extra 2.5G sat idle
+while the pages evicted from the smaller pool had to be re-read from disk.
+
+It did, though, bring the peak budget down from ~10.8G to ~9.3G, which is the
+one argument for it on a memory-constrained machine — at a 32% cost.
+
+Worth noting `tmp_table_size` is a **per temp table** limit, not a global cap,
+so 4G is not a 4G ceiling: a query materialising two large intermediates can
+hold twice that.
+
 ## Item 1 is most of it
 
 `tmp_table_size` and `max_heap_table_size` were at **16 MB**. TPC-DS queries
