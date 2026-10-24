@@ -13,9 +13,15 @@ timings, rather than hardcoded.
 RUN_TAG suffixes the output directory, so a repeat pass can be compared
 against the first to tell a real page-size effect from plan noise.
 
-Records, per query: wall time, row count, and an md5 of the output.  The md5
-lets us prove afterwards that all four page sizes return identical results —
-page size must not change an answer, only how fast it arrives.
+Records, per query: wall time, row count, and two hashes of the output.
+
+  md5        the output verbatim, order included
+  md5_sorted the header plus the data rows sorted
+
+Comparing both tells a real answer change from mere row-order instability:
+queries whose ORDER BY is not a total order (q71 has 2160 of 3948 rows tied;
+q65 has 7 of 100 and a LIMIT, so even the row *set* is under-determined) will
+differ in md5 but agree in md5_sorted.
 
 Results go to pagesize/results/<PAGE_KB>k/query<N>.json.
 """
@@ -99,8 +105,11 @@ def main():
             r['detail'] = err
         else:
             text = "\n===\n".join(out)
-            r['rows'] = max(0, len(text.strip().splitlines()) - 1)
+            lines = text.strip().splitlines()
+            r['rows'] = max(0, len(lines) - 1)
             r['md5'] = hashlib.md5(text.encode()).hexdigest()
+            ordered = ("\n".join(lines[:1] + sorted(lines[1:]))).encode()
+            r['md5_sorted'] = hashlib.md5(ordered).hexdigest()
             r['status'] = 'OK'
         json.dump(r, open(f"{rdir}/query{n}.json", 'w'), indent=1)
         print(f"query{n:<3} {r['status']:<6} {secs:>7.1f}s "

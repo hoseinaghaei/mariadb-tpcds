@@ -1,0 +1,46 @@
+# SF=4 instance.  innodb_page_size is fixed at datadir initialization.
+[mysqld]
+datadir                        = /Users/hosseinaghaei/Desktop/projects/dw/pagesize/data-32k-sf4
+socket                         = /Users/hosseinaghaei/Desktop/projects/dw/pagesize/s32-sf4.sock
+port                           = 3532
+pid-file                       = /Users/hosseinaghaei/Desktop/projects/dw/pagesize/32k-sf4.pid
+log-error                      = /Users/hosseinaghaei/Desktop/projects/dw/pagesize/32k-sf4.err
+
+innodb_page_size               = 32K
+
+innodb_buffer_pool_size        = 8G
+innodb_log_file_size           = 96M
+innodb_flush_log_at_trx_commit = 1
+innodb_flush_method            = O_DIRECT
+innodb_io_capacity             = 200
+innodb_read_io_threads         = 4
+innodb_write_io_threads        = 4
+innodb_doublewrite             = ON
+innodb_file_per_table          = ON
+innodb_adaptive_hash_index     = OFF
+innodb_old_blocks_pct          = 37
+
+character_set_server           = utf8mb4
+collation_server               = utf8mb4_general_ci
+local_infile                   = 1
+
+# At SF=1 this was 300s.  At SF=4 several queries legitimately exceed that,
+# and a query killed by the cap records a censored time that would corrupt
+# the comparison.  Raised so it never binds; the runner keeps its own
+# client-side timeout.
+max_statement_time             = 3600
+
+tmp_table_size                 = 16M
+max_heap_table_size            = 16M
+join_buffer_size               = 256K
+sort_buffer_size               = 2M
+
+skip_name_resolve
+userstat = 1
+innodb_stats_persistent_sample_pages = 160
+
+# T4 -- item 1 in isolation.  Nothing else changed from the baseline, so the
+# peak is 8G pool + 1.5G temp rather than T1's ~11G.
+tmp_table_size      = 1536M
+max_heap_table_size = 1536M
+use_stat_tables     = never
