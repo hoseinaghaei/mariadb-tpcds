@@ -122,3 +122,18 @@ pagesize/index-usage-sampled.sh <PAGE_KB> <SF> <SAMPLE>  # with re-ANALYZE
 
 Each writes `pagesize/results/idxuse-<P>k-sf<SF>[-stats<N>].tsv`:
 table, index, rows read, used/UNUSED.
+
+Consolidated views, regenerated from the raw results:
+
+```bash
+python3 pagesize/consolidate.py          # -> results/all-runs.csv
+python3 pagesize/consolidate-indexes.py  # -> results/index-usage.csv
+```
+
+`all-runs.csv` is one row per (configuration, query) across all 19 runs, with
+page size, sampling depth, scale factor, index count and **queryset**
+(`all99` or `tier45`). Totals are only comparable within one queryset — the
+tier-4/5 runs cover 40 queries, the earlier runs 99.
+
+`index-usage.csv` is one row per index, one column per configuration, with a
+verdict of `always` / `FLIPS` / `never`.

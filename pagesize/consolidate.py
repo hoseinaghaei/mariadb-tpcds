@@ -11,21 +11,21 @@ import json, glob, os, csv, re
 LAB = "/Users/hosseinaghaei/Desktop/projects/dw/pagesize"
 RES = f"{LAB}/results"
 
-# directory name -> (page_kb, sample_pages, pass, scale, indexes)
+# Parse a results directory name into the configuration it represents.
+#   <page>k[-r2][-full188][-idxuse][-sf<N>][-stats<N>]
+# queryset is derived from how many queries the pass actually ran: 99 = the
+# full suite, 40 = tier 4+5.  Totals are only comparable within one queryset.
 def describe(d):
-    m = re.match(r'(\d+)k(?:-(r2|sf4|full188|stats(\d+)))?$', d)
+    m = re.match(r'(\d+)k(-.*)?$', d)
     if not m:
         return None
-    page = int(m.group(1))
-    suffix, sample, npass, scale, nidx = m.group(2), 20, 1, 1, 182
-    if suffix == 'r2':
-        npass = 2
-    elif suffix == 'sf4':
-        scale, nidx = 4, 188
-    elif suffix == 'full188':
-        nidx = 188
-    elif suffix and suffix.startswith('stats'):
-        sample = int(m.group(3))
+    page, rest = int(m.group(1)), (m.group(2) or '')
+    scale = 4 if 'sf4' in rest else 1
+    sm = re.search(r'stats(\d+)', rest)
+    sample = int(sm.group(1)) if sm else 20
+    npass = 2 if 'r2' in rest else 1
+    # 182 only for the early SF=1 runs built before sql/11 was added
+    nidx = 182 if (scale == 1 and 'full188' not in rest and 'idxuse' not in rest) else 188
     return page, sample, npass, scale, nidx
 
 
@@ -41,6 +41,7 @@ for d in sorted(os.listdir(RES)):
     if not files:
         continue
     total, n, errs = 0.0, 0, 0
+    qset = 'all99' if len(files) > 60 else 'tier45'
     for f in files:
         r = json.load(open(f))
         total += r['seconds']
@@ -48,31 +49,32 @@ for d in sorted(os.listdir(RES)):
         errs += (r['status'] != 'OK')
         rows.append({'config': d, 'page_kb': page, 'sample_pages': sample,
                      'pass': npass, 'scale': scale, 'indexes': nidx,
+                     'queryset': qset,
                      'query': r['query'], 'seconds': r['seconds'],
                      'status': r['status'], 'rows': r.get('rows', ''),
                      'md5': r.get('md5', '')})
     st = f"{RES}/{d}/_storage.json"
     stor = json.load(open(st)) if os.path.exists(st) else None
     mb = (sum(t['data'] + t['index'] for t in stor['tables']) / 2**20) if stor else None
-    summary.append((d, page, sample, npass, scale, n, errs, total, mb))
+    summary.append((d, page, sample, npass, scale, nidx, qset, n, errs, total, mb))
 
 rows.sort(key=lambda r: (r['scale'], r['page_kb'], r['sample_pages'], r['pass'], r['query']))
 out = f"{RES}/all-runs.csv"
 with open(out, 'w', newline='') as fh:
     w = csv.DictWriter(fh, fieldnames=['config', 'page_kb', 'sample_pages', 'pass',
-                                       'scale', 'indexes', 'query', 'seconds',
+                                       'scale', 'indexes', 'queryset', 'query', 'seconds',
                                        'status', 'rows', 'md5'])
     w.writeheader()
     w.writerows(rows)
 
 print(f"wrote {out}  ({len(rows)} rows, {len(summary)} configurations)\n")
-print(f"{'configuration':<16} {'page':>5} {'sample':>7} {'pass':>5} {'SF':>3} "
-      f"{'n':>4} {'err':>4} {'total':>10} {'storage':>11}")
-print("-" * 78)
-for d, page, sample, npass, scale, n, errs, total, mb in sorted(
-        summary, key=lambda x: (x[4], x[1], x[2], x[3])):
-    print(f"{d:<16} {page:>4}K {sample:>7} {npass:>5} {scale:>3} {n:>4} {errs:>4} "
-          f"{total:>9.1f}s {(f'{mb:,.0f} MB' if mb else '—'):>11}")
+print(f"{'configuration':<26} {'page':>5} {'smpl':>5} {'SF':>3} {'idx':>4} "
+      f"{'queryset':>9} {'n':>4} {'err':>4} {'total':>10}")
+print("-" * 86)
+for d, page, sample, npass, scale, nidx, qset, n, errs, total, mb in sorted(
+        summary, key=lambda x: (x[6], x[4], x[1], x[2], x[3])):
+    print(f"{d:<26} {page:>4}K {sample:>5} {scale:>3} {nidx:>4} {qset:>9} "
+          f"{n:>4} {errs:>4} {total:>9.1f}s")
 
 # cross-configuration answer check
 print()
