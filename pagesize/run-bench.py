@@ -69,6 +69,24 @@ def main():
     rdir = f"{LAB}/results/{page}k{('-' + tag) if tag else ''}"
     os.makedirs(rdir, exist_ok=True)
 
+    # derive the scale factor from the socket: the SF=4 instances use
+    # s<page>-sf4.sock.  Recorded per query so consolidation never has to
+    # guess it from a directory name.
+    scale = 4 if 'sf4' in os.path.basename(sock) else 1
+
+    # Record the sampling depth and index count the run actually saw, rather
+    # than leaving consolidation to infer them from the directory name.  The
+    # tuning runs are a case in point: tagged t1-config etc., they carry no
+    # hint of sf4/sample160/188 indexes in their name.
+    def ask(sql):
+        return subprocess.run(['mariadb', f'--socket={sock}', f'--user={me}',
+                               '-N', '-B', 'tpcds', '-e', sql],
+                              capture_output=True, text=True).stdout.strip()
+    sample = int(ask('select @@innodb_stats_persistent_sample_pages') or 0)
+    nidx = int(ask("select count(distinct table_name,index_name) "
+                   "from information_schema.statistics "
+                   "where table_schema='tpcds'") or 0)
+
     base = ['mariadb', f'--socket={sock}', f'--user={me}', '-B',
             '--default-character-set=utf8mb4', 'tpcds']
 
@@ -78,8 +96,8 @@ def main():
     if actual != page:
         sys.exit(f"instance on {sock} reports {actual}K, expected {page}K")
     wanted = list(range(1, 100)) if which == 'all' else tier45()
-    print(f"=== {page}K pages, socket {sock}, client timeout {timeout}s, "
-          f"{len(wanted)} queries ({which})", flush=True)
+    print(f"=== {page}K pages, SF={scale}, sample={sample}, {nidx} indexes, "
+          f"{len(wanted)} queries ({which}), timeout {timeout}s", flush=True)
 
     total = 0.0
     for n in wanted:
@@ -99,7 +117,8 @@ def main():
         secs = round(time.time() - t0, 1)
         total += secs
 
-        r = {'query': n, 'page_kb': int(page), 'seconds': secs}
+        r = {'query': n, 'page_kb': int(page), 'scale': scale,
+             'sample_pages': sample, 'indexes': nidx, 'seconds': secs}
         if err:
             r['status'] = 'ERROR'
             r['detail'] = err

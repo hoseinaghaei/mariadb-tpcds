@@ -44,6 +44,10 @@ for d in sorted(os.listdir(RES)):
     qset = 'all99' if len(files) > 60 else 'tier45'
     for f in files:
         r = json.load(open(f))
+        # values recorded by the runner always beat guessing from the name
+        scale = r.get('scale', scale)
+        sample = r.get('sample_pages', sample)
+        nidx = r.get('indexes', nidx)
         total += r['seconds']
         n += 1
         errs += (r['status'] != 'OK')

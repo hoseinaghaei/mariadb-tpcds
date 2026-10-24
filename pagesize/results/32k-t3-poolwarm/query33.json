@@ -5,5 +5,8 @@
  "rows": 100,
  "md5": "9bbfbe9c1bc3160573f80295bf233926",
  "md5_sorted": "50d82efc009c541ffcde830fb300b49c",
- "status": "OK"
+ "status": "OK",
+ "scale": 4,
+ "sample_pages": 160,
+ "indexes": 188
 }

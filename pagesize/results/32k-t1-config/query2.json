@@ -4,5 +4,8 @@
  "seconds": 13.5,
  "rows": 2520,
  "md5": "879f8fdb79b8166d785efaacecc2f0da",
- "status": "OK"
+ "status": "OK",
+ "scale": 4,
+ "sample_pages": 160,
+ "indexes": 188
 }
