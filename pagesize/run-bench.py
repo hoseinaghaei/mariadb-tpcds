@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Run all 99 TPC-DS queries against one page-size lab instance.
 
-usage: run-bench.py <PAGE_KB> [RUN_TAG]
+usage: run-bench.py <PAGE_KB> [RUN_TAG] [--socket PATH] [--timeout SEC]
 
 RUN_TAG suffixes the output directory, so a repeat pass can be compared
 against the first to tell a real page-size effect from plan noise.
@@ -22,9 +22,21 @@ PRE = ("SET SESSION sql_mode="
 
 
 def main():
-    page = sys.argv[1]
-    tag = sys.argv[2] if len(sys.argv) > 2 else ""
-    sock = f"{LAB}/s{page}.sock"
+    argv = sys.argv[1:]
+    sock_override, timeout = None, 1800
+    for flag, conv in (('--socket', str), ('--timeout', int)):
+        if flag in argv:
+            i = argv.index(flag)
+            val = conv(argv[i + 1])
+            del argv[i:i + 2]
+            if flag == '--socket':
+                sock_override = val
+            else:
+                timeout = val
+
+    page = argv[0]
+    tag = argv[1] if len(argv) > 1 else ""
+    sock = sock_override or f"{LAB}/s{page}.sock"
     me = getpass.getuser()
     rdir = f"{LAB}/results/{page}k{('-' + tag) if tag else ''}"
     os.makedirs(rdir, exist_ok=True)
@@ -37,7 +49,7 @@ def main():
     actual = got.stdout.strip().split('.')[0]
     if actual != page:
         sys.exit(f"instance on {sock} reports {actual}K, expected {page}K")
-    print(f"=== {page}K pages, socket {sock}", flush=True)
+    print(f"=== {page}K pages, socket {sock}, client timeout {timeout}s", flush=True)
 
     total = 0.0
     for n in range(1, 100):
@@ -48,7 +60,7 @@ def main():
         out, err, t0 = [], None, time.time()
         for st in stmts:
             p = subprocess.run(base + ['-e', PRE + st],
-                               capture_output=True, text=True, timeout=1800)
+                               capture_output=True, text=True, timeout=timeout)
             if p.returncode:
                 e = [l for l in p.stderr.strip().splitlines() if 'ERROR' in l]
                 err = (e[0] if e else p.stderr.strip())[:200]

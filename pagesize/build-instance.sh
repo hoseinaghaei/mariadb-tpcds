@@ -121,8 +121,9 @@ if (( NIDX >= 180 )); then
 else
   say "creating indexes (have $NIDX)"
   t0=$SECONDS
-  sed 's/^CREATE INDEX /CREATE INDEX IF NOT EXISTS /i' sql/05_indexes.sql | $CLI tpcds
-  sed 's/^CREATE INDEX /CREATE INDEX IF NOT EXISTS /i' sql/14_contributed_indexes.sql | $CLI tpcds
+  for f in sql/05_indexes.sql sql/11_optimizer_indexes.sql sql/14_contributed_indexes.sql; do
+    sed 's/^CREATE INDEX /CREATE INDEX IF NOT EXISTS /i' "$f" | $CLI tpcds
+  done
   say "indexes took $((SECONDS - t0))s"
 fi
 

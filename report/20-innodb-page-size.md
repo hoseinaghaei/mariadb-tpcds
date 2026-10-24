@@ -1,5 +1,11 @@
 # InnoDB page size: 8K / 16K / 32K / 64K
 
+> **Measured at SF=1 only.** The whole of this report is a fully-cached
+> database: 9 GB of data in an 8 GB buffer pool. `report/21-page-size-at-scale.md`
+> repeats it at SF=4 (32 GB against the same pool) and the result reverses —
+> the page-size difference vanishes and the per-query winners invert. Read
+> report 21 before acting on anything here.
+
 Four standalone instances, identical in every respect but
 `innodb_page_size`: same 8 GB buffer pool, same 158 indexes, same
 scale-1 dataset, same serial 99-query run, each started cold.

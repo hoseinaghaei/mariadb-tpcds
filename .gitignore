@@ -50,3 +50,8 @@ pagesize/*.sock
 pagesize/*.pid
 pagesize/*.err
 pagesize/*.log
+
+# SF=4 dataset for the scaled page-size test (~4 GB)
+DSGen-software-code-4.0.0/data-sf4/
+pagesize/data-*-sf4/
+pagesize/*-sf4.sock
