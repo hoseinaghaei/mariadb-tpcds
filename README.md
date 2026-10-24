@@ -5,6 +5,12 @@
 Running the complete **TPC-DS v4.0.0** benchmark schema and all **99 queries**
 on **MariaDB 13.0.2** (Apple Silicon, macOS).
 
+**Current course work:** the headline results below describe the original
+repository author's environment. Riccardo's independent experiments use MariaDB
+10.11.14 on Linux, SF=1 and data seed 10. See
+[`experiments/README.md`](experiments/README.md) for the isolated workflow,
+query candidates, measurement protocol and remaining submission work.
+
 > **Performance results in this repository are NOT comparable to TPC Benchmark
 > Results.** They were not audited, not produced at a publishable scale factor,
 > and do not meet the requirements of any official TPC Benchmark Standard. They
@@ -81,6 +87,18 @@ non-Windows host.
 
 ## Reproducing
 
+Run the commands below from the repository root (the directory containing
+`sql/`, `queries/` and `DSGen-software-code-4.0.0/`). The checkout can live
+anywhere, including a directory with spaces; no personal paths need editing.
+The loader uses relative `LOAD DATA LOCAL INFILE` paths, resolved from the
+MariaDB client's working directory, so run the load command from this root.
+The Python query tools locate their inputs from their own script location.
+
+On Linux, use `make OS=LINUX` for the build in step 1. The Linux target
+enables `-fcommon` for the toolkit's legacy shared global variables, which
+otherwise cause linker errors with GCC 10 and newer. Changes to the makefile
+automatically rebuild existing object files.
+
 ```sh
 # 1. build the toolkit (already patched for macOS in this tree)
 cd DSGen-software-code-4.0.0/tools && make
@@ -104,6 +122,14 @@ python3 compare.py
 
 The generated data is **not** in this repository (1.2 GB). Step 2 recreates it
 byte-identically — `dsdgen` is deterministic.
+
+For dedicated databases and scale/seed-specific data directories, use
+[`scripts/prepare_experiments.py`](scripts/prepare_experiments.py) as described
+in the [experiment guide](experiments/README.md). Its generated SQL and setup
+manifest use repository-relative paths. New experiment job manifests use paths
+relative to the job file, so they remain usable when the checkout is moved.
+Archived measurement records may contain the original machine's paths as
+historical metadata; the scripts do not depend on those paths.
 
 ---
 

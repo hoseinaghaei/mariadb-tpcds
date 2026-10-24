@@ -1,0 +1,13 @@
+{
+  "dataset": "SF=1, data seed 10, toolkit 4.0.0",
+  "database": "tpcds_riccio_sf1",
+  "physical_designs": [
+    "primary keys only",
+    "primary keys plus 117 visible reference indexes"
+  ],
+  "run_count": 154,
+  "ordinary_checked_repetitions": 81,
+  "all_run_statuses_ok": true,
+  "completed_utc": "2026-10-14T20:25:49.903416+00:00",
+  "note": "Independent five-query contribution; final Mac, four scales, all-99 workload and final PDF remain group work."
+}

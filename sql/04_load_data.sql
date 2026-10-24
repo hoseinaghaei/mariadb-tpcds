@@ -1,7 +1,9 @@
 -- ---------------------------------------------------------------------------
 --  Load the dsdgen SF=1 flat files into the tpcds schema.
 --
---  Run with:  mariadb --local-infile=1 < 04_load_data.sql
+--  Run from the repository root:
+--    mariadb --local-infile=1 < sql/04_load_data.sql
+--  LOCAL INFILE paths are relative to the client working directory.
 --
 --  Three things about the dsdgen format drive the shape of this script:
 --    1. every line ends with a trailing '|', so LINES TERMINATED BY '|\n'
@@ -25,7 +27,7 @@ SET SESSION sql_mode = 'STRICT_ALL_TABLES';
 
 
 -- date_dim ---------------------------------------------------------------
-LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-code-4.0.0/data/date_dim.dat'
+LOAD DATA LOCAL INFILE 'DSGen-software-code-4.0.0/data/date_dim.dat'
   INTO TABLE date_dim
   CHARACTER SET utf8mb4
   FIELDS TERMINATED BY '|' ESCAPED BY ''
@@ -59,7 +61,7 @@ LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-
   d_current_year = NULLIF(@d_current_year, '');
 
 -- time_dim ---------------------------------------------------------------
-LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-code-4.0.0/data/time_dim.dat'
+LOAD DATA LOCAL INFILE 'DSGen-software-code-4.0.0/data/time_dim.dat'
   INTO TABLE time_dim
   CHARACTER SET utf8mb4
   FIELDS TERMINATED BY '|' ESCAPED BY ''
@@ -75,7 +77,7 @@ LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-
   t_meal_time = NULLIF(@t_meal_time, '');
 
 -- customer_demographics --------------------------------------------------
-LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-code-4.0.0/data/customer_demographics.dat'
+LOAD DATA LOCAL INFILE 'DSGen-software-code-4.0.0/data/customer_demographics.dat'
   INTO TABLE customer_demographics
   CHARACTER SET utf8mb4
   FIELDS TERMINATED BY '|' ESCAPED BY ''
@@ -92,7 +94,7 @@ LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-
   cd_dep_college_count = NULLIF(@cd_dep_college_count, '');
 
 -- household_demographics -------------------------------------------------
-LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-code-4.0.0/data/household_demographics.dat'
+LOAD DATA LOCAL INFILE 'DSGen-software-code-4.0.0/data/household_demographics.dat'
   INTO TABLE household_demographics
   CHARACTER SET utf8mb4
   FIELDS TERMINATED BY '|' ESCAPED BY ''
@@ -105,7 +107,7 @@ LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-
   hd_vehicle_count = NULLIF(@hd_vehicle_count, '');
 
 -- income_band ------------------------------------------------------------
-LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-code-4.0.0/data/income_band.dat'
+LOAD DATA LOCAL INFILE 'DSGen-software-code-4.0.0/data/income_band.dat'
   INTO TABLE income_band
   CHARACTER SET utf8mb4
   FIELDS TERMINATED BY '|' ESCAPED BY ''
@@ -116,7 +118,7 @@ LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-
   ib_upper_bound = NULLIF(@ib_upper_bound, '');
 
 -- item -------------------------------------------------------------------
-LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-code-4.0.0/data/item.dat'
+LOAD DATA LOCAL INFILE 'DSGen-software-code-4.0.0/data/item.dat'
   INTO TABLE item
   CHARACTER SET utf8mb4
   FIELDS TERMINATED BY '|' ESCAPED BY ''
@@ -145,7 +147,7 @@ LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-
   i_product_name = NULLIF(@i_product_name, '');
 
 -- reason -----------------------------------------------------------------
-LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-code-4.0.0/data/reason.dat'
+LOAD DATA LOCAL INFILE 'DSGen-software-code-4.0.0/data/reason.dat'
   INTO TABLE reason
   CHARACTER SET utf8mb4
   FIELDS TERMINATED BY '|' ESCAPED BY ''
@@ -155,7 +157,7 @@ LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-
   r_reason_desc = NULLIF(@r_reason_desc, '');
 
 -- ship_mode --------------------------------------------------------------
-LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-code-4.0.0/data/ship_mode.dat'
+LOAD DATA LOCAL INFILE 'DSGen-software-code-4.0.0/data/ship_mode.dat'
   INTO TABLE ship_mode
   CHARACTER SET utf8mb4
   FIELDS TERMINATED BY '|' ESCAPED BY ''
@@ -168,7 +170,7 @@ LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-
   sm_contract = NULLIF(@sm_contract, '');
 
 -- warehouse --------------------------------------------------------------
-LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-code-4.0.0/data/warehouse.dat'
+LOAD DATA LOCAL INFILE 'DSGen-software-code-4.0.0/data/warehouse.dat'
   INTO TABLE warehouse
   CHARACTER SET utf8mb4
   FIELDS TERMINATED BY '|' ESCAPED BY ''
@@ -189,7 +191,7 @@ LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-
   w_gmt_offset = NULLIF(@w_gmt_offset, '');
 
 -- customer_address -------------------------------------------------------
-LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-code-4.0.0/data/customer_address.dat'
+LOAD DATA LOCAL INFILE 'DSGen-software-code-4.0.0/data/customer_address.dat'
   INTO TABLE customer_address
   CHARACTER SET utf8mb4
   FIELDS TERMINATED BY '|' ESCAPED BY ''
@@ -209,7 +211,7 @@ LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-
   ca_location_type = NULLIF(@ca_location_type, '');
 
 -- customer ---------------------------------------------------------------
-LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-code-4.0.0/data/customer.dat'
+LOAD DATA LOCAL INFILE 'DSGen-software-code-4.0.0/data/customer.dat'
   INTO TABLE customer
   CHARACTER SET utf8mb4
   FIELDS TERMINATED BY '|' ESCAPED BY ''
@@ -234,7 +236,7 @@ LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-
   c_last_review_date_sk = NULLIF(@c_last_review_date_sk, '');
 
 -- store ------------------------------------------------------------------
-LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-code-4.0.0/data/store.dat'
+LOAD DATA LOCAL INFILE 'DSGen-software-code-4.0.0/data/store.dat'
   INTO TABLE store
   CHARACTER SET utf8mb4
   FIELDS TERMINATED BY '|' ESCAPED BY ''
@@ -270,7 +272,7 @@ LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-
   s_tax_percentage = NULLIF(@s_tax_percentage, '');
 
 -- call_center ------------------------------------------------------------
-LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-code-4.0.0/data/call_center.dat'
+LOAD DATA LOCAL INFILE 'DSGen-software-code-4.0.0/data/call_center.dat'
   INTO TABLE call_center
   CHARACTER SET utf8mb4
   FIELDS TERMINATED BY '|' ESCAPED BY ''
@@ -308,7 +310,7 @@ LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-
   cc_tax_percentage = NULLIF(@cc_tax_percentage, '');
 
 -- catalog_page -----------------------------------------------------------
-LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-code-4.0.0/data/catalog_page.dat'
+LOAD DATA LOCAL INFILE 'DSGen-software-code-4.0.0/data/catalog_page.dat'
   INTO TABLE catalog_page
   CHARACTER SET utf8mb4
   FIELDS TERMINATED BY '|' ESCAPED BY ''
@@ -324,7 +326,7 @@ LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-
   cp_type = NULLIF(@cp_type, '');
 
 -- web_site ---------------------------------------------------------------
-LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-code-4.0.0/data/web_site.dat'
+LOAD DATA LOCAL INFILE 'DSGen-software-code-4.0.0/data/web_site.dat'
   INTO TABLE web_site
   CHARACTER SET utf8mb4
   FIELDS TERMINATED BY '|' ESCAPED BY ''
@@ -357,7 +359,7 @@ LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-
   web_tax_percentage = NULLIF(@web_tax_percentage, '');
 
 -- web_page ---------------------------------------------------------------
-LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-code-4.0.0/data/web_page.dat'
+LOAD DATA LOCAL INFILE 'DSGen-software-code-4.0.0/data/web_page.dat'
   INTO TABLE web_page
   CHARACTER SET utf8mb4
   FIELDS TERMINATED BY '|' ESCAPED BY ''
@@ -378,7 +380,7 @@ LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-
   wp_max_ad_count = NULLIF(@wp_max_ad_count, '');
 
 -- promotion --------------------------------------------------------------
-LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-code-4.0.0/data/promotion.dat'
+LOAD DATA LOCAL INFILE 'DSGen-software-code-4.0.0/data/promotion.dat'
   INTO TABLE promotion
   CHARACTER SET utf8mb4
   FIELDS TERMINATED BY '|' ESCAPED BY ''
@@ -404,7 +406,7 @@ LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-
   p_discount_active = NULLIF(@p_discount_active, '');
 
 -- store_sales ------------------------------------------------------------
-LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-code-4.0.0/data/store_sales.dat'
+LOAD DATA LOCAL INFILE 'DSGen-software-code-4.0.0/data/store_sales.dat'
   INTO TABLE store_sales
   CHARACTER SET utf8mb4
   FIELDS TERMINATED BY '|' ESCAPED BY ''
@@ -434,7 +436,7 @@ LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-
   ss_net_profit = NULLIF(@ss_net_profit, '');
 
 -- store_returns ----------------------------------------------------------
-LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-code-4.0.0/data/store_returns.dat'
+LOAD DATA LOCAL INFILE 'DSGen-software-code-4.0.0/data/store_returns.dat'
   INTO TABLE store_returns
   CHARACTER SET utf8mb4
   FIELDS TERMINATED BY '|' ESCAPED BY ''
@@ -461,7 +463,7 @@ LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-
   sr_net_loss = NULLIF(@sr_net_loss, '');
 
 -- catalog_sales ----------------------------------------------------------
-LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-code-4.0.0/data/catalog_sales.dat'
+LOAD DATA LOCAL INFILE 'DSGen-software-code-4.0.0/data/catalog_sales.dat'
   INTO TABLE catalog_sales
   CHARACTER SET utf8mb4
   FIELDS TERMINATED BY '|' ESCAPED BY ''
@@ -502,7 +504,7 @@ LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-
   cs_net_profit = NULLIF(@cs_net_profit, '');
 
 -- catalog_returns --------------------------------------------------------
-LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-code-4.0.0/data/catalog_returns.dat'
+LOAD DATA LOCAL INFILE 'DSGen-software-code-4.0.0/data/catalog_returns.dat'
   INTO TABLE catalog_returns
   CHARACTER SET utf8mb4
   FIELDS TERMINATED BY '|' ESCAPED BY ''
@@ -536,7 +538,7 @@ LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-
   cr_net_loss = NULLIF(@cr_net_loss, '');
 
 -- web_sales --------------------------------------------------------------
-LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-code-4.0.0/data/web_sales.dat'
+LOAD DATA LOCAL INFILE 'DSGen-software-code-4.0.0/data/web_sales.dat'
   INTO TABLE web_sales
   CHARACTER SET utf8mb4
   FIELDS TERMINATED BY '|' ESCAPED BY ''
@@ -577,7 +579,7 @@ LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-
   ws_net_profit = NULLIF(@ws_net_profit, '');
 
 -- web_returns ------------------------------------------------------------
-LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-code-4.0.0/data/web_returns.dat'
+LOAD DATA LOCAL INFILE 'DSGen-software-code-4.0.0/data/web_returns.dat'
   INTO TABLE web_returns
   CHARACTER SET utf8mb4
   FIELDS TERMINATED BY '|' ESCAPED BY ''
@@ -608,7 +610,7 @@ LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-
   wr_net_loss = NULLIF(@wr_net_loss, '');
 
 -- inventory --------------------------------------------------------------
-LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-code-4.0.0/data/inventory.dat'
+LOAD DATA LOCAL INFILE 'DSGen-software-code-4.0.0/data/inventory.dat'
   INTO TABLE inventory
   CHARACTER SET utf8mb4
   FIELDS TERMINATED BY '|' ESCAPED BY ''
@@ -618,7 +620,7 @@ LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-
   inv_quantity_on_hand = NULLIF(@inv_quantity_on_hand, '');
 
 -- dbgen_version ----------------------------------------------------------
-LOAD DATA LOCAL INFILE '/Users/hosseinaghaei/Desktop/projects/dw/DSGen-software-code-4.0.0/data/dbgen_version.dat'
+LOAD DATA LOCAL INFILE 'DSGen-software-code-4.0.0/data/dbgen_version.dat'
   INTO TABLE dbgen_version
   CHARACTER SET utf8mb4
   FIELDS TERMINATED BY '|' ESCAPED BY ''

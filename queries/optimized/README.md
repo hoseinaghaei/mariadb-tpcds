@@ -3,6 +3,18 @@
 One sub-folder per query. Each holds every variant tried, plus a `README.md`
 with measured timings and the reasoning.
 
+Riccardo's separately measured Q4, Q5, Q31, Q39 and Q51 work is documented in
+[`experiments/README.md`](../../experiments/README.md), with evidence in
+[`experiments/evidence/riccio_sf1_20261014/`](../../experiments/evidence/riccio_sf1_20261014/).
+Those Linux/SF=1 measurements use their own baselines; the historical table below
+belongs to the original repository author.
+
+The step-by-step documents for [Q4](q4/README.md), [Q5](q5/README.md),
+[Q31](q31/README.md), [Q39](q39/README.md) and [Q51](q51/README.md) compare every
+retained SQL version, its output and performance, the plan evidence, and the
+reason for selection or rejection. The [report chapter](../../report/riccardo-query-experiments.md#development-history-and-alternatives)
+collects the version history into one table for report assembly.
+
 | Query | Original | Best | Speedup |
 |---|---:|---:|---:|
 | [`q72`](q72/) | 719.3s | **1.0s** | **719x** |

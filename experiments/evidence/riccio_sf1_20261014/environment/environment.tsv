@@ -1,0 +1,4 @@
+server_version	buffer_pool_bytes	tmp_table_size	max_heap_table_size
+10.11.14-MariaDB-0ubuntu0.24.04.1	2147483648	16777216	16777216
+dv_version	dv_create_date	dv_create_time	dv_cmdline_args
+4.0.0	2026-10-14	19:18:27	-SCALE 1 -RNGSEED 10 -DIR ../data/sf1_seed10 

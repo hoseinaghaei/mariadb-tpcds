@@ -1,0 +1,14 @@
+{
+  "database": "tpcds_riccio_sf1",
+  "scale": 1,
+  "data_seed": 10,
+  "root": "/home/just_riccio/Documents/emjm/DEAI_courses/data_warehouse/mariadb-tpcds/experiments/local/takeover_20261014T180419Z",
+  "runs": "/home/just_riccio/Documents/emjm/DEAI_courses/data_warehouse/mariadb-tpcds/experiments/local/takeover_20261014T180419Z/runs",
+  "started_utc": "2026-10-14T18:04:19.028780+00:00",
+  "timing_protocol": "serial; query cache disabled; per-version warm-up; interleaved pairs; ordinary runs separated from diagnostics",
+  "status": "completed",
+  "completed_utc": "2026-10-14T20:25:49.903416+00:00",
+  "final_visible_secondary_indexes": 117,
+  "evidence_directory": "/home/just_riccio/Documents/emjm/DEAI_courses/data_warehouse/mariadb-tpcds/experiments/evidence/riccio_sf1_20261014",
+  "ordinary_checked_repetitions": 81
+}

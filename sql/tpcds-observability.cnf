@@ -29,7 +29,8 @@ performance-schema-consumer-events-statements-history-long = ON
 
 # --- Slow query log --------------------------------------------------------
 slow_query_log                  = 1
-slow_query_log_file             = /opt/homebrew/var/mysql/slow.log
+# Relative to MariaDB's configured data directory on every platform.
+slow_query_log_file             = slow.log
 log_output                      = FILE
 long_query_time                 = 0.5
 log_slow_verbosity              = query_plan,explain,innodb

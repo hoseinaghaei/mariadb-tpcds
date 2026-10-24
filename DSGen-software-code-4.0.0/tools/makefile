@@ -56,7 +56,8 @@ CC		= $($(OS)_CC)
 # CFLAGS
 AIX_CFLAGS		= -q64 -O3 -D_LARGE_FILES
 HPUX_CFLAGS		= -O3 -Wall
-LINUX_CFLAGS	= -g -Wall
+# GCC 10+ defaults to -fno-common; the legacy toolkit shares tentative globals.
+LINUX_CFLAGS	= -g -Wall -fcommon
 MACOS_CFLAGS	= -g -Wall -Wno-format -Wno-implicit-int -Wno-deprecated-non-prototype -Wno-error=implicit-function-declaration -Wno-error=int-conversion -Wno-error=incompatible-pointer-types
 NCR_CFLAGS		= -g 
 SOLARIS_CFLAGS	= -O3 -Wall
@@ -235,6 +236,9 @@ GENERATED	= tables.h streams.h columns.h
 DATE_STAMP	= `date '+%Y%m%d'`
 #
 all: .ctags_updated $(PROGS) $(IDX) 
+
+# Recompile existing objects when compiler settings in this makefile change.
+$(OBJ): makefile
 
 $(PROG1): $(OBJ1) $(IDX)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $(PROG1) $(OBJ1) $(LIBS)

@@ -6,6 +6,9 @@
 exact: 25 `LOAD DATA` statements, 429 columns — 52 `NOT NULL` loaded directly,
 **377 routed through `NULLIF(@v,'')`**.
 
+Run from the repository root. The input paths are relative to the MariaDB
+client's working directory and point into `DSGen-software-code-4.0.0/data/`.
+
 ```sh
 mariadb --local-infile=1 < sql/04_load_data.sql
 ```

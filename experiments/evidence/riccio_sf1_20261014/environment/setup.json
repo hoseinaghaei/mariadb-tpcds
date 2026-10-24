@@ -1,0 +1,8 @@
+{
+  "database": "tpcds_riccio_sf1",
+  "scale": 1,
+  "data_seed": 10,
+  "data_directory": "/home/just_riccio/Documents/emjm/DEAI_courses/data_warehouse/mariadb-tpcds/DSGen-software-code-4.0.0/data/sf1_seed10",
+  "sql_directory": "/home/just_riccio/Documents/emjm/DEAI_courses/data_warehouse/mariadb-tpcds/experiments/local/tpcds_riccio_sf1_sql",
+  "note": "Preparation only; data generation and loading have not been performed."
+}
