@@ -32,3 +32,4 @@ sort_buffer_size               = 2M
 
 skip_name_resolve
 
+userstat = 1

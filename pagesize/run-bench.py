@@ -2,6 +2,13 @@
 """Run all 99 TPC-DS queries against one page-size lab instance.
 
 usage: run-bench.py <PAGE_KB> [RUN_TAG] [--socket PATH] [--timeout SEC]
+                    [--queries all|tier45]
+
+--queries tier45 (the default) runs only the 40 tier-4 and tier-5 queries.
+Tiers 1-3 are sub-second queries whose timings are dominated by connection and
+parse overhead, so including them pads totals with noise.  The lists are read
+from queries/tiers/04_*.sql and 05_*.sql, which are generated from measured
+timings, rather than hardcoded.
 
 RUN_TAG suffixes the output directory, so a repeat pass can be compared
 against the first to tell a real page-size effect from plan noise.
@@ -12,7 +19,7 @@ page size must not change an answer, only how fast it arrives.
 
 Results go to pagesize/results/<PAGE_KB>k/query<N>.json.
 """
-import subprocess, sys, os, json, time, hashlib, getpass
+import subprocess, sys, os, json, time, hashlib, getpass, re, glob
 
 REPO = "/Users/hosseinaghaei/Desktop/projects/dw"
 LAB = f"{REPO}/pagesize"
@@ -21,9 +28,24 @@ PRE = ("SET SESSION sql_mode="
        "CONCAT(@@sql_mode,',IGNORE_SPACE,PIPES_AS_CONCAT');")
 
 
+def tier45():
+    """Query numbers in tier 4 and tier 5, read from the generated tier files."""
+    ns = set()
+    for pat in (f"{REPO}/queries/tiers/04_*.sql", f"{REPO}/queries/tiers/05_*.sql"):
+        for f in glob.glob(pat):
+            ns |= {int(m) for m in re.findall(r'query(\d+)', open(f).read())}
+    if not ns:
+        sys.exit("could not read the tier files")
+    return sorted(ns)
+
+
 def main():
     argv = sys.argv[1:]
-    sock_override, timeout = None, 1800
+    sock_override, timeout, which = None, 1800, 'tier45'
+    if '--queries' in argv:
+        i = argv.index('--queries')
+        which = argv[i + 1]
+        del argv[i:i + 2]
     for flag, conv in (('--socket', str), ('--timeout', int)):
         if flag in argv:
             i = argv.index(flag)
@@ -49,10 +71,12 @@ def main():
     actual = got.stdout.strip().split('.')[0]
     if actual != page:
         sys.exit(f"instance on {sock} reports {actual}K, expected {page}K")
-    print(f"=== {page}K pages, socket {sock}, client timeout {timeout}s", flush=True)
+    wanted = list(range(1, 100)) if which == 'all' else tier45()
+    print(f"=== {page}K pages, socket {sock}, client timeout {timeout}s, "
+          f"{len(wanted)} queries ({which})", flush=True)
 
     total = 0.0
-    for n in range(1, 100):
+    for n in wanted:
         path = f"{QDIR}/query{n}.sql"
         if not os.path.exists(path):
             continue
@@ -82,7 +106,8 @@ def main():
         print(f"query{n:<3} {r['status']:<6} {secs:>7.1f}s "
               f"rows={r.get('rows','-')} {r.get('detail','')}", flush=True)
 
-    print(f"=== {page}K total {total:.1f}s ({total/60:.1f} min)", flush=True)
+    print(f"=== {page}K total {total:.1f}s ({total/60:.1f} min) "
+          f"over {len(wanted)} {which} queries", flush=True)
 
     # storage footprint, per table
     sizes = subprocess.run(base + ['-N', '-e', """

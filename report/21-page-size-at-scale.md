@@ -9,6 +9,16 @@ This is that re-measurement, at **SF=4**: a 32 GB database against the same
 8 GB pool, so roughly **4x more data than memory**. Two instances, 16K (the
 default) and 32K (the winner at SF=1), identical in every other respect.
 
+## Correction to the SF=1 column
+
+The 16K/SF=1 instance used here carried **182 indexes, not 188** — it was built
+before `sql/11_optimizer_indexes.sql` was added to the build script, and only
+the 32K copy was backfilled. Its SF=1 number is therefore not a like-for-like
+comparison. Re-measured with both at 188 over tier 4+5, 32K is **1.95x** faster
+at SF=1, not 1.54x. See `report/22-unused-indexes-by-configuration.md`.
+
+The SF=4 figures below are unaffected: both SF=4 instances carried 188 indexes.
+
 ## Headline
 
 | | SF=1 | SF=4 |
