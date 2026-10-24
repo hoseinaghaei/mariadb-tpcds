@@ -44,3 +44,9 @@ __pycache__/
 
 # Packaged source snapshots; raw evidence archives remain tracked.
 /experiments/*.zip
+# InnoDB page-size lab: four standalone datadirs, ~9 GB each
+pagesize/data-*/
+pagesize/*.sock
+pagesize/*.pid
+pagesize/*.err
+pagesize/*.log

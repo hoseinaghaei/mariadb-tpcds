@@ -1,0 +1,156 @@
+{
+ "page_kb": 32,
+ "total_seconds": 454.3,
+ "tables": [
+  {
+   "name": "call_center",
+   "rows": 6,
+   "data": 32768,
+   "index": 65536
+  },
+  {
+   "name": "catalog_page",
+   "rows": 11902,
+   "data": 3178496,
+   "index": 655360
+  },
+  {
+   "name": "catalog_returns",
+   "rows": 126904,
+   "data": 57769984,
+   "index": 89686016
+  },
+  {
+   "name": "catalog_sales",
+   "rows": 2161803,
+   "data": 643825664,
+   "index": 1464500224
+  },
+  {
+   "name": "customer",
+   "rows": 99272,
+   "data": 26247168,
+   "index": 19070976
+  },
+  {
+   "name": "customer_address",
+   "rows": 50005,
+   "data": 9469952,
+   "index": 4096000
+  },
+  {
+   "name": "customer_demographics",
+   "rows": 1914957,
+   "data": 198344704,
+   "index": 165969920
+  },
+  {
+   "name": "date_dim",
+   "rows": 72712,
+   "data": 17858560,
+   "index": 25427968
+  },
+  {
+   "name": "dbgen_version",
+   "rows": 1,
+   "data": 32768,
+   "index": 0
+  },
+  {
+   "name": "household_demographics",
+   "rows": 7200,
+   "data": 589824,
+   "index": 196608
+  },
+  {
+   "name": "income_band",
+   "rows": 20,
+   "data": 32768,
+   "index": 0
+  },
+  {
+   "name": "inventory",
+   "rows": 11819268,
+   "data": 910163968,
+   "index": 1532723200
+  },
+  {
+   "name": "item",
+   "rows": 17655,
+   "data": 11567104,
+   "index": 13107200
+  },
+  {
+   "name": "promotion",
+   "rows": 300,
+   "data": 131072,
+   "index": 98304
+  },
+  {
+   "name": "reason",
+   "rows": 75,
+   "data": 32768,
+   "index": 0
+  },
+  {
+   "name": "ship_mode",
+   "rows": 20,
+   "data": 32768,
+   "index": 0
+  },
+  {
+   "name": "store",
+   "rows": 12,
+   "data": 32768,
+   "index": 65536
+  },
+  {
+   "name": "store_returns",
+   "rows": 347809,
+   "data": 80871424,
+   "index": 107282432
+  },
+  {
+   "name": "store_sales",
+   "rows": 3473697,
+   "data": 782237696,
+   "index": 2720202752
+  },
+  {
+   "name": "time_dim",
+   "rows": 84600,
+   "data": 13664256,
+   "index": 0
+  },
+  {
+   "name": "warehouse",
+   "rows": 5,
+   "data": 32768,
+   "index": 0
+  },
+  {
+   "name": "web_page",
+   "rows": 60,
+   "data": 32768,
+   "index": 98304
+  },
+  {
+   "name": "web_returns",
+   "rows": 72055,
+   "data": 24150016,
+   "index": 44498944
+  },
+  {
+   "name": "web_sales",
+   "rows": 750656,
+   "data": 341344256,
+   "index": 685801472
+  },
+  {
+   "name": "web_site",
+   "rows": 30,
+   "data": 32768,
+   "index": 65536
+  }
+ ]
+}

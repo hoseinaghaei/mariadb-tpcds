@@ -1,0 +1,156 @@
+{
+ "page_kb": 16,
+ "total_seconds": 508.2,
+ "tables": [
+  {
+   "name": "call_center",
+   "rows": 6,
+   "data": 16384,
+   "index": 32768
+  },
+  {
+   "name": "catalog_page",
+   "rows": 11690,
+   "data": 2637824,
+   "index": 589824
+  },
+  {
+   "name": "catalog_returns",
+   "rows": 169176,
+   "data": 54149120,
+   "index": 94126080
+  },
+  {
+   "name": "catalog_sales",
+   "rows": 1393435,
+   "data": 494878720,
+   "index": 1393000448
+  },
+  {
+   "name": "customer",
+   "rows": 98407,
+   "data": 25755648,
+   "index": 15826944
+  },
+  {
+   "name": "customer_address",
+   "rows": 49582,
+   "data": 9977856,
+   "index": 4227072
+  },
+  {
+   "name": "customer_demographics",
+   "rows": 1908956,
+   "data": 198967296,
+   "index": 158777344
+  },
+  {
+   "name": "date_dim",
+   "rows": 72124,
+   "data": 16302080,
+   "index": 21102592
+  },
+  {
+   "name": "dbgen_version",
+   "rows": 1,
+   "data": 16384,
+   "index": 0
+  },
+  {
+   "name": "household_demographics",
+   "rows": 7200,
+   "data": 1589248,
+   "index": 180224
+  },
+  {
+   "name": "income_band",
+   "rows": 20,
+   "data": 16384,
+   "index": 0
+  },
+  {
+   "name": "inventory",
+   "rows": 11808335,
+   "data": 914358272,
+   "index": 1527709696
+  },
+  {
+   "name": "item",
+   "rows": 17359,
+   "data": 11026432,
+   "index": 7766016
+  },
+  {
+   "name": "promotion",
+   "rows": 300,
+   "data": 98304,
+   "index": 49152
+  },
+  {
+   "name": "reason",
+   "rows": 75,
+   "data": 16384,
+   "index": 0
+  },
+  {
+   "name": "ship_mode",
+   "rows": 20,
+   "data": 16384,
+   "index": 0
+  },
+  {
+   "name": "store",
+   "rows": 12,
+   "data": 16384,
+   "index": 32768
+  },
+  {
+   "name": "store_returns",
+   "rows": 287838,
+   "data": 78315520,
+   "index": 104235008
+  },
+  {
+   "name": "store_sales",
+   "rows": 2880311,
+   "data": 693010432,
+   "index": 2623045632
+  },
+  {
+   "name": "time_dim",
+   "rows": 85894,
+   "data": 13123584,
+   "index": 0
+  },
+  {
+   "name": "warehouse",
+   "rows": 5,
+   "data": 16384,
+   "index": 0
+  },
+  {
+   "name": "web_page",
+   "rows": 60,
+   "data": 16384,
+   "index": 49152
+  },
+  {
+   "name": "web_returns",
+   "rows": 72000,
+   "data": 22626304,
+   "index": 36929536
+  },
+  {
+   "name": "web_sales",
+   "rows": 713457,
+   "data": 322912256,
+   "index": 670285824
+  },
+  {
+   "name": "web_site",
+   "rows": 30,
+   "data": 16384,
+   "index": 32768
+  }
+ ]
+}

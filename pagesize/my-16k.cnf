@@ -1,0 +1,36 @@
+# innodb_page_size is fixed at datadir initialization and must be passed on
+# every start as well.  Everything else mirrors the Homebrew server.
+[mysqld]
+datadir                        = /Users/hosseinaghaei/Desktop/projects/dw/pagesize/data-16k
+socket                         = /Users/hosseinaghaei/Desktop/projects/dw/pagesize/s16.sock
+port                           = 3416
+pid-file                       = /Users/hosseinaghaei/Desktop/projects/dw/pagesize/16k.pid
+log-error                      = /Users/hosseinaghaei/Desktop/projects/dw/pagesize/16k.err
+
+innodb_page_size               = 16K
+
+innodb_buffer_pool_size        = 8G
+innodb_log_file_size           = 96M
+innodb_flush_log_at_trx_commit = 1
+innodb_flush_method            = O_DIRECT
+innodb_io_capacity             = 200
+innodb_read_io_threads         = 4
+innodb_write_io_threads        = 4
+innodb_doublewrite             = ON
+innodb_file_per_table          = ON
+innodb_adaptive_hash_index     = OFF
+innodb_old_blocks_pct          = 37
+
+character_set_server           = utf8mb4
+collation_server               = utf8mb4_general_ci
+local_infile                   = 1
+max_statement_time             = 300
+tmp_table_size                 = 16M
+max_heap_table_size            = 16M
+join_buffer_size               = 256K
+sort_buffer_size               = 2M
+
+skip_name_resolve
+
+# experiment: does deeper sampling reproduce the 32K plans?
+innodb_stats_persistent_sample_pages = 160

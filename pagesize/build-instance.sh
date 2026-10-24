@@ -1,0 +1,142 @@
+#!/bin/bash
+#
+# build-instance.sh <PAGE_KB>
+#
+# Builds a standalone MariaDB instance with innodb_page_size=<PAGE_KB>K, loads
+# the TPC-DS scale-1 dataset into it, creates every index, and leaves the
+# server running so the benchmark can be pointed at it.
+#
+# Each instance is completely self-contained: its own datadir, config, port and
+# socket under pagesize/.  The Homebrew instance on 3306 is never touched.
+#
+# Settings other than innodb_page_size mirror the Homebrew server exactly, so
+# page size is the only variable.
+
+set -Eeuo pipefail
+
+PAGE_KB="${1:?usage: build-instance.sh <4|8|16|32|64>}"
+case "$PAGE_KB" in 4|8|16|32|64) ;; *) echo "bad page size: $PAGE_KB" >&2; exit 1 ;; esac
+
+REPO=/Users/hosseinaghaei/Desktop/projects/dw
+LAB=$REPO/pagesize
+DD=$LAB/data-${PAGE_KB}k
+CNF=$LAB/my-${PAGE_KB}k.cnf
+SOCK=$LAB/s${PAGE_KB}.sock
+PORT=$((3400 + PAGE_KB))
+LOG=$LAB/build-${PAGE_KB}k.log
+BASEDIR=$(/opt/homebrew/bin/mariadb -N -B -e "select @@basedir" | sed 's:/$::')
+ME=$(id -un)
+
+say() { printf '[%s] %sK: %s\n' "$(date +%H:%M:%S)" "$PAGE_KB" "$*"; }
+
+mkdir -p "$LAB"
+
+# ------------------------------------------------------------------ config
+cat > "$CNF" <<EOF
+# innodb_page_size is fixed at datadir initialization and must be passed on
+# every start as well.  Everything else mirrors the Homebrew server.
+[mysqld]
+datadir                        = $DD
+socket                         = $SOCK
+port                           = $PORT
+pid-file                       = $LAB/${PAGE_KB}k.pid
+log-error                      = $LAB/${PAGE_KB}k.err
+
+innodb_page_size               = ${PAGE_KB}K
+
+innodb_buffer_pool_size        = 8G
+innodb_log_file_size           = 96M
+innodb_flush_log_at_trx_commit = 1
+innodb_flush_method            = O_DIRECT
+innodb_io_capacity             = 200
+innodb_read_io_threads         = 4
+innodb_write_io_threads        = 4
+innodb_doublewrite             = ON
+innodb_file_per_table          = ON
+innodb_adaptive_hash_index     = OFF
+innodb_old_blocks_pct          = 37
+
+character_set_server           = utf8mb4
+collation_server               = utf8mb4_general_ci
+local_infile                   = 1
+max_statement_time             = 300
+tmp_table_size                 = 16M
+max_heap_table_size            = 16M
+join_buffer_size               = 256K
+sort_buffer_size               = 2M
+
+skip_name_resolve
+EOF
+
+# ------------------------------------------------------------------ init
+if [[ -d "$DD" ]]; then
+  say "datadir already exists, skipping init ($DD)"
+else
+  say "initializing datadir with ${PAGE_KB}K pages"
+  mariadb-install-db --defaults-file="$CNF" --user="$ME" \
+      --basedir="$BASEDIR" --datadir="$DD" --auth-root-socket-user="$ME" \
+      > "$LAB/install-${PAGE_KB}k.log" 2>&1 \
+    || { echo "init failed, see $LAB/install-${PAGE_KB}k.log" >&2; exit 1; }
+fi
+
+# ------------------------------------------------------------------ start
+if mariadb-admin --socket="$SOCK" --user="$ME" ping >/dev/null 2>&1; then
+  say "already running on $SOCK"
+else
+  say "starting on port $PORT"
+  mariadbd --defaults-file="$CNF" >> "$LAB/${PAGE_KB}k.err" 2>&1 &
+  for i in $(seq 1 180); do
+    mariadb-admin --socket="$SOCK" --user="$ME" ping >/dev/null 2>&1 && break
+    sleep 1
+  done
+  mariadb-admin --socket="$SOCK" --user="$ME" ping >/dev/null 2>&1 \
+    || { echo "server did not start, see $LAB/${PAGE_KB}k.err" >&2; exit 1; }
+fi
+
+CLI="mariadb --socket=$SOCK --user=$ME"
+ACTUAL=$($CLI -N -B -e "select @@innodb_page_size/1024")
+say "running, innodb_page_size = ${ACTUAL%.*}K"
+[[ "${ACTUAL%.*}" == "$PAGE_KB" ]] || { echo "page size mismatch!" >&2; exit 1; }
+
+# ------------------------------------------------------------------ schema + data
+cd "$REPO"
+if $CLI -N -B -e "select count(*) from information_schema.tables where table_schema='tpcds'" \
+     2>/dev/null | grep -qx 25; then
+  say "tpcds already has 25 tables, skipping schema+load"
+else
+  say "creating schema"
+  $CLI -e "drop database if exists tpcds; create database tpcds"
+  $CLI tpcds < sql/01_schema.sql
+
+  say "loading data"
+  t0=$SECONDS
+  $CLI --local-infile=1 tpcds < sql/04_load_data.sql
+  say "load took $((SECONDS - t0))s"
+fi
+
+# ------------------------------------------------------------------ indexes
+NIDX=$($CLI -N -B -e "select count(distinct table_name,index_name) from information_schema.statistics where table_schema='tpcds'")
+if (( NIDX >= 180 )); then
+  say "already has $NIDX indexes, skipping"
+else
+  say "creating indexes (have $NIDX)"
+  t0=$SECONDS
+  sed 's/^CREATE INDEX /CREATE INDEX IF NOT EXISTS /i' sql/05_indexes.sql | $CLI tpcds
+  sed 's/^CREATE INDEX /CREATE INDEX IF NOT EXISTS /i' sql/14_contributed_indexes.sql | $CLI tpcds
+  say "indexes took $((SECONDS - t0))s"
+fi
+
+say "analyzing"
+$CLI tpcds -e "$($CLI -N -B -e "select group_concat(concat('analyze table ',table_name) separator '; ') from information_schema.tables where table_schema='tpcds'")" > /dev/null
+
+# ------------------------------------------------------------------ report
+$CLI -N -B -e "
+select concat('tables=', count(*),
+              ' rows=', sum(table_rows),
+              ' data_mb=', round(sum(data_length)/1048576),
+              ' index_mb=', round(sum(index_length)/1048576),
+              ' total_mb=', round(sum(data_length+index_length)/1048576))
+from information_schema.tables where table_schema='tpcds'" \
+  | sed "s/^/[$(date +%H:%M:%S)] ${PAGE_KB}K: /"
+
+say "ready on socket $SOCK (port $PORT)"
