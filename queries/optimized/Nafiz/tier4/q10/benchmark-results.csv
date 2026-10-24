@@ -1,0 +1,4 @@
+﻿"Version","Criterion","Seconds","Milliseconds","Status","OutputFile","SameAsOriginal"
+"query10_v0_original","Original","4.892","4892","OK","query10_v0_original.out","True"
+"query10_v2_date_range","Date-key range filter","0.284","283","OK","query10_v2_date_range.out","True"
+"query10_v1_nodatedim","Candidate rewrite","0.281","280","OK","query10_v1_nodatedim.out","True"

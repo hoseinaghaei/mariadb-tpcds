@@ -1,0 +1,5 @@
+﻿"Version","Criterion","Seconds","Milliseconds","Status","OutputFile","SameAsOriginal"
+"query7_v0_original","Original","3.784","3784","OK","query7_v0_original.out","True"
+"query7_v1_reordered","Candidate rewrite","1.455","1455","OK","query7_v1_reordered.out","True"
+"query7_v3_date_range","Date-key range filter","1.252","1252","OK","query7_v3_date_range.out","True"
+"query7_v2_datefirst_hint","Date-first join hint","1.176","1176","OK","query7_v2_datefirst_hint.out","True"

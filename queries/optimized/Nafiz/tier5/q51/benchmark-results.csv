@@ -1,0 +1,4 @@
+﻿"Version","Criterion","Seconds","Milliseconds","Status","OutputFile","SameAsOriginal"
+"query51_v0_original","Original","26.671","26670","OK","query51_v0_original.out","True"
+"query51_v1_union_pivot","UNION grouped pivot","17.477","17477","OK","query51_v1_union_pivot.out","True"
+"query51_v2_union_range","Date-key range filter","16.887","16887","OK","query51_v2_union_range.out","True"

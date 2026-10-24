@@ -1,0 +1,6 @@
+﻿<!doctype html><html><head><meta charset='utf-8'><title>q57 optimization benchmark</title>
+<style>body{font-family:Segoe UI,Arial;margin:32px;color:#1f2937}table{border-collapse:collapse;width:100%;max-width:900px}th,td{border:1px solid #d1d5db;padding:9px;text-align:left}th{background:#eff6ff}.bar{height:18px;background:#2563eb;min-width:2px}</style>
+</head><body><h1>q57: optimization benchmark</h1><p>Scale factor 1; one timed run. Only rows marked <b>True</b> match the original output.</p><table><tr><th>Version</th><th>Optimization criterion</th><th>Seconds</th><th>Same result</th><th>Relative time</th></tr><tr><td>query57_v0_original</td><td>Original</td><td>8.377</td><td>True</td><td><div class='bar' style='width:100%'></div></td></tr>
+<tr><td>query57_v1_window</td><td>Window LAG/LEAD</td><td>2.432</td><td>True</td><td><div class='bar' style='width:29%'></div></td></tr>
+<tr><td>query57_v2_window_range</td><td>Date-key range filter</td><td>1.879</td><td>True</td><td><div class='bar' style='width:22.4%'></div></td></tr>
+<tr><td>query57_v3_datefirst</td><td>Date-first join hint</td><td>1.8</td><td>True</td><td><div class='bar' style='width:21.5%'></div></td></tr></table></body></html>

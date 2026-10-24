@@ -1,0 +1,5 @@
+﻿"Version","Criterion","Seconds","Milliseconds","Status","OutputFile","SameAsOriginal"
+"query8_v0_original","Original","4.121","4120","OK","query8_v0_original.out","True"
+"query8_v1_date_range","Date-key range filter","0.246","245","OK","query8_v1_date_range.out","True"
+"query8_v2_reordered","Candidate rewrite","0.246","246","OK","query8_v2_reordered.out","True"
+"query8_v3_datefirst","Date-first join hint","0.255","254","OK","query8_v3_datefirst.out","True"

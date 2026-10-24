@@ -1,0 +1,4 @@
+﻿"Version","Criterion","Seconds","Milliseconds","Status","OutputFile","SameAsOriginal"
+"query11_v0_original","Original","17.343","17342","OK","query11_v0_original.out","True"
+"query11_v1_pivot","Aggregate pivot","13.804","13803","OK","query11_v1_pivot.out","True"
+"query11_v2_pivot_range","Date-key range filter","7.163","7163","OK","query11_v2_pivot_range.out","True"

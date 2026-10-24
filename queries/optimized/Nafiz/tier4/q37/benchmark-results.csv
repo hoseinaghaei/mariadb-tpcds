@@ -1,0 +1,4 @@
+﻿"Version","Criterion","Seconds","Milliseconds","Status","OutputFile","SameAsOriginal"
+"query37_v0_original","Original","2.277","2277","OK","query37_v0_original.out","True"
+"query37_v1_date_range","Date-key range filter","0.114","113","OK","query37_v1_date_range.out","True"
+"query37_v2_range_semijoin","Date-key range + catalog existence check","0.111","111","OK","query37_v2_range_semijoin.out","True"
