@@ -179,6 +179,11 @@ page-size dependence this experiment does not isolate.
 
 ## What to actually do
 
+> **Superseded.** The follow-up sweep at the end of this report shows that
+> deeper sampling helps 16K but *hurts* 32K, and that the page-size difference
+> largely disappears once sampling is deep enough. Read the revised
+> recommendation at the bottom instead.
+
 1. **Do not rebuild the datadir for page size.** Set
    `innodb_stats_persistent_sample_pages = 160` on the existing 16K server and
    re-run `ANALYZE TABLE`. That captures most of the available gain for the
@@ -221,3 +226,88 @@ Each instance is self-contained under `pagesize/` with its own datadir, config,
 port (3400+KB) and socket. The Homebrew server on 3306 is never touched. The
 four datadirs total ~37 GB and are gitignored; delete with
 `rm -rf pagesize/data-*`.
+
+
+---
+
+# Follow-up: sweeping the sample size on 32K
+
+The section above concluded that page size was a proxy for statistics quality
+and recommended `innodb_stats_persistent_sample_pages = 160`. Sweeping the
+same knob on the 32K instance shows that conclusion was **half right, and the
+recommendation was wrong.**
+
+| page | sample pages | KB sampled | 99-query total |
+|---|---:|---:|---:|
+| 16K | 20 (default) | 320 | 645.4s (mean of 2) |
+| 16K | 160 | 2,560 | 508.2s |
+| 32K | 20 (default) | 640 | **463.0s** (mean of 2) |
+| 32K | 80 | 2,560 | 536.9s |
+| 32K | 160 | 5,120 | 505.2s |
+| 32K | 320 | 10,240 | 505.2s |
+
+## Deep sampling erases the page-size difference
+
+16K@160 is 508.2s, 32K@160 is 505.2s, 32K@320 is 505.2s. Three configurations
+across two page sizes, all within **0.6%**. Once the optimizer has enough
+statistics, page size stops mattering for the suite as a whole.
+
+That is the real explanation of the earlier result: the 645s vs 463s gap at
+default sampling was never a property of page size. It was the fixed 20-page
+sample covering different amounts of data, and the plans that followed.
+
+## But deeper sampling is not a reliable improvement
+
+| page | default → 160 |
+|---|---|
+| 16K | 645.4s → 508.2s, **21% faster** |
+| 32K | 463.0s → 505.2s, **9% slower** |
+
+Same change, opposite sign. And the curve is not monotonic: 32K@80 (536.9s)
+is worse than both 32K@20 and 32K@160.
+
+The best configuration measured anywhere is still **32K with the default
+shallow 20-page sample, 463.0s** — coarse, less accurate statistics happening
+to yield a better plan than accurate ones. More sampling does not mean better
+plans; it means *different* plans, and whether they are better is a property
+of this workload, not of the setting.
+
+`innodb_stats_persistent_sample_pages` is therefore not a knob to turn on
+principle. It has to be measured per server, and the sweep is cheap — about
+8 minutes per setting here.
+
+## query72 is the genuine page-size effect
+
+One query does not fit the statistics story at all:
+
+| sample pages | 16K | 32K |
+|---|---:|---:|
+| 20 | 55.4s | 3.7s |
+| 80 | — | 1.9s |
+| 160 | 21.6s | 1.9s |
+| 320 | — | 1.9s |
+
+q72 improves with sampling on both page sizes and saturates at 1.9s on 32K,
+but 32K beats 16K by **11x at every sampling depth**. No amount of statistics
+closes that gap. This is a real page-size dependence, and it is the single
+largest one in the suite. It is not explained here.
+
+## Revised recommendation
+
+This supersedes "What to actually do" above.
+
+1. **Do not set `innodb_stats_persistent_sample_pages = 160` blindly.** It is
+   worth 21% on the 16K server and costs 9% on 32K. If you apply it to the
+   live 16K instance, measure before and after and be ready to revert — it is
+   a dynamic global, so the only cost of backing out is re-running `ANALYZE`.
+2. **The page-size difference is mostly not about page size.** At matched deep
+   sampling the four copies converge. Rebuilding a datadir to chase a
+   difference that a statistics setting also produces is not a good trade.
+3. **If you rebuild anyway, 32K at default sampling is the fastest thing
+   measured** (463.0s vs 645.4s for the current configuration, 28% better) —
+   but understand that this is the optimizer getting lucky on coarse
+   statistics, not a robust property. It could reverse on different data.
+4. **q72 is the exception worth chasing.** An 11x page-size effect that
+   survives every sampling depth is a real signal, and q72 is the single most
+   expensive query in the benchmark. Worth understanding before deciding
+   anything about page size.

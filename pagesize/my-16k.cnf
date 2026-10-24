@@ -32,5 +32,3 @@ sort_buffer_size               = 2M
 
 skip_name_resolve
 
-# experiment: does deeper sampling reproduce the 32K plans?
-innodb_stats_persistent_sample_pages = 160
