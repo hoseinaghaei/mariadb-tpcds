@@ -1,4 +1,4 @@
--- v1: retain the original predicates and add the equivalent 1998 date-key range.
+-- v2: retain the original predicates and add the equivalent 1998 date-key range.
 SELECT i_item_id, AVG(ss_quantity) agg1, AVG(ss_list_price) agg2,
        AVG(ss_coupon_amt) agg3, AVG(ss_sales_price) agg4
 FROM store_sales, customer_demographics, date_dim, item, promotion

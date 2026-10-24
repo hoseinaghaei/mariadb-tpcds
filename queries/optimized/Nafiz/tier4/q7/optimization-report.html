@@ -2,5 +2,5 @@
 <style>body{font-family:Segoe UI,Arial;margin:32px;color:#1f2937}table{border-collapse:collapse;width:100%;max-width:900px}th,td{border:1px solid #d1d5db;padding:9px;text-align:left}th{background:#eff6ff}.bar{height:18px;background:#2563eb;min-width:2px}</style>
 </head><body><h1>q7: optimization benchmark</h1><p>Scale factor 1; one timed run. Only rows marked <b>True</b> match the original output.</p><table><tr><th>Version</th><th>Optimization criterion</th><th>Seconds</th><th>Same result</th><th>Relative time</th></tr><tr><td>query7_v0_original</td><td>Original</td><td>3.784</td><td>True</td><td><div class='bar' style='width:100%'></div></td></tr>
 <tr><td>query7_v1_reordered</td><td>Candidate rewrite</td><td>1.455</td><td>True</td><td><div class='bar' style='width:38.5%'></div></td></tr>
-<tr><td>query7_v3_date_range</td><td>Date-key range filter</td><td>1.252</td><td>True</td><td><div class='bar' style='width:33.1%'></div></td></tr>
-<tr><td>query7_v2_datefirst_hint</td><td>Date-first join hint</td><td>1.176</td><td>True</td><td><div class='bar' style='width:31.1%'></div></td></tr></table></body></html>
+<tr><td>query7_v2_date_range</td><td>Date-key range filter</td><td>1.252</td><td>True</td><td><div class='bar' style='width:33.1%'></div></td></tr>
+<tr><td>query7_v3_datefirst_hint</td><td>Date-first join hint</td><td>1.176</td><td>True</td><td><div class='bar' style='width:31.1%'></div></td></tr></table></body></html>

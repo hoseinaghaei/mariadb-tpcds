@@ -1,4 +1,4 @@
-﻿-- v2: v1 range filters; remove date_dim joins after proving the key range is exact.
+﻿-- v1: exact date-key ranges with redundant date_dim joins removed.
 SELECT cd_gender,cd_marital_status,cd_education_status,COUNT(*) cnt1,cd_purchase_estimate,COUNT(*) cnt2,cd_credit_rating,COUNT(*) cnt3,cd_dep_count,COUNT(*) cnt4,cd_dep_employed_count,COUNT(*) cnt5,cd_dep_college_count,COUNT(*) cnt6
 FROM customer c, customer_address ca, customer_demographics
 WHERE c.c_current_addr_sk=ca.ca_address_sk AND ca_county IN ('Madison County','Wallowa County','Calhoun County','Broadwater County','McCone County') AND cd_demo_sk=c.c_current_cdemo_sk

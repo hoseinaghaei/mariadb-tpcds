@@ -1,4 +1,4 @@
-﻿-- v1: retain the original predicates and add the equivalent 1998 date-key range.
+﻿-- v3: add a date-first join hint to the equivalent 1998 date-key range.
 SELECT /*+ JOIN_PREFIX(date_dim, store_sales) */ i_item_id, AVG(ss_quantity) agg1, AVG(ss_list_price) agg2,
        AVG(ss_coupon_amt) agg3, AVG(ss_sales_price) agg4
 FROM date_dim, store_sales, customer_demographics, item, promotion

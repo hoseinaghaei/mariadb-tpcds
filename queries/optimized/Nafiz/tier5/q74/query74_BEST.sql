@@ -1,4 +1,4 @@
--- v2: pivot rewrite with source date-key ranges for 1999-2000.
+-- v1: pivot rewrite with source date-key ranges for 1999-2000.
 WITH year_total AS (
  SELECT c_customer_id customer_id,c_first_name customer_first_name,c_last_name customer_last_name,d_year yr,MAX(ss_net_paid) year_total,'s' sale_type
  FROM customer JOIN store_sales ON c_customer_sk=ss_customer_sk JOIN date_dim ON ss_sold_date_sk=d_date_sk

@@ -48,11 +48,8 @@ Each saved version has a `.sql` and matching `.out` file. The folder also has
 `query37_BEST.sql`, `benchmark-results.csv`, and an HTML report with bars
 ordered from longest to shortest recorded time.
 
-From `queries/optimized/Nafiz` in PowerShell:
-
-```powershell
-$pw = Read-Host 'MariaDB root password' -AsSecureString
-.\run-tier5-optimizations.ps1 -Password $pw -QueryIds q37
-```
-
-This reruns Q37 and regenerates the outputs, CSV, HTML, and BEST file.
+From this query folder in PowerShell, start MariaDB with
+`& 'C:\Program Files\MariaDB 13.0\bin\mariadb.exe' --skip-ssl -u root -p tpcds`.
+At its prompt enter `source query37_v0_original.sql`, then
+`source query37_BEST.sql`. This reruns the SQL; it does not overwrite the
+saved `.out`, CSV, or HTML benchmark artifacts.

@@ -45,11 +45,8 @@ was not saved as another version.
 
 ## Re-run
 
-From `queries/optimized/Nafiz` in PowerShell:
-
-```powershell
-$pw = Read-Host 'MariaDB root password' -AsSecureString
-.\run-tier5-optimizations.ps1 -Password $pw -QueryIds q33
-```
-
-This regenerates the `.out` files, CSV, HTML report, and `BEST` selection.
+From this query folder in PowerShell, start MariaDB with
+`& 'C:\Program Files\MariaDB 13.0\bin\mariadb.exe' --skip-ssl -u root -p tpcds`.
+At its prompt enter `source query33_v0_original.sql`, then
+`source query33_BEST.sql`. This reruns the SQL; it does not overwrite the
+saved `.out`, CSV, or HTML benchmark artifacts.
