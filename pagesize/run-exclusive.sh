@@ -19,7 +19,9 @@ SERVICE=$(brew services list 2>/dev/null | awk 'NR>1 && $1 ~ /^mariadb(@|$)/ && 
 
 restore() {
   local rc=$?
-  if [[ -n "${SERVICE:-}" ]]; then
+  if [[ -f "$LAB/KEEP-LIVE-OFF" ]]; then
+    echo "--- leaving the live server stopped (pagesize/KEEP-LIVE-OFF present)"
+  elif [[ -n "${SERVICE:-}" ]]; then
     echo "--- restarting live server ($SERVICE)"
     brew services start "$SERVICE" >/dev/null 2>&1 || \
       echo "    WARNING: could not restart $SERVICE -- run: brew services start $SERVICE" >&2

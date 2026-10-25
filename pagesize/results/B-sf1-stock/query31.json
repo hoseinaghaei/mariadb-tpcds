@@ -1,0 +1,14 @@
+{
+ "query": 31,
+ "tag": "B-sf1-stock",
+ "scale": 1,
+ "page_kb": 32,
+ "sample_pages": 20,
+ "seconds": 0.4,
+ "buffer_pool_bytes": 8589934592,
+ "tmp_table_size": 16777216,
+ "rows": 44,
+ "md5": "d629f8c278e99e0529dcea613856b9fb",
+ "md5_sorted": "3576a0a00705265ad83567ed7afe037f",
+ "status": "OK"
+}

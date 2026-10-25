@@ -1,0 +1,14 @@
+{
+ "query": 74,
+ "tag": "C-sf1-sf4cfg",
+ "scale": 1,
+ "page_kb": 32,
+ "sample_pages": 160,
+ "seconds": 4.9,
+ "buffer_pool_bytes": 8589934592,
+ "tmp_table_size": 1610612736,
+ "rows": 100,
+ "md5": "09d594a3aca7f325cdae1969b9d559ff",
+ "md5_sorted": "119b628e69a4ac08ae3d5c7f0a50a4a5",
+ "status": "OK"
+}

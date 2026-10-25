@@ -1,0 +1,48 @@
+# innodb_page_size is fixed at datadir initialization and must be passed on
+# every start as well.  Everything else mirrors the Homebrew server.
+[mysqld]
+datadir                        = /Users/hosseinaghaei/Desktop/projects/dw/pagesize/data-32k
+socket                         = /Users/hosseinaghaei/Desktop/projects/dw/pagesize/s32.sock
+port                           = 3432
+pid-file                       = /Users/hosseinaghaei/Desktop/projects/dw/pagesize/32k.pid
+log-error                      = /Users/hosseinaghaei/Desktop/projects/dw/pagesize/32k.err
+
+innodb_page_size               = 32K
+
+innodb_buffer_pool_size        = 8G
+innodb_log_file_size           = 96M
+innodb_flush_log_at_trx_commit = 1
+innodb_flush_method            = O_DIRECT
+innodb_io_capacity             = 200
+innodb_read_io_threads         = 4
+innodb_write_io_threads        = 4
+innodb_doublewrite             = ON
+innodb_file_per_table          = ON
+innodb_adaptive_hash_index     = OFF
+innodb_old_blocks_pct          = 37
+
+character_set_server           = utf8mb4
+collation_server               = utf8mb4_general_ci
+local_infile                   = 1
+max_statement_time             = 300
+tmp_table_size                 = 16M
+max_heap_table_size            = 16M
+join_buffer_size               = 256K
+sort_buffer_size               = 2M
+
+skip_name_resolve
+userstat = 1
+tmp_table_size                 = 1536M
+max_heap_table_size            = 1536M
+aria_pagecache_buffer_size     = 1G
+innodb_read_io_threads         = 8
+innodb_read_ahead_threshold    = 24
+innodb_old_blocks_pct          = 25
+sort_buffer_size               = 64M
+join_cache_level               = 8
+join_buffer_size               = 64M
+join_buffer_space_limit        = 256M
+optimizer_switch               = 'mrr=on,mrr_cost_based=off'
+key_buffer_size                = 16M
+innodb_stats_persistent_sample_pages = 160
+max_statement_time = 3600

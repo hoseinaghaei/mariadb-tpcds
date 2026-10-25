@@ -1,0 +1,14 @@
+{
+ "query": 7,
+ "tag": "ab1-globaloff",
+ "scale": 4,
+ "page_kb": 32,
+ "sample_pages": 160,
+ "seconds": 2.2,
+ "buffer_pool_bytes": 8589934592,
+ "tmp_table_size": 1610612736,
+ "rows": 100,
+ "md5": "c33c2399fde9ef754b3c03daef7cc820",
+ "md5_sorted": "7cac7c7d4d0daa2f90a30ecc31e830d9",
+ "status": "OK"
+}

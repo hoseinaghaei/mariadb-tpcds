@@ -1,0 +1,13 @@
+The live Homebrew MariaDB on port 3306 is to stay STOPPED.
+
+Set 2026-10-25 at the user's instruction ("keep the 3306 server off for
+further notice").  While this file exists, the lab scripts will not restart
+the service when they finish.
+
+Why it matters: the live server reserves its own 8 GB buffer pool.  On this
+16 GB machine that competes with a lab instance's 8 GB, which killed two runs
+outright, and - because innodb_flush_method=O_DIRECT has no effect on macOS -
+its activity also evicts the lab datadir from the OS file cache, which is the
+leading explanation for the unexplained 8.6% drift between runs.
+
+To restore it:  rm pagesize/KEEP-LIVE-OFF  &&  brew services start mariadb

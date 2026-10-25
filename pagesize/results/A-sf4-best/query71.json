@@ -1,0 +1,14 @@
+{
+ "query": 71,
+ "tag": "A-sf4-best",
+ "scale": 4,
+ "page_kb": 32,
+ "sample_pages": 160,
+ "seconds": 5.6,
+ "buffer_pool_bytes": 8589934592,
+ "tmp_table_size": 1610612736,
+ "rows": 3948,
+ "md5": "ad55ea9a28a40865734a2ce7e8c542d9",
+ "md5_sorted": "cdbaae24b36796648f2462e671c7cd61",
+ "status": "OK"
+}
