@@ -1,63 +1,23 @@
 -- query74
--- source: queries/mariadb/query74.sql  (no optimized version exists)
+-- source: queries/optimized/Nafiz/tier5/q74/query74_BEST.sql
 
 SET SESSION sql_mode = CONCAT(@@sql_mode, ',IGNORE_SPACE,PIPES_AS_CONCAT');
 
-with year_total as (
- select c_customer_id customer_id
-       ,c_first_name customer_first_name
-       ,c_last_name customer_last_name
-       ,d_year as year
-       ,max(ss_net_paid) year_total
-       ,'s' sale_type
- from customer
-     ,store_sales
-     ,date_dim
- where c_customer_sk = ss_customer_sk
-   and ss_sold_date_sk = d_date_sk
-   and d_year in (1999,1999+1)
- group by c_customer_id
-         ,c_first_name
-         ,c_last_name
-         ,d_year
- union all
- select c_customer_id customer_id
-       ,c_first_name customer_first_name
-       ,c_last_name customer_last_name
-       ,d_year as year
-       ,max(ws_net_paid) year_total
-       ,'w' sale_type
- from customer
-     ,web_sales
-     ,date_dim
- where c_customer_sk = ws_bill_customer_sk
-   and ws_sold_date_sk = d_date_sk
-   and d_year in (1999,1999+1)
- group by c_customer_id
-         ,c_first_name
-         ,c_last_name
-         ,d_year
-         )
-  select 
-        t_s_secyear.customer_id, t_s_secyear.customer_first_name, t_s_secyear.customer_last_name
- from year_total t_s_firstyear
-     ,year_total t_s_secyear
-     ,year_total t_w_firstyear
-     ,year_total t_w_secyear
- where t_s_secyear.customer_id = t_s_firstyear.customer_id
-         and t_s_firstyear.customer_id = t_w_secyear.customer_id
-         and t_s_firstyear.customer_id = t_w_firstyear.customer_id
-         and t_s_firstyear.sale_type = 's'
-         and t_w_firstyear.sale_type = 'w'
-         and t_s_secyear.sale_type = 's'
-         and t_w_secyear.sale_type = 'w'
-         and t_s_firstyear.year = 1999
-         and t_s_secyear.year = 1999+1
-         and t_w_firstyear.year = 1999
-         and t_w_secyear.year = 1999+1
-         and t_s_firstyear.year_total > 0
-         and t_w_firstyear.year_total > 0
-         and case when t_w_firstyear.year_total > 0 then t_w_secyear.year_total / t_w_firstyear.year_total else null end
-           > case when t_s_firstyear.year_total > 0 then t_s_secyear.year_total / t_s_firstyear.year_total else null end
- order by 2,1,3
-limit 100;
+WITH year_total AS (
+ SELECT c_customer_id customer_id,c_first_name customer_first_name,c_last_name customer_last_name,d_year yr,MAX(ss_net_paid) year_total,'s' sale_type
+ FROM customer JOIN store_sales ON c_customer_sk=ss_customer_sk JOIN date_dim ON ss_sold_date_sk=d_date_sk
+ WHERE ss_sold_date_sk BETWEEN 2451180 AND 2451910 AND d_year IN (1999,2000) GROUP BY c_customer_id,c_first_name,c_last_name,d_year
+ UNION ALL
+ SELECT c_customer_id,c_first_name,c_last_name,d_year,MAX(ws_net_paid),'w'
+ FROM customer JOIN web_sales ON c_customer_sk=ws_bill_customer_sk JOIN date_dim ON ws_sold_date_sk=d_date_sk
+ WHERE ws_sold_date_sk BETWEEN 2451180 AND 2451910 AND d_year IN (1999,2000) GROUP BY c_customer_id,c_first_name,c_last_name,d_year
+), p AS (
+ SELECT customer_id,customer_first_name,customer_last_name,
+  MAX(CASE WHEN sale_type='s' AND yr=1999 THEN year_total END) s1999,MAX(CASE WHEN sale_type='s' AND yr=2000 THEN year_total END) s2000,
+  MAX(CASE WHEN sale_type='w' AND yr=1999 THEN year_total END) w1999,MAX(CASE WHEN sale_type='w' AND yr=2000 THEN year_total END) w2000,
+  COUNT(CASE WHEN sale_type='s' AND yr=1999 THEN 1 END) a,COUNT(CASE WHEN sale_type='s' AND yr=2000 THEN 1 END) b,COUNT(CASE WHEN sale_type='w' AND yr=1999 THEN 1 END) c,COUNT(CASE WHEN sale_type='w' AND yr=2000 THEN 1 END) d
+ FROM year_total GROUP BY customer_id,customer_first_name,customer_last_name
+)
+SELECT customer_id,customer_first_name,customer_last_name FROM p
+WHERE a>0 AND b>0 AND c>0 AND d>0 AND s1999>0 AND w1999>0 AND w2000/w1999>s2000/s1999
+ORDER BY customer_first_name,customer_id,customer_last_name LIMIT 100;

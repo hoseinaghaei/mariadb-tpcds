@@ -1,5 +1,5 @@
 -- query8
--- source: queries/mariadb/query8.sql  (no optimized version exists)
+-- source: queries/optimized/Nafiz/tier4/q8/query8_BEST.sql
 
 SET SESSION sql_mode = CONCAT(@@sql_mode, ',IGNORE_SPACE,PIPES_AS_CONCAT');
 
@@ -102,7 +102,7 @@ select  s_store_name
             group by ca_zip
             having count(*) > 10)A1)A2) V1
  where ss_store_sk = s_store_sk
-  and ss_sold_date_sk = d_date_sk
+  and ss_sold_date_sk = d_date_sk and ss_sold_date_sk between 2451636 and 2451726
   and d_qoy = 2 and d_year = 2000
   and (substr(s_zip,1,2) = substr(V1.ca_zip,1,2))
  group by s_store_name

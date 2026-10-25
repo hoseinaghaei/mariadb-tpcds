@@ -61,6 +61,16 @@ OPTIMIZED = {
     78: "q78/query78_BEST.sql",
     88: "q88/query88_BEST.sql",
     97: "Aysha/q97/query97_BEST.sql",
+    # Nafiz, merged 2026-10-25.  He also has q31 and q51, but riccio's are
+    # already verified here; worth comparing the two later.
+    7:  "Nafiz/tier4/q7/query7_BEST.sql",
+    8:  "Nafiz/tier4/q8/query8_BEST.sql",
+    10: "Nafiz/tier4/q10/query10_BEST.sql",
+    33: "Nafiz/tier4/q33/query33_BEST.sql",
+    37: "Nafiz/tier4/q37/query37_BEST.sql",
+    11: "Nafiz/tier5/q11/query11_BEST.sql",
+    57: "Nafiz/tier5/q57/query57_BEST.sql",
+    74: "Nafiz/tier5/q74/query74_BEST.sql",
 }
 
 # q35 and q38 have "optimized" files containing only CREATE INDEX -- no query
@@ -133,13 +143,20 @@ def correct(n, sql):
 def clean(sql):
     """Drop a leading EXPLAIN/ANALYZE and index DDL; keep SET and temp tables.
 
+    Strips a UTF-8 BOM first.  Eight of Nafiz's files begin with one, and it
+    defeats the comment test: the first line reads "\ufeff-- v3: ..." which
+    does not start with '--', so the comment survived into the SQL.  Where the
+    BOM sat directly before SELECT (q8) it made the statement itself invalid.
+    All three failures were this.
+
     Comments are stripped BEFORE splitting on ';'.  A comment containing a
     semicolon -- q4 opens with "-- Requires unique customer.c_customer_id;
     validate that assumption separately." -- otherwise splits mid-comment and
     the tail survives as stray text ahead of the query.
     """
+    sql = sql.lstrip('\ufeff')
     sql = "\n".join(l for l in sql.splitlines()
-                    if not l.strip().startswith('--'))
+                    if not l.strip().lstrip('\ufeff').startswith('--'))
     out, dropped = [], []
     for st in sql.split(';'):
         body = st.strip()

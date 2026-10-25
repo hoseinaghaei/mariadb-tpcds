@@ -1,0 +1,5 @@
+  q7    optimized  orig    4.53s  tuned    6.31s   IDENTICAL
+  q8    optimized  orig    1.92s  tuned    1.19s   both empty - nothing to compare
+  q10   optimized  orig    0.65s  tuned    0.39s   IDENTICAL
+
+  identical 2   row-order-only 0   DIFFERS 0   errors 1
