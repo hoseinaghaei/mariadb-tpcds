@@ -1,8 +1,29 @@
--- SET SESSION join_buffer_size = 268435456;
--- SET SESSION tmp_table_size = 536870912;
--- SET SESSION max_heap_table_size = 536870912;
+-- For SF4 use teh following indexes
+
+-- reduces time to : 27 seconds
+
+-- Existing index storage: store_sales 339.98 MB, catalog_sales 173.88 MB, web_sales 89.70 MB
+-- Total existing index storage: ~603.56 MB
+-- New indexes below will require additional storage (exact size depends on the data).
+
+-- CREATE INDEX idx_ss_date_item
+--     ON store_sales (ss_sold_date_sk, ss_item_sk);
+-- Estimated additional storage: to be measured
+
+-- CREATE INDEX idx_cs_date_item
+--     ON catalog_sales (cs_sold_date_sk, cs_item_sk);
+-- Estimated additional storage: to be measured
+
+-- CREATE INDEX idx_ws_date_item
+--     ON web_sales (ws_sold_date_sk, ws_item_sk);
+-- Estimated additional storage: to be measured
+
+
+-- SF1 and SF4
+SET SESSION join_buffer_size = 268435456;
+SET SESSION tmp_table_size = 536870912;
+SET SESSION max_heap_table_size = 536870912;
 -- ANALYZE FORMAT=JSON
-explain
 select * from (
   select channel, i_brand_id, i_class_id, i_category_id, sum(sales), sum(number_sales)
   from (
