@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Q23 optimization benchmark</title>
+<style>
+body{font:16px/1.5 Segoe UI,Arial,sans-serif;max-width:1100px;margin:36px auto;padding:0 22px;color:#1f2937}
+h1{margin-bottom:0}.muted{color:#64748b}.card{background:#eff6ff;border-left:4px solid #2563eb;padding:12px 18px;margin:20px 0}
+table{border-collapse:collapse;width:100%;margin-top:18px}th,td{border:1px solid #d1d5db;padding:9px;vertical-align:middle;text-align:left}th{background:#f1f5f9}td:last-child{width:23%}
+.bar{height:18px;background:#2563eb;min-width:3px;border-radius:3px}tr:last-child .bar{background:#16a34a}code{white-space:nowrap}
+@media(max-width:750px){body{font-size:14px}table{display:block;overflow-x:auto;white-space:nowrap}}
+</style></head><body>
+<h1>Q23: optimization benchmark</h1>
+<p class="muted">MariaDB 13.0.2 · TPC-DS SF=1 · 25 October 2026 · median of recorded full-file wall-clock runs. Original first; candidates ordered slowest to fastest.</p>
+<div class="card"><strong>BEST: v4_late_customer_join — 1.427 s median</strong><br>
+Original: 54.293 s median. Approximately 38.0× faster (97.4% less time). Every saved version returned the same two result sets as the original on this database.</div>
+<table><thead><tr><th>Version</th><th>Optimization criterion</th><th>Median seconds</th><th>Individual trials (s)</th><th>Same output</th><th>Relative time</th></tr></thead><tbody>
+<tr><td><code>query23_v0_original</code></td><td>Original</td><td>54.293</td><td>54.335, 54.25</td><td>Yes</td><td><div class="bar" style="width:100.00%"></div></td></tr>
+<tr><td><code>query23_v1_reuse_filters</code></td><td>Reuse filter sets</td><td>19.257</td><td>19.224, 19.29</td><td>Yes</td><td><div class="bar" style="width:35.47%"></div></td></tr>
+<tr><td><code>query23_v2_customer_first</code></td><td>Customer-first item pruning</td><td>7.901</td><td>8.046, 7.757</td><td>Yes</td><td><div class="bar" style="width:14.55%"></div></td></tr>
+<tr><td><code>query23_v3_single_customer_scan</code></td><td>One customer-sales scan</td><td>3.658</td><td>3.846, 3.895, 3.658, 3.634, 3.629</td><td>Yes</td><td><div class="bar" style="width:6.74%"></div></td></tr>
+<tr><td><code>query23_v4_late_customer_join</code></td><td>Join customer after grouping</td><td>1.427</td><td>1.427, 1.427, 1.438</td><td>Yes</td><td><div class="bar" style="width:2.63%"></div></td></tr>
+</tbody></table>
+<p>The first result set is <code>NULL</code>; the second contains zero rows at the original 95% threshold. At a diagnostic 50% threshold, original and BEST both returned the same non-empty three-line output; this diagnostic did not change the saved SQL.</p>
+<p class="muted">These are local query-wall-clock measurements, not TPC-DS official scores. The existing project reference-answer comparison for Q23 records a row-count mismatch; output equality here is against the original MariaDB Q23, not the external answer set. See README.md for methods, rejected tests, and rerun instructions.</p>
+</body></html>

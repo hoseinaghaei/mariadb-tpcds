@@ -1,3 +1,25 @@
+-- For SF4 use teh following indexes
+
+-- reduces time to : 27 seconds
+
+-- Existing index storage: store_sales 339.98 MB, catalog_sales 173.88 MB, web_sales 89.70 MB
+-- Total existing index storage: ~603.56 MB
+-- New indexes below will require additional storage (exact size depends on the data).
+
+-- CREATE INDEX idx_ss_date_item
+--     ON store_sales (ss_sold_date_sk, ss_item_sk);
+-- Estimated additional storage: to be measured
+
+-- CREATE INDEX idx_cs_date_item
+--     ON catalog_sales (cs_sold_date_sk, cs_item_sk);
+-- Estimated additional storage: to be measured
+
+-- CREATE INDEX idx_ws_date_item
+--     ON web_sales (ws_sold_date_sk, ws_item_sk);
+-- Estimated additional storage: to be measured
+
+
+
 with date_window as (
     select min(d_date_sk) as first_date_sk,
            max(d_date_sk) as last_date_sk
@@ -13,7 +35,7 @@ target_weeks as (
       and d_dom = 15
 ),
 weekly_sales as (
-    select item.i_braknd_id,
+    select item.i_brand_id,
            item.i_class_id,
            item.i_category_id,
            sum(case when calendar.d_week_seq = target_weeks.this_year_week

@@ -1,0 +1,6 @@
+Version,Criterion,Seconds,Milliseconds,Minutes,Hours,Days,Ticks,TrialsSeconds,Status,OutputFile,SameAsOriginal
+query23_v0_original,"Original",54.2925,54292.50,0.90487500,0.0150812500,0.000628385417,542925000,"54.335; 54.25",OK,query23_v0_original.out,True
+query23_v1_reuse_filters,"Reuse filter sets",19.2570,19257.00,0.32095000,0.0053491667,0.000222881944,192570000,"19.224; 19.29",OK,query23_v1_reuse_filters.out,True
+query23_v2_customer_first,"Customer-first item pruning",7.9015,7901.50,0.13169167,0.0021948611,0.000091452546,79015000,"8.046; 7.757",OK,query23_v2_customer_first.out,True
+query23_v3_single_customer_scan,"One customer-sales scan",3.6580,3658.00,0.06096667,0.0010161111,0.000042337963,36580000,"3.846; 3.895; 3.658; 3.634; 3.629",OK,query23_v3_single_customer_scan.out,True
+query23_v4_late_customer_join,"Join customer after grouping",1.4270,1427.00,0.02378333,0.0003963889,0.000016516204,14270000,"1.427; 1.427; 1.438",OK,query23_v4_late_customer_join.out,True
