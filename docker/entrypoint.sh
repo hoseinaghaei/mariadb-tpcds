@@ -23,15 +23,17 @@ note() { printf '          %s\n' "$*"; }
 # A profile only sets defaults; any explicit -e overrides it.
 case "${PROFILE:-quick}" in
   quick)
-    : "${SCALE:=1}" "${PAGE_SIZE:=16}" "${BUFFER_POOL:=2G}" "${SAMPLE_PAGES:=20}"
-    : "${QUERYSET:=tier45}" "${TUNED:=both}" ;;
+    # 32K and sample 160 are the standing configuration (sql/tpcds-tuned.cnf);
+    # stock settings were retired on 2026-10-25 after measuring 2.94x at SF=1.
+    : "${SCALE:=1}" "${PAGE_SIZE:=32}" "${BUFFER_POOL:=2G}" "${SAMPLE_PAGES:=160}"
+    : "${QUERYSET:=tier45}" "${TUNED:=tuned}" ;;
   full)
     # reproduces the shape of report 23: SF=4, 32K pages, 8G pool, sample 160
     : "${SCALE:=4}" "${PAGE_SIZE:=32}" "${BUFFER_POOL:=8G}" "${SAMPLE_PAGES:=160}"
-    : "${QUERYSET:=tier45}" "${TUNED:=both}" ;;
+    : "${QUERYSET:=tier45}" "${TUNED:=tuned}" ;;
   smoke)
-    : "${SCALE:=1}" "${PAGE_SIZE:=16}" "${BUFFER_POOL:=1G}" "${SAMPLE_PAGES:=20}"
-    : "${QUERYSET:=tier45}" "${TUNED:=baseline}" ;;
+    : "${SCALE:=1}" "${PAGE_SIZE:=32}" "${BUFFER_POOL:=1G}" "${SAMPLE_PAGES:=160}"
+    : "${QUERYSET:=tier45}" "${TUNED:=tuned}" ;;
   *) echo "unknown PROFILE: $PROFILE (use quick, full or smoke)" >&2; exit 1 ;;
 esac
 
@@ -236,7 +238,7 @@ check_measured() {   # $1 = tag
 }
 
 case "$TUNED" in
-  baseline) run_one baseline ""; check_measured baseline ;;
+  baseline) run_one baseline ""; check_measured baseline ;;   # stock: retired, kept for comparison
   tuned)    run_one tuned "$TUNING_BLOCK"; check_measured tuned ;;
   both)     run_one baseline ""; check_measured baseline
             run_one tuned "$TUNING_BLOCK"; check_measured tuned ;;

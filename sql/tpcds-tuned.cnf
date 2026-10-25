@@ -1,0 +1,78 @@
+# TPC-DS standing server configuration
+#
+# Adopted 2026-10-25. This replaces the stock settings for all further work:
+# every benchmark, comparison and report from here on uses these values, and
+# results measured against stock settings are superseded.
+#
+# Measured worth, over the 40 tier-4/5 queries:
+#
+#   SF=1, 32K pages   464.5s -> 157.8s   2.94x   (report 24)
+#   SF=4, 32K pages   2403.4s -> ~950s   ~2.5x   (report 23, corrected)
+#
+# At SF=1, 39 of 40 queries improve or stay level and all 40 answers are
+# byte-identical to the stock run. The single regression is q35, by 0.9s.
+#
+# Drop this in alongside sql/tpcds-observability.cnf, or point a standalone
+# instance at it with --defaults-file.
+
+[mysqld]
+
+# --- the single biggest item -------------------------------------------
+# Stock is 16M. TPC-DS materialises multi-million-row intermediates, so at
+# 16M essentially every expensive query spills its temp tables to disk.
+# Worth 2.01x on its own at SF=4 (report 23, run T4).
+#
+# NOTE: this is a limit PER TEMP TABLE, not a global cap. A query building
+# two large intermediates can hold twice this. 1536M suits a serial
+# benchmark on a 16 GB machine; a server taking concurrent analytic
+# sessions needs it scaled down by roughly the session count.
+tmp_table_size                       = 1536M
+max_heap_table_size                  = 1536M
+
+# --- joins --------------------------------------------------------------
+# join_cache_level 8 enables block-nested-loop hash joins (BKAH); mrr is off
+# by default. mrr_cost_based stays off: letting the cost model decide
+# measured 4% slower (report 23, run s5).
+join_cache_level                     = 8
+join_buffer_size                     = 64M
+join_buffer_space_limit              = 256M
+optimizer_switch                     = 'mrr=on,mrr_cost_based=off'
+
+# --- sorting and the Aria page cache ------------------------------------
+# Aria backs MariaDB's on-disk internal temp tables. At 128M it was serving
+# 36M read requests with zero physical reads, so it is doing real work and
+# is left large.
+sort_buffer_size                     = 64M
+aria_pagecache_buffer_size           = 1G
+
+# --- read path ----------------------------------------------------------
+innodb_read_io_threads               = 8
+innodb_read_ahead_threshold          = 24
+innodb_old_blocks_pct                = 25
+
+# --- statistics ---------------------------------------------------------
+# Counts PAGES, not rows, so the stock 20 covers proportionally less of a
+# table as data grows. Worth 37% at SF=4; it COST 9% at SF=1 in an earlier
+# test, so this one is worth re-checking if the dataset changes size.
+innodb_stats_persistent_sample_pages = 160
+
+# --- no MyISAM tables here ----------------------------------------------
+key_buffer_size                      = 16M
+
+# --- page size ----------------------------------------------------------
+# 32K is what every measurement above used. It is FIXED when the data
+# directory is initialised and cannot be changed on an existing datadir --
+# changing it means a rebuild. The live 3306 server is 16K and has not been
+# measured with these settings.
+#
+# innodb_page_size                   = 32K
+
+# --- deliberately NOT set -----------------------------------------------
+# innodb_buffer_pool_dump_pct = 100   measured 26% slower (report 23, T3)
+# use_stat_tables / histograms        measured 13% slower, and does not
+#                                     revert by setting use_stat_tables=never
+# innodb.optimizer_disk_read_ratio    the measured miss ratio is 0.0005, so
+#                                     the 0.02 default is already pessimistic
+#
+# split_materialized is set PER QUERY, not here: it is worth 12x on q59 but
+# costs q23 +54s. See queries/tuned/ and its README.
