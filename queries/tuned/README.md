@@ -1,6 +1,12 @@
-# `queries/tuned/` — the 99 queries, each carrying the settings it needs
+# `queries/tuned/` — the tier 4/5 queries, each carrying the settings it needs
 
-One self-contained `.sql` per query. Run any of them directly:
+The **40** tier-4 and tier-5 queries, one self-contained `.sql` each. These
+are the expensive queries the project compares, and the only ones the
+split-materialisation sweep covered — files for the other 59 would imply a
+measurement that was never taken. The list is read from
+`queries/tiers/04_*.sql` and `05_*.sql`, so it follows a re-ranking.
+
+Run any of them directly:
 
 ```bash
 mariadb -B tpcds < queries/tuned/query59.sql
@@ -34,7 +40,7 @@ SET SESSION optimizer_switch = 'split_materialized=off';
 | q59 | **−138.1s** | one of its two CTE references was re-materialised 7,665 times |
 | q14 | −17.0s | |
 | q2 | −9.5s | |
-| q5 | −8.9s | |
+| q5 | −8.9s | also needs `PIPES_AS_CONCAT`, below |
 | q11 | −5.6s | |
 | q27 | −3.7s | |
 
@@ -69,9 +75,11 @@ run-to-run variation is ±8%, so a single run cannot tell a 1.6s gain from a
 1.6s fluctuation. Choosing the better of two measurements per query is how
 you fit to noise. Together they are worth about 6s of the 777.7s.
 
-**Eighty-five queries never measured.** The split comparison covered tier 4
-and 5 only — 40 of 99. The other 59 carry no split setting because there is
-no measurement, not because one was taken and rejected.
+**Twenty-six measured with no effect.** They were in the sweep and moved by
+less than a second either way, so they carry only the `sql_mode` line.
+
+**The other 59 queries of the 99 are not here at all**, by design: they were
+never measured, and a file asserting a default would imply otherwise.
 
 ## Provenance and caveat
 

@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
-"""Generate queries/tuned/ — one self-contained .sql per query, carrying any
-per-query optimizer setting that was measured to help.
+"""Generate queries/tuned/ — one self-contained .sql per TIER 4/5 query,
+carrying any per-query optimizer setting that was measured to help.
+
+Tier 4 and 5 are the 40 expensive queries of the 99, and the only ones this
+project compares.  They are also the only ones the split-materialisation
+sweep covered, so generating files for the other 59 would imply a measurement
+that was never taken.  The list is read from the generated tier files, not
+hardcoded, so it follows a re-ranking.
 
 At present the only such setting is split_materialized.  q59 referenced its
 CTE twice and MariaDB re-materialised one reference 7,665 times, once per
@@ -73,7 +79,18 @@ def header(n):
     return note + pre
 
 
+def tier45():
+    ns = set()
+    for pat in (f"{REPO}/queries/tiers/04_*.sql", f"{REPO}/queries/tiers/05_*.sql"):
+        for f in glob.glob(pat):
+            ns |= {int(m) for m in re.findall(r'query(\d+)', open(f).read())}
+    if not ns:
+        raise SystemExit("could not read queries/tiers/04_*.sql and 05_*.sql")
+    return ns
+
+
 def main():
+    want = tier45()
     os.makedirs(DST, exist_ok=True)
     for old in glob.glob(f"{DST}/query*.sql"):
         os.remove(old)
@@ -82,15 +99,17 @@ def main():
     for path in sorted(glob.glob(f"{SRC}/query*.sql"),
                        key=lambda p: int(re.search(r'query(\d+)', p).group(1))):
         n = int(re.search(r'query(\d+)', path).group(1))
+        if n not in want:
+            continue
         body = open(path).read()
         open(f"{DST}/query{n}.sql", 'w').write(header(n) + body)
         written += 1
 
-    print(f"wrote {written} files to queries/tuned/")
+    print(f"wrote {written} files to queries/tuned/ (tier 4+5 only)")
     print(f"  split_materialized=off applied to {len(APPLY)}: {APPLY}")
     print(f"  left default, measured worse ({len(WORSE)}): {WORSE}")
     print(f"  left default, inside noise ({len(MARGINAL)}): {MARGINAL}")
-    print(f"  untouched (no measurement or no effect): "
+    print(f"  measured, no effect: "
           f"{written - len(APPLY) - len(WORSE) - len(MARGINAL)}")
 
 
