@@ -1,51 +1,53 @@
+-- query31
+-- source: queries/optimized/q31/query31_BEST.sql
+
 SET SESSION sql_mode = CONCAT(@@sql_mode, ',IGNORE_SPACE,PIPES_AS_CONCAT');
 
-with ss as
- (select ca_county,d_qoy, d_year,sum(ss_ext_sales_price) as store_sales
- from store_sales,date_dim,customer_address
- where ss_sold_date_sk = d_date_sk
-  and ss_addr_sk=ca_address_sk
- group by ca_county,d_qoy, d_year),
- ws as
- (select ca_county,d_qoy, d_year,sum(ws_ext_sales_price) as web_sales
- from web_sales,date_dim,customer_address
- where ws_sold_date_sk = d_date_sk
-  and ws_bill_addr_sk=ca_address_sk
- group by ca_county,d_qoy, d_year)
- select 
-        ss1.ca_county
-       ,ss1.d_year
-       ,ws2.web_sales/ws1.web_sales web_q1_q2_increase
-       ,ss2.store_sales/ss1.store_sales store_q1_q2_increase
-       ,ws3.web_sales/ws2.web_sales web_q2_q3_increase
-       ,ss3.store_sales/ss2.store_sales store_q2_q3_increase
- from
-        ss ss1
-       ,ss ss2
-       ,ss ss3
-       ,ws ws1
-       ,ws ws2
-       ,ws ws3
- where
-    ss1.d_qoy = 1
-    and ss1.d_year = 2001
-    and ss1.ca_county = ss2.ca_county
-    and ss2.d_qoy = 2
-    and ss2.d_year = 2001
- and ss2.ca_county = ss3.ca_county
-    and ss3.d_qoy = 3
-    and ss3.d_year = 2001
-    and ss1.ca_county = ws1.ca_county
-    and ws1.d_qoy = 1
-    and ws1.d_year = 2001
-    and ws1.ca_county = ws2.ca_county
-    and ws2.d_qoy = 2
-    and ws2.d_year = 2001
-    and ws1.ca_county = ws3.ca_county
-    and ws3.d_qoy = 3
-    and ws3.d_year =2001
-    and case when ws1.web_sales > 0 then ws2.web_sales/ws1.web_sales else null end 
-       > case when ss1.store_sales > 0 then ss2.store_sales/ss1.store_sales else null end
-    and case when ws2.web_sales > 0 then ws3.web_sales/ws2.web_sales else null end
-       > case when ss2.store_sales > 0 then ss3.store_sales/ss2.store_sales else null end
- order by web_q2_q3_increase;
+WITH ss_quarter AS (
+    SELECT ca_county, d_qoy, d_year,
+           SUM(ss_ext_sales_price) AS store_sales
+    FROM store_sales
+    JOIN date_dim ON ss_sold_date_sk = d_date_sk
+    JOIN customer_address ON ss_addr_sk = ca_address_sk
+    WHERE d_year = 2001 AND d_qoy IN (1, 2, 3)
+    GROUP BY ca_county, d_qoy, d_year
+),
+ws_quarter AS (
+    SELECT ca_county, d_qoy, d_year,
+           SUM(ws_ext_sales_price) AS web_sales
+    FROM web_sales
+    JOIN date_dim ON ws_sold_date_sk = d_date_sk
+    JOIN customer_address ON ws_bill_addr_sk = ca_address_sk
+    WHERE d_year = 2001 AND d_qoy IN (1, 2, 3)
+    GROUP BY ca_county, d_qoy, d_year
+),
+ss AS (
+    SELECT ca_county, d_year,
+           MAX(CASE WHEN d_qoy = 1 THEN store_sales END) AS q1,
+           MAX(CASE WHEN d_qoy = 2 THEN store_sales END) AS q2,
+           MAX(CASE WHEN d_qoy = 3 THEN store_sales END) AS q3
+    FROM ss_quarter
+    GROUP BY ca_county, d_year
+    HAVING COUNT(DISTINCT d_qoy) = 3
+),
+ws AS (
+    SELECT ca_county, d_year,
+           MAX(CASE WHEN d_qoy = 1 THEN web_sales END) AS q1,
+           MAX(CASE WHEN d_qoy = 2 THEN web_sales END) AS q2,
+           MAX(CASE WHEN d_qoy = 3 THEN web_sales END) AS q3
+    FROM ws_quarter
+    GROUP BY ca_county, d_year
+    HAVING COUNT(DISTINCT d_qoy) = 3
+)
+SELECT ss.ca_county, ss.d_year,
+       ws.q2 / ws.q1 AS web_q1_q2_increase,
+       ss.q2 / ss.q1 AS store_q1_q2_increase,
+       ws.q3 / ws.q2 AS web_q2_q3_increase,
+       ss.q3 / ss.q2 AS store_q2_q3_increase
+FROM ss
+JOIN ws ON ss.ca_county = ws.ca_county AND ss.d_year = ws.d_year
+WHERE CASE WHEN ws.q1 > 0 THEN ws.q2 / ws.q1 ELSE NULL END
+        > CASE WHEN ss.q1 > 0 THEN ss.q2 / ss.q1 ELSE NULL END
+  AND CASE WHEN ws.q2 > 0 THEN ws.q3 / ws.q2 ELSE NULL END
+        > CASE WHEN ss.q2 > 0 THEN ss.q3 / ss.q2 ELSE NULL END
+ORDER BY web_q2_q3_increase;

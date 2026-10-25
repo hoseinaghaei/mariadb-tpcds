@@ -1,0 +1,20 @@
+  q2    optimized  orig   13.09s  tuned    4.90s   IDENTICAL
+  q4    optimized  orig   61.82s  tuned   18.36s   IDENTICAL
+  q5    optimized  orig   32.86s  tuned    4.00s   IDENTICAL
+  q21   optimized  orig    2.12s  tuned    0.61s   IDENTICAL
+  q22   optimized  orig   28.54s  tuned   22.93s   IDENTICAL
+  q27   optimized  orig    5.23s  tuned    6.42s   IDENTICAL
+  q31   optimized  orig    1.21s  tuned    1.00s   IDENTICAL
+  q39   optimized  orig    3.22s  tuned    1.17s   IDENTICAL
+  q43   optimized  orig    2.52s  tuned    1.90s   IDENTICAL
+  q47   optimized  orig   27.53s  tuned    9.14s   IDENTICAL
+  q51   optimized  orig   26.93s  tuned   22.29s   IDENTICAL
+  q54   optimized  orig    6.29s  tuned    0.23s   ** EMPTY/ERROR **
+  q59   optimized  orig  162.49s  tuned    4.44s   IDENTICAL
+  q67   optimized  orig   35.26s  tuned   26.46s   IDENTICAL
+  q72   optimized  orig   40.11s  tuned   10.13s   IDENTICAL
+  q78   optimized  orig   28.10s  tuned   19.88s   IDENTICAL
+  q88   optimized  orig    0.93s  tuned    0.15s   IDENTICAL
+  q97   optimized  orig    6.85s  tuned    7.69s   IDENTICAL
+
+  identical 17   row-order-only 0   DIFFERS 0   errors 1

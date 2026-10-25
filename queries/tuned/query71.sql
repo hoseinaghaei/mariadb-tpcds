@@ -1,3 +1,6 @@
+-- query71
+-- source: queries/mariadb/query71.sql  (no optimized version exists)
+
 SET SESSION sql_mode = CONCAT(@@sql_mode, ',IGNORE_SPACE,PIPES_AS_CONCAT');
 
 select i_brand_id brand_id, i_brand brand,t_hour,t_minute,

@@ -1,6 +1,8 @@
--- query66 concatenates with the ANSI '||' operator, so it needs
--- PIPES_AS_CONCAT: without it MariaDB reads '||' as logical OR and
--- this query returns the wrong number of rows, silently.
+-- query66
+-- source: queries/mariadb/query66.sql  (no optimized version exists)
+-- needs PIPES_AS_CONCAT: it concatenates with ANSI '||', and
+-- without the mode MariaDB reads that as OR and returns wrong rows
+
 SET SESSION sql_mode = CONCAT(@@sql_mode, ',IGNORE_SPACE,PIPES_AS_CONCAT');
 
 select   

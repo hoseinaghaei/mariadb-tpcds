@@ -1,3 +1,6 @@
+-- query35
+-- source: queries/mariadb/query35.sql  (its optimized file is index-only, no query to substitute)
+
 SET SESSION sql_mode = CONCAT(@@sql_mode, ',IGNORE_SPACE,PIPES_AS_CONCAT');
 
 select   

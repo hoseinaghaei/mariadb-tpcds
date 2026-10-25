@@ -1,4 +1,6 @@
--- query78: split materialisation left ON deliberately -- disabling it measured +13.9s (slower).
+-- query78
+-- source: queries/optimized/q78/query78_BEST.sql
+-- split materialisation left ON: disabling it measured +13.9s (slower)
 
 SET SESSION sql_mode = CONCAT(@@sql_mode, ',IGNORE_SPACE,PIPES_AS_CONCAT');
 
@@ -11,7 +13,7 @@ with ws as
    from web_sales
    left join web_returns on wr_order_number=ws_order_number and ws_item_sk=wr_item_sk
    join date_dim on ws_sold_date_sk = d_date_sk
-   where wr_order_number is null
+   where wr_order_number is null and d_year = 2001
    group by d_year, ws_item_sk, ws_bill_customer_sk
    ),
 cs as
@@ -23,7 +25,7 @@ cs as
    from catalog_sales
    left join catalog_returns on cr_order_number=cs_order_number and cs_item_sk=cr_item_sk
    join date_dim on cs_sold_date_sk = d_date_sk
-   where cr_order_number is null
+   where cr_order_number is null and d_year = 2001
    group by d_year, cs_item_sk, cs_bill_customer_sk
    ),
 ss as
@@ -35,7 +37,7 @@ ss as
    from store_sales
    left join store_returns on sr_ticket_number=ss_ticket_number and ss_item_sk=sr_item_sk
    join date_dim on ss_sold_date_sk = d_date_sk
-   where sr_ticket_number is null
+   where sr_ticket_number is null and d_year = 2001
    group by d_year, ss_item_sk, ss_customer_sk
    )
  select 

@@ -1,9 +1,8 @@
--- query2: split materialisation disabled for this query.
--- Measured -9.5s at SF=4 / 32K / tier 4+5 (see queries/tuned/README.md).
--- The setting is session-scoped, so it affects only this query.
+-- query2
+-- source: queries/optimized/q2/query2_BEST.sql
+-- split materialisation OFF: measured -9.5s at SF=4
 
 SET SESSION sql_mode = CONCAT(@@sql_mode, ',IGNORE_SPACE,PIPES_AS_CONCAT');
-
 SET SESSION optimizer_switch = 'split_materialized=off';
 
 with wscs as
@@ -11,11 +10,23 @@ with wscs as
         ,sales_price
   from (select ws_sold_date_sk sold_date_sk
               ,ws_ext_sales_price sales_price
-        from web_sales 
+        from web_sales
+        where ws_sold_date_sk between (select min(d_date_sk) from date_dim
+                        where d_week_seq in (select d_week_seq from date_dim
+                                             where d_year in (2000, 2000+1)))
+                 and (select max(d_date_sk) from date_dim
+                        where d_week_seq in (select d_week_seq from date_dim
+                                             where d_year in (2000, 2000+1)))
         union all
         select cs_sold_date_sk sold_date_sk
               ,cs_ext_sales_price sales_price
-        from catalog_sales) as TBL_1),
+        from catalog_sales
+        where cs_sold_date_sk between (select min(d_date_sk) from date_dim
+                        where d_week_seq in (select d_week_seq from date_dim
+                                             where d_year in (2000, 2000+1)))
+                 and (select max(d_date_sk) from date_dim
+                        where d_week_seq in (select d_week_seq from date_dim
+                                             where d_year in (2000, 2000+1)))) as TBL_1),
  wswscs as 
  (select d_week_seq,
         sum(case when (d_day_name='Sunday') then sales_price else null end) sun_sales,

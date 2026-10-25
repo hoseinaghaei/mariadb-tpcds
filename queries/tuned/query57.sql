@@ -1,4 +1,6 @@
--- query57: split materialisation left ON deliberately -- disabling it measured +3.2s (slower).
+-- query57
+-- source: queries/mariadb/query57.sql  (no optimized version exists)
+-- split materialisation left ON: disabling it measured +3.2s (slower)
 
 SET SESSION sql_mode = CONCAT(@@sql_mode, ',IGNORE_SPACE,PIPES_AS_CONCAT');
 

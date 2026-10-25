@@ -1,3 +1,6 @@
+-- query77
+-- source: queries/mariadb/query77.sql  (no optimized version exists)
+
 SET SESSION sql_mode = CONCAT(@@sql_mode, ',IGNORE_SPACE,PIPES_AS_CONCAT');
 
 select * from (

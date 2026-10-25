@@ -1,9 +1,8 @@
--- query11: split materialisation disabled for this query.
--- Measured -5.6s at SF=4 / 32K / tier 4+5 (see queries/tuned/README.md).
--- The setting is session-scoped, so it affects only this query.
+-- query11
+-- source: queries/mariadb/query11.sql  (no optimized version exists)
+-- split materialisation OFF: measured -5.6s at SF=4
 
 SET SESSION sql_mode = CONCAT(@@sql_mode, ',IGNORE_SPACE,PIPES_AS_CONCAT');
-
 SET SESSION optimizer_switch = 'split_materialized=off';
 
 with year_total as (

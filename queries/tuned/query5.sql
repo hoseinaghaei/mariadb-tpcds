@@ -1,12 +1,10 @@
--- query5: split materialisation disabled for this query.
--- Measured -8.9s at SF=4 / 32K / tier 4+5 (see queries/tuned/README.md).
--- The setting is session-scoped, so it affects only this query.
+-- query5
+-- source: queries/optimized/q5/query5_BEST.sql
+-- split materialisation OFF: measured -8.9s at SF=4
+-- needs PIPES_AS_CONCAT: it concatenates with ANSI '||', and
+-- without the mode MariaDB reads that as OR and returns wrong rows
 
--- query5 concatenates with the ANSI '||' operator, so it needs
--- PIPES_AS_CONCAT: without it MariaDB reads '||' as logical OR and
--- this query returns the wrong number of rows, silently.
 SET SESSION sql_mode = CONCAT(@@sql_mode, ',IGNORE_SPACE,PIPES_AS_CONCAT');
-
 SET SESSION optimizer_switch = 'split_materialized=off';
 
 select * from (
@@ -24,6 +22,8 @@ with ssr as
             cast(0 as decimal(7,2)) as return_amt,
             cast(0 as decimal(7,2)) as net_loss
     from store_sales
+    JOIN date_dim filtered_date ON ss_sold_date_sk = filtered_date.d_date_sk
+    WHERE filtered_date.d_date BETWEEN CAST('1998-08-28' AS DATE) AND (CAST('1998-08-28' AS DATE) + INTERVAL 14 DAY)
     union all
     select sr_store_sk as store_sk,
            sr_returned_date_sk as date_sk,
@@ -32,6 +32,8 @@ with ssr as
            sr_return_amt as return_amt,
            sr_net_loss as net_loss
     from store_returns
+    JOIN date_dim filtered_date ON sr_returned_date_sk = filtered_date.d_date_sk
+    WHERE filtered_date.d_date BETWEEN CAST('1998-08-28' AS DATE) AND (CAST('1998-08-28' AS DATE) + INTERVAL 14 DAY)
    ) salesreturns,
      date_dim,
      store
@@ -55,6 +57,8 @@ with ssr as
             cast(0 as decimal(7,2)) as return_amt,
             cast(0 as decimal(7,2)) as net_loss
     from catalog_sales
+    JOIN date_dim filtered_date ON cs_sold_date_sk = filtered_date.d_date_sk
+    WHERE filtered_date.d_date BETWEEN CAST('1998-08-28' AS DATE) AND (CAST('1998-08-28' AS DATE) + INTERVAL 14 DAY)
     union all
     select cr_catalog_page_sk as page_sk,
            cr_returned_date_sk as date_sk,
@@ -63,6 +67,8 @@ with ssr as
            cr_return_amount as return_amt,
            cr_net_loss as net_loss
     from catalog_returns
+    JOIN date_dim filtered_date ON cr_returned_date_sk = filtered_date.d_date_sk
+    WHERE filtered_date.d_date BETWEEN CAST('1998-08-28' AS DATE) AND (CAST('1998-08-28' AS DATE) + INTERVAL 14 DAY)
    ) salesreturns,
      date_dim,
      catalog_page
@@ -86,6 +92,8 @@ with ssr as
             cast(0 as decimal(7,2)) as return_amt,
             cast(0 as decimal(7,2)) as net_loss
     from web_sales
+    JOIN date_dim filtered_date ON ws_sold_date_sk = filtered_date.d_date_sk
+    WHERE filtered_date.d_date BETWEEN CAST('1998-08-28' AS DATE) AND (CAST('1998-08-28' AS DATE) + INTERVAL 14 DAY)
     union all
     select ws_web_site_sk as wsr_web_site_sk,
            wr_returned_date_sk as date_sk,
@@ -96,6 +104,8 @@ with ssr as
     from web_returns left outer join web_sales on
          ( wr_item_sk = ws_item_sk
            and wr_order_number = ws_order_number)
+    JOIN date_dim filtered_date ON wr_returned_date_sk = filtered_date.d_date_sk
+    WHERE filtered_date.d_date BETWEEN CAST('1998-08-28' AS DATE) AND (CAST('1998-08-28' AS DATE) + INTERVAL 14 DAY)
    ) salesreturns,
      date_dim,
      web_site

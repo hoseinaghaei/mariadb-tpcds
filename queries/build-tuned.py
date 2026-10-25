@@ -1,82 +1,165 @@
 #!/usr/bin/env python3
-"""Generate queries/tuned/ — one self-contained .sql per TIER 4/5 query,
-carrying any per-query optimizer setting that was measured to help.
+"""Generate queries/tuned/ — the tier-4/5 queries as we actually run them.
 
-Tier 4 and 5 are the 40 expensive queries of the 99, and the only ones this
-project compares.  They are also the only ones the split-materialisation
-sweep covered, so generating files for the other 59 would imply a measurement
-that was never taken.  The list is read from the generated tier files, not
+Each file is self-contained and uses, in order of preference:
+
+  1. the team's optimized version of that query, where one exists
+  2. otherwise the adapted TPC-DS original from queries/mariadb/
+
+plus the settings that query needs: sql_mode always, and
+split_materialized=off on the six queries measured to gain from it.
+
+Tier 4 and 5 are the 40 expensive queries of the 99 and the only ones this
+project compares.  The list is read from the generated tier files, not
 hardcoded, so it follows a re-ranking.
 
-At present the only such setting is split_materialized.  q59 referenced its
-CTE twice and MariaDB re-materialised one reference 7,665 times, once per
-outer row; turning the strategy off for that query takes it from 151.8s to
-13.7s.  Nine other queries also improve, four get worse, and 26 are
-unaffected, so the setting is applied per query rather than globally:
+On split_materialized: it is worth 12x on q59, which is structural (one of
+q59's two CTE references was re-materialised 7,665 times).  Whether applying
+it per query beats applying it globally is NOT established -- two interleaved
+passes put per-query at +4.8% and -8.9% against global, so the two are
+indistinguishable in total on this host.  It is set per query because the
+per-query evidence is strong, not because the totals favour it.
 
-    split off everywhere   867.5s
-    split on everywhere    971.4s
-    per query              777.7s   <- what these files produce
-
-Measured on 32K pages / SF=4 / 8G pool / sample 160 under the T1 tuning.
 Re-generate with:  python3 queries/build-tuned.py
 """
-import os, re, glob, json
+import os, re, glob
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = f"{REPO}/queries/mariadb"
+OPT = f"{REPO}/queries/optimized"
 DST = f"{REPO}/queries/tuned"
 
 NOSPLIT = "SET SESSION optimizer_switch = 'split_materialized=off';"
-
-# Every file gets this so it is correct when run on its own.  TPC-DS uses the
-# ANSI '||' for string concatenation in q5, q66, q80 and q84; without
-# PIPES_AS_CONCAT MariaDB reads it as logical OR, which silently returns 0/1
-# in place of the concatenated id -- q5 and q80 then give 7 rows instead of
-# 100.  IGNORE_SPACE allows the function-name spacing the generated SQL uses.
+# Every file sets this so it is correct run on its own.  TPC-DS concatenates
+# with ANSI '||' in q5, q66, q80 and q84; without PIPES_AS_CONCAT MariaDB
+# reads '||' as logical OR and those queries silently return the wrong rows --
+# q5 gives 7 instead of 100.
 SQLMODE = ("SET SESSION sql_mode = "
            "CONCAT(@@sql_mode, ',IGNORE_SPACE,PIPES_AS_CONCAT');")
 PIPES = (5, 66, 80, 84)
 
-# Measured delta in seconds when split materialisation is turned OFF
-# (negative = turning it off is faster).  From 32k-s0-t1baseline vs
-# 32k-t6-nosplit, tier 4+5, SF=4.
+# The team's chosen optimized source per query.  A list means the query has
+# several statements and each part has its own file (q14 is two halves).
+OPTIMIZED = {
+    2:  "q2/query2_BEST.sql",
+    4:  "q4/query4_BEST.sql",
+    5:  "q5/query5_BEST.sql",
+    14: ["Aysha/q14/Query-14-A/q14_A_Optimized.sql",
+         "Aysha/q14/Query-14-B/Q14-B-Optimized.sql"],
+    21: "Aysha/q21/query21_optimized.sql",
+    22: "q22/query22_BEST.sql",
+    27: "Aysha/q27/q27_Optimized.sql",
+    31: "q31/query31_BEST.sql",
+    39: "q39/query39_BEST.sql",
+    43: "Aysha/q43/q43_Optimized.sql",
+    47: "Aysha/q47/q47_Optimized_3secs.sql",
+    51: "q51/query51_BEST.sql",
+    54: "Aysha/q54/q54_Optimized_V2.sql",
+    59: "q59-sf4/query59_BEST.sql",      # the SF=4 rewrite, 38.9x
+    67: "Aysha/q67/q67-v2-Optimized.sql",
+    72: "q72/query72_BEST.sql",
+    78: "q78/query78_BEST.sql",
+    88: "q88/query88_BEST.sql",
+    97: "Aysha/q97/query97_BEST.sql",
+}
+
+# q35 and q38 have "optimized" files containing only CREATE INDEX -- no query
+# to substitute.  Their indexes are already in sql/14_contributed_indexes.sql.
+INDEX_ONLY = {35, 38}
+
 DELTA = {59: -138.1, 14: -17.0, 2: -9.5, 5: -8.9, 11: -5.6, 27: -3.7,
          68: -1.9, 72: -1.6, 46: -1.6, 22: -1.3,
          57: +3.2, 78: +13.9, 4: +14.6, 23: +54.0}
-
-# Only act where the measurement is larger than this host's run-to-run noise.
-# The 1-2s cases (q68, q72, q46, q22) are inside it and are left alone: a
-# single run cannot tell a 1.6s gain from a 1.6s fluctuation.
 THRESHOLD = 3.0
 APPLY = sorted(q for q, d in DELTA.items() if d <= -THRESHOLD)
-MARGINAL = sorted(q for q, d in DELTA.items() if -THRESHOLD < d < 0)
 WORSE = sorted(q for q, d in DELTA.items() if d > 0)
+MARGINAL = sorted(q for q, d in DELTA.items() if -THRESHOLD < d < 0)
 
 
-def header(n):
-    pre = ""
-    if n in PIPES:
-        pre += (f"-- query{n} concatenates with the ANSI '||' operator, so it needs\n"
-                f"-- PIPES_AS_CONCAT: without it MariaDB reads '||' as logical OR and\n"
-                f"-- this query returns the wrong number of rows, silently.\n")
-    pre += f"{SQLMODE}\n\n"
+def correct(n, sql):
+    """Fix defects in the optimized sources on the way out, leaving the
+       files under queries/optimized/ untouched."""
+    notes = []
+    if n == 14 and "i_braknd_id" in sql:
+        # transposed letters: part B has never executed
+        sql = sql.replace("i_braknd_id", "i_brand_id")
+        notes.append("typo i_braknd_id -> i_brand_id (part B would not run at all)")
+    if n == 14 and "as brand_id," in sql:
+        # Part B collapses the ty_/ly_ column pairs: TPC-DS emits channel,
+        # brand, class and category TWICE (once per year, 12 columns), this
+        # emits them once plus both years' figures (8 columns).  The join
+        # forces ty_ == ly_ on those four -- verified against the original's
+        # own output -- so expanding them back is faithful.
+        sql = sql.replace(
+            """select 'store' as channel,
+       weekly_sales.i_brand_id    as brand_id,
+       weekly_sales.i_class_id    as class_id,
+       weekly_sales.i_category_id as category_id,
+       weekly_sales.this_year_sales,
+       weekly_sales.this_year_number_of_sales,
+       weekly_sales.last_year_sales,
+       weekly_sales.last_year_number_of_sales""",
+            """select 'store' as ty_channel,
+       weekly_sales.i_brand_id    as ty_brand,
+       weekly_sales.i_class_id    as ty_class,
+       weekly_sales.i_category_id as ty_category,
+       weekly_sales.this_year_sales as ty_sales,
+       weekly_sales.this_year_number_of_sales as ty_number_sales,
+       'store' as ly_channel,
+       weekly_sales.i_brand_id    as ly_brand,
+       weekly_sales.i_class_id    as ly_class,
+       weekly_sales.i_category_id as ly_category,
+       weekly_sales.last_year_sales as ly_sales,
+       weekly_sales.last_year_number_of_sales as ly_number_sales""")
+        # the ORDER BY referenced the aliases just renamed
+        sql = sql.replace("order by brand_id, class_id, category_id",
+                          "order by ty_brand, ty_class, ty_category")
+        notes.append("part B emitted 8 columns; TPC-DS requires 12 (the ty_/ly_ "
+                     "key columns are repeated per year) - expanded, and its "
+                     "ORDER BY updated to the new aliases")
+    if n == 47 and re.search(r'SELECT\s+\*\s*\n\s*FROM\s+v1', sql, re.I):
+        # its v1 declares sum_sales before avg_monthly_sales, so SELECT *
+        # emits columns 7 and 8 transposed against the TPC-DS select list
+        sql = re.sub(
+            r'SELECT\s+\*\s*\n\s*FROM\s+v1',
+            "SELECT i_category, i_brand, s_store_name, s_company_name,\n"
+            "       d_year, d_moy, avg_monthly_sales, sum_sales, psum, nsum\n"
+            "FROM v1", sql, flags=re.I)
+        notes.append("named the select list: SELECT * had sum_sales and "
+                     "avg_monthly_sales transposed")
+    return sql, notes
 
-    if n in APPLY:
-        return (f"-- query{n}: split materialisation disabled for this query.\n"
-                f"-- Measured {DELTA[n]:+.1f}s at SF=4 / 32K / tier 4+5 "
-                f"(see queries/tuned/README.md).\n"
-                f"-- The setting is session-scoped, so it affects only this query.\n\n"
-                f"{pre}{NOSPLIT}\n\n")
-    note = ""
-    if n in WORSE:
-        note = (f"-- query{n}: split materialisation left ON deliberately -- "
-                f"disabling it measured {DELTA[n]:+.1f}s (slower).\n\n")
-    elif n in MARGINAL:
-        note = (f"-- query{n}: disabling split materialisation measured "
-                f"{DELTA[n]:+.1f}s, inside this host's run-to-run noise,\n"
-                f"-- so it is left at the default.\n\n")
-    return note + pre
+
+def clean(sql):
+    """Drop a leading EXPLAIN/ANALYZE and index DDL; keep SET and temp tables.
+
+    Comments are stripped BEFORE splitting on ';'.  A comment containing a
+    semicolon -- q4 opens with "-- Requires unique customer.c_customer_id;
+    validate that assumption separately." -- otherwise splits mid-comment and
+    the tail survives as stray text ahead of the query.
+    """
+    sql = "\n".join(l for l in sql.splitlines()
+                    if not l.strip().startswith('--'))
+    out, dropped = [], []
+    for st in sql.split(';'):
+        body = st.strip()
+        if not body:
+            continue
+        head = body.split(None, 1)[0].lower()
+        # index DDL and ANALYZE TABLE are maintenance, not the query.  Left in,
+        # ANALYZE TABLE prints its own Table/Op/Msg_type/Msg_text rows into the
+        # result set, which looks like the query returning extra rows.
+        if head in ('create', 'drop') and re.search(r'\bindex\b', body, re.I):
+            dropped.append(re.sub(r'\s+', ' ', body)[:60])
+            continue
+        if re.match(r'analyze\s+(table|local|no_write_to_binlog)', body, re.I):
+            dropped.append(re.sub(r'\s+', ' ', body)[:60])
+            continue
+        body = re.sub(r'^\s*(analyze\s+format\s*=\s*json|explain\s+analyze|explain)\s+',
+                      '', body, flags=re.I).strip()
+        if body:
+            out.append(body)
+    return ";\n".join(out) + ";\n", dropped
 
 
 def tier45():
@@ -95,22 +178,63 @@ def main():
     for old in glob.glob(f"{DST}/query*.sql"):
         os.remove(old)
 
-    written = 0
-    for path in sorted(glob.glob(f"{SRC}/query*.sql"),
-                       key=lambda p: int(re.search(r'query(\d+)', p).group(1))):
-        n = int(re.search(r'query(\d+)', path).group(1))
-        if n not in want:
-            continue
-        body = open(path).read()
-        open(f"{DST}/query{n}.sql", 'w').write(header(n) + body)
-        written += 1
+    used_opt, used_orig, all_notes = [], [], []
+    for n in sorted(want):
+        src = OPTIMIZED.get(n)
+        notes = []
+        if src and n not in INDEX_ONLY:
+            paths = src if isinstance(src, list) else [src]
+            parts = []
+            for rel in paths:
+                fixed, nt = correct(n, open(f"{OPT}/{rel}").read())
+                notes += nt
+                body, dropped = clean(fixed)
+                parts.append(body)
+                if dropped:
+                    notes.append("removed index DDL: " + "; ".join(dropped))
+            sql = "\n".join(parts)
+            origin = ", ".join(f"queries/optimized/{p}" for p in paths)
+            used_opt.append(n)
+        else:
+            sql = open(f"{SRC}/query{n}.sql").read().rstrip()
+            sql += ("" if sql.endswith(';') else ';') + "\n"
+            why = ("its optimized file is index-only, no query to substitute"
+                   if n in INDEX_ONLY else "no optimized version exists")
+            origin = f"queries/mariadb/query{n}.sql  ({why})"
+            used_orig.append(n)
 
-    print(f"wrote {written} files to queries/tuned/ (tier 4+5 only)")
-    print(f"  split_materialized=off applied to {len(APPLY)}: {APPLY}")
-    print(f"  left default, measured worse ({len(WORSE)}): {WORSE}")
-    print(f"  left default, inside noise ({len(MARGINAL)}): {MARGINAL}")
-    print(f"  measured, no effect: "
-          f"{written - len(APPLY) - len(WORSE) - len(MARGINAL)}")
+        h = [f"-- query{n}", f"-- source: {origin}"]
+        for note in notes:
+            h.append(f"-- correction: {note}")
+        if n in APPLY:
+            h.append(f"-- split materialisation OFF: measured {DELTA[n]:+.1f}s at SF=4")
+        elif n in WORSE:
+            h.append(f"-- split materialisation left ON: disabling it measured "
+                     f"{DELTA[n]:+.1f}s (slower)")
+        elif n in MARGINAL:
+            h.append(f"-- split materialisation at default: {DELTA[n]:+.1f}s is "
+                     f"inside this host's noise")
+        if n in PIPES:
+            h.append("-- needs PIPES_AS_CONCAT: it concatenates with ANSI '||', and")
+            h.append("-- without the mode MariaDB reads that as OR and returns wrong rows")
+
+        body = "\n".join(h) + "\n\n" + SQLMODE + "\n"
+        if n in APPLY:
+            body += NOSPLIT + "\n"
+        body += "\n" + sql
+        open(f"{DST}/query{n}.sql", 'w').write(body)
+        if notes:
+            all_notes.append((n, notes))
+
+    print(f"wrote {len(want)} files to queries/tuned/ (tier 4+5)")
+    print(f"  team's optimized version : {len(used_opt):>2}  {used_opt}")
+    print(f"  TPC-DS original          : {len(used_orig):>2}  {used_orig}")
+    print(f"  split_materialized=off   : {len(APPLY):>2}  {APPLY}")
+    if all_notes:
+        print("  corrections applied:")
+        for n, nt in all_notes:
+            for x in nt:
+                print(f"    q{n}: {x}")
 
 
 main()

@@ -1,5 +1,6 @@
--- query46: disabling split materialisation measured -1.6s, inside this host's run-to-run noise,
--- so it is left at the default.
+-- query46
+-- source: queries/mariadb/query46.sql  (no optimized version exists)
+-- split materialisation at default: -1.6s is inside this host's noise
 
 SET SESSION sql_mode = CONCAT(@@sql_mode, ',IGNORE_SPACE,PIPES_AS_CONCAT');
 

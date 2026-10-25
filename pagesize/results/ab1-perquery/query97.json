@@ -1,0 +1,14 @@
+{
+ "query": 97,
+ "tag": "ab1-perquery",
+ "scale": 4,
+ "page_kb": 32,
+ "sample_pages": 160,
+ "seconds": 5.8,
+ "buffer_pool_bytes": 8589934592,
+ "tmp_table_size": 1610612736,
+ "rows": 1,
+ "md5": "87105c5b7a482280298bdf1e391cf73e",
+ "md5_sorted": "ea0e04ef71c9944902c64e67724ccbf4",
+ "status": "OK"
+}
