@@ -77,10 +77,9 @@ apply the expansion by hand.
 (The original also orders by `channel` first. Part B is store-only, so
 channel is constant and omitting it changes nothing.)
 
-**Worth it:** part A already matched the original exactly and is much faster.
-Part B's timing is still being verified — the 19.9s we measured earlier was
-taken while part B was erroring, so it only timed part A and is not a valid
-figure for the pair.
+**Worth it:** with all three fixes, q14 verifies **byte-for-byte identical**
+to the original and runs **191.7s → 27.9s at SF=4 — 6.9x**. Both parts, both
+result sets. This is the first time part B has produced a result at all.
 
 ---
 
