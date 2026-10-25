@@ -1,0 +1,3 @@
+﻿"Version","Criterion","Seconds","Milliseconds","Status","OutputFile","SameAsOriginal"
+"query74_v0_original","Original","10.443","10443","OK","query74_v0_original.out","True"
+"query74_v1_pivot_range","Pivot + date-key range","6.077","6077","OK","query74_v1_pivot_range.out","True"

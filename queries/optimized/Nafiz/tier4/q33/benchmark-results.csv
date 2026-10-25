@@ -1,0 +1,3 @@
+﻿"Version","Criterion","Seconds","Milliseconds","Status","OutputFile","SameAsOriginal"
+"query33_v0_original","Original","2.899","2899","OK","query33_v0_original.out","True"
+"query33_v1_date_range","Date-key range filter","0.171","171","OK","query33_v1_date_range.out","True"

@@ -1,0 +1,5 @@
+﻿"Version","Criterion","Seconds","Milliseconds","Status","OutputFile","SameAsOriginal"
+"query57_v0_original","Original","8.377","8377","OK","query57_v0_original.out","True"
+"query57_v1_window","Window LAG/LEAD","2.432","2432","OK","query57_v1_window.out","True"
+"query57_v2_window_range","Date-key range filter","1.879","1878","OK","query57_v2_window_range.out","True"
+"query57_v3_datefirst","Date-first join hint","1.8","1799","OK","query57_v3_datefirst.out","True"
