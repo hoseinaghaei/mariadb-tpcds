@@ -1,0 +1,81 @@
+# Reproducing the benchmark in Docker
+
+One command, Linux container, nothing installed on the host but Docker:
+
+```bash
+./reproduce.sh            # quick   SF=1, 16K pages, baseline vs tuned (~25 min)
+./reproduce.sh smoke      # smallest, baseline only                    (~20 min)
+./reproduce.sh full       # SF=4, 32K pages, 8G pool, as report 23     (~3 h)
+```
+
+Results land in `./results/`. The repository is mounted **read-only**, so a
+run cannot modify it; generated data and the database live in a named Docker
+volume (`tpcds-data`), which a second run reuses to skip generation.
+
+## What a run does
+
+1. Builds `dsdgen` from the TPC-DS sources with `OS=LINUX`
+2. Generates scale-factor data
+3. Initialises MariaDB at the chosen `innodb_page_size`
+4. Creates the schema and loads the data
+5. Creates all 188 indexes (`sql/05`, `11`, `14`)
+6. `ANALYZE TABLE`
+7. Benchmarks the tier-4/5 query set, baseline and tuned
+
+Then prints the totals, the ratio, and an answer cross-check.
+
+## Options
+
+Any of these can be overridden as `KEY=VALUE` after the profile:
+
+| variable | default (quick) | meaning |
+|---|---|---|
+| `SCALE` | 1 | dsdgen scale factor |
+| `PAGE_SIZE` | 16 | 4, 8, 16, 32 or 64 |
+| `BUFFER_POOL` | 2G | `innodb_buffer_pool_size` |
+| `SAMPLE_PAGES` | 20 | `innodb_stats_persistent_sample_pages` |
+| `QUERYSET` | tier45 | `tier45` (40 queries) or `all` (99) |
+| `TUNED` | both | `baseline`, `tuned` or `both` |
+| `MARIADB_TAG` | 11.4 | base image tag |
+
+```bash
+./reproduce.sh quick SCALE=2 PAGE_SIZE=32 BUFFER_POOL=4G
+```
+
+## Why Linux matters here
+
+The original measurements were taken on macOS, where **`innodb_flush_method
+= O_DIRECT` is accepted but has no effect** — InnoDB's reads go through the
+macOS file cache. Measured on the host: the same scan takes 3.6s genuinely
+cold, 2.0s after a restart with the OS cache warm, and 1.7s fully cached,
+while InnoDB reports ~22–29k physical reads in both cold cases. Restarting
+the server empties the buffer pool but not the OS cache, so a "cold" run is
+partly warm, and every page is cached twice.
+
+On Linux, direct I/O works, so this container is the more trustworthy venue.
+Expect absolute times to differ from the macOS figures in `report/` — at
+SF=1 with a 1 GB pool, q51 took 167s here against single-digit seconds on
+macOS.
+
+## Resource notes
+
+- `full` wants 12G+ given to the Docker VM for its 8G pool; otherwise run it
+  as `./reproduce.sh full BUFFER_POOL=4G`.
+- The `tpcds-data` volume holds the generated data and the database: about
+  3 GB at SF=1, about 35 GB at SF=4. Remove it with `docker volume rm
+  tpcds-data`.
+
+## Verification built into a run
+
+A reproduction that silently benchmarks an empty database is worse than one
+that fails, so the pipeline checks itself:
+
+- `dsdgen` must build and must produce data
+- the running server's `innodb_page_size` must match what was asked for
+- `store_sales` must hold rows after loading — an earlier bug passed
+  `-TERMINATE N` to `dsdgen`, which strips the trailing `|` the loader needs,
+  and `LOAD DATA` then inserted nothing without erroring
+- a benchmark that finishes implausibly fast is rejected
+- every query's output is hashed verbatim **and** row-sorted, so a real answer
+  change is distinguished from row-order instability (q65 and q71 have an
+  `ORDER BY` that is not a total order)

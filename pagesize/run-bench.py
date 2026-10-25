@@ -95,6 +95,32 @@ def main():
     actual = got.stdout.strip().split('.')[0]
     if actual != page:
         sys.exit(f"instance on {sock} reports {actual}K, expected {page}K")
+    # Counters the tuning decisions depend on: the buffer pool miss ratio
+    # feeds innodb.optimizer_disk_read_ratio, Sort_merge_passes says whether
+    # sorts are spilling to tmpdir, and the Aria counters say whether the
+    # Aria page cache is doing anything at all.
+    COUNTERS = ('Innodb_buffer_pool_reads', 'Innodb_buffer_pool_read_requests',
+                'Sort_merge_passes', 'Sort_scan', 'Sort_range',
+                'Aria_pagecache_read_requests', 'Aria_pagecache_reads',
+                'Created_tmp_disk_tables', 'Created_tmp_tables',
+                'Handler_mrr_init', 'Handler_mrr_key_refills')
+
+    def status():
+        rows = ask("select lower(variable_name), variable_value "
+                   "from information_schema.global_status where variable_name in ("
+                   + ",".join(f"'{c}'" for c in COUNTERS) + ")")
+        out = {}
+        for line in rows.splitlines():
+            if '\t' in line:
+                k, v = line.split('\t', 1)
+                try:
+                    out[k] = int(v)
+                except ValueError:
+                    pass
+        return out
+
+    before = status()
+
     wanted = list(range(1, 100)) if which == 'all' else tier45()
     print(f"=== {page}K pages, SF={scale}, sample={sample}, {nidx} indexes, "
           f"{len(wanted)} queries ({which}), timeout {timeout}s", flush=True)
@@ -134,8 +160,26 @@ def main():
         print(f"query{n:<3} {r['status']:<6} {secs:>7.1f}s "
               f"rows={r.get('rows','-')} {r.get('detail','')}", flush=True)
 
+    after = status()
+    delta = {k: after.get(k, 0) - before.get(k, 0) for k in after}
+    reads = delta.get('innodb_buffer_pool_reads', 0)
+    reqs = delta.get('innodb_buffer_pool_read_requests', 0)
+    miss = reads / reqs if reqs else 0.0
+    json.dump({'counters': delta, 'miss_ratio': round(miss, 4)},
+              open(f"{rdir}/_counters.json", 'w'), indent=1)
+
     print(f"=== {page}K total {total:.1f}s ({total/60:.1f} min) "
           f"over {len(wanted)} {which} queries", flush=True)
+    print(f"    buffer pool: {reads:,} reads / {reqs:,} requests  "
+          f"-> miss ratio {miss:.4f}  (optimizer assumes 0.02)", flush=True)
+    print(f"    sorts: {delta.get('sort_merge_passes',0):,} merge passes, "
+          f"{delta.get('sort_scan',0):,} scans, {delta.get('sort_range',0):,} ranges",
+          flush=True)
+    print(f"    tmp tables: {delta.get('created_tmp_disk_tables',0):,} on disk of "
+          f"{delta.get('created_tmp_tables',0):,}   aria reads: "
+          f"{delta.get('aria_pagecache_read_requests',0):,} requests", flush=True)
+    print(f"    mrr: {delta.get('handler_mrr_init',0):,} inits, "
+          f"{delta.get('handler_mrr_key_refills',0):,} key refills", flush=True)
 
     # storage footprint, per table
     sizes = subprocess.run(base + ['-N', '-e', """
