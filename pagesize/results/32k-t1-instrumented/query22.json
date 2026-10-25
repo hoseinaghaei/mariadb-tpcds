@@ -1,0 +1,12 @@
+{
+ "query": 22,
+ "page_kb": 32,
+ "scale": 4,
+ "sample_pages": 160,
+ "indexes": 188,
+ "seconds": 26.8,
+ "rows": 100,
+ "md5": "75d4859f87e72cf8c244ad68c5e0caad",
+ "md5_sorted": "935928806cefaa6771c2798e899bc76d",
+ "status": "OK"
+}

@@ -1,0 +1,156 @@
+{
+ "page_kb": 32,
+ "total_seconds": 981.4,
+ "tables": [
+  {
+   "name": "call_center",
+   "rows": 12,
+   "data": 32768,
+   "index": 65536
+  },
+  {
+   "name": "catalog_page",
+   "rows": 11718,
+   "data": 3178496,
+   "index": 655360
+  },
+  {
+   "name": "catalog_returns",
+   "rows": 560702,
+   "data": 217350144,
+   "index": 362315776
+  },
+  {
+   "name": "catalog_sales",
+   "rows": 5963210,
+   "data": 1925152768,
+   "index": 5304680448
+  },
+  {
+   "name": "customer",
+   "rows": 231397,
+   "data": 59867136,
+   "index": 44236800
+  },
+  {
+   "name": "customer_address",
+   "rows": 115154,
+   "data": 22052864,
+   "index": 8454144
+  },
+  {
+   "name": "customer_demographics",
+   "rows": 1914957,
+   "data": 198344704,
+   "index": 202702848
+  },
+  {
+   "name": "date_dim",
+   "rows": 72483,
+   "data": 17858560,
+   "index": 34963456
+  },
+  {
+   "name": "dbgen_version",
+   "rows": 1,
+   "data": 32768,
+   "index": 0
+  },
+  {
+   "name": "household_demographics",
+   "rows": 7200,
+   "data": 589824,
+   "index": 458752
+  },
+  {
+   "name": "income_band",
+   "rows": 20,
+   "data": 32768,
+   "index": 0
+  },
+  {
+   "name": "inventory",
+   "rows": 35375491,
+   "data": 2650800128,
+   "index": 4630380544
+  },
+  {
+   "name": "item",
+   "rows": 45069,
+   "data": 28344320,
+   "index": 22020096
+  },
+  {
+   "name": "promotion",
+   "rows": 366,
+   "data": 163840,
+   "index": 98304
+  },
+  {
+   "name": "reason",
+   "rows": 75,
+   "data": 32768,
+   "index": 0
+  },
+  {
+   "name": "ship_mode",
+   "rows": 20,
+   "data": 32768,
+   "index": 0
+  },
+  {
+   "name": "store",
+   "rows": 42,
+   "data": 32768,
+   "index": 65536
+  },
+  {
+   "name": "store_returns",
+   "rows": 1159669,
+   "data": 316080128,
+   "index": 388825088
+  },
+  {
+   "name": "store_sales",
+   "rows": 11254382,
+   "data": 2812116992,
+   "index": 10673192960
+  },
+  {
+   "name": "time_dim",
+   "rows": 86008,
+   "data": 13664256,
+   "index": 0
+  },
+  {
+   "name": "warehouse",
+   "rows": 6,
+   "data": 32768,
+   "index": 0
+  },
+  {
+   "name": "web_page",
+   "rows": 106,
+   "data": 32768,
+   "index": 98304
+  },
+  {
+   "name": "web_returns",
+   "rows": 285999,
+   "data": 89292800,
+   "index": 153550848
+  },
+  {
+   "name": "web_sales",
+   "rows": 2683679,
+   "data": 1329561600,
+   "index": 2546434048
+  },
+  {
+   "name": "web_site",
+   "rows": 34,
+   "data": 32768,
+   "index": 65536
+  }
+ ]
+}

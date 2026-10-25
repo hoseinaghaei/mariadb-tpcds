@@ -1,0 +1,6 @@
+q59 at SF=4 / 32K / T1 config
+  original                              175.5s  rows=100   md5=2e10df996bd5
+  query59_v1_weekfilter                 167.8s  rows=100   md5=2e10df996bd5
+
+output comparison against the original:
+  query59_v1_weekfilter: IDENTICAL

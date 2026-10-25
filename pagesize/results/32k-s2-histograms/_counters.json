@@ -1,0 +1,16 @@
+{
+ "counters": {
+  "aria_pagecache_read_requests": 21357597,
+  "aria_pagecache_reads": 616,
+  "created_tmp_disk_tables": 4,
+  "created_tmp_tables": 290,
+  "handler_mrr_init": 6124,
+  "handler_mrr_key_refills": 0,
+  "innodb_buffer_pool_read_requests": 776670030,
+  "innodb_buffer_pool_reads": 463182,
+  "sort_merge_passes": 7,
+  "sort_range": 0,
+  "sort_scan": 176375
+ },
+ "miss_ratio": 0.0006
+}

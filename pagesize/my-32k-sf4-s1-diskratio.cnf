@@ -1,0 +1,80 @@
+# SF=4 instance.  innodb_page_size is fixed at datadir initialization.
+[mysqld]
+datadir                        = /Users/hosseinaghaei/Desktop/projects/dw/pagesize/data-32k-sf4
+socket                         = /Users/hosseinaghaei/Desktop/projects/dw/pagesize/s32-sf4.sock
+port                           = 3532
+pid-file                       = /Users/hosseinaghaei/Desktop/projects/dw/pagesize/32k-sf4.pid
+log-error                      = /Users/hosseinaghaei/Desktop/projects/dw/pagesize/32k-sf4.err
+
+innodb_page_size               = 32K
+
+innodb_buffer_pool_size        = 8G
+innodb_log_file_size           = 96M
+innodb_flush_log_at_trx_commit = 1
+innodb_flush_method            = O_DIRECT
+innodb_io_capacity             = 200
+innodb_read_io_threads         = 4
+innodb_write_io_threads        = 4
+innodb_doublewrite             = ON
+innodb_file_per_table          = ON
+innodb_adaptive_hash_index     = OFF
+innodb_old_blocks_pct          = 37
+
+character_set_server           = utf8mb4
+collation_server               = utf8mb4_general_ci
+local_infile                   = 1
+
+# At SF=1 this was 300s.  At SF=4 several queries legitimately exceed that,
+# and a query killed by the cap records a censored time that would corrupt
+# the comparison.  Raised so it never binds; the runner keeps its own
+# client-side timeout.
+max_statement_time             = 3600
+
+tmp_table_size                 = 16M
+max_heap_table_size            = 16M
+join_buffer_size               = 256K
+sort_buffer_size               = 2M
+
+skip_name_resolve
+userstat = 1
+innodb_stats_persistent_sample_pages = 160
+
+# ---------------------------------------------------------------- T1 tuning
+# Proposed MariaDB DW settings, tested against the 2403.4s baseline
+# (32K / SF=4 / sample 160 / tier 4+5).  Items 2-tmpdir, 3-ssd, 4-old_blocks_time,
+# 5-histogram_type, 9-perf_schema and 9-adaptive_hash were already in effect.
+
+# 1  temp tables in memory (was 16M / 16M)
+tmp_table_size                 = 1536M
+max_heap_table_size            = 1536M
+
+# 2  Aria page cache -- MariaDB's on-disk internal temp tables (was 128M)
+aria_pagecache_buffer_size     = 1G
+
+# 3  read path (was 4 / 56)
+innodb_read_io_threads         = 8
+innodb_read_ahead_threshold    = 24
+
+# 4  protect the hot set from scans (was 37)
+innodb_old_blocks_pct          = 25
+
+# 6  sort buffer (was 2M)
+sort_buffer_size               = 64M
+
+# 7  joins -- join_cache_level 8 enables BKAH; mrr was off (was 2 / 256K / 2M)
+join_cache_level               = 8
+join_buffer_size               = 64M
+join_buffer_space_limit        = 256M
+optimizer_switch               = 'mrr=on,mrr_cost_based=off'
+
+# 9  reclaim waste -- no MyISAM tables here (was 128M)
+key_buffer_size                = 16M
+
+# T3: back to T1 behaviour for statistics.  The EITS/histograms collected in
+# T2 stay in mysql.{table,column,index}_stats but are not consulted, because
+# T2 was net slower than T1 (one query, q59, regressed 15.3s -> 157.7s).
+# Reversible: set this to PREFERABLY_FOR_QUERIES to use them again.
+use_stat_tables = never
+
+# --- s1-diskratio ---
+
