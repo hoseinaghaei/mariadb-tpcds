@@ -71,6 +71,9 @@ OPTIMIZED = {
     11: "Nafiz/tier5/q11/query11_BEST.sql",
     57: "Nafiz/tier5/q57/query57_BEST.sql",
     74: "Nafiz/tier5/q74/query74_BEST.sql",
+    # Claude, from the structural scan of the unoptimized queries
+    68: "q68-sf4/query68_v1_datefirst.sql",
+    46: "q46-sf4/query46_v1_datefirst.sql",
 }
 
 # q35 and q38 have "optimized" files containing only CREATE INDEX -- no query

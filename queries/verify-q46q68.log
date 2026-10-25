@@ -1,0 +1,4 @@
+  q46   optimized  orig   11.67s  tuned    5.78s   IDENTICAL
+  q68   optimized  orig   10.55s  tuned    2.09s   IDENTICAL
+
+  identical 2   row-order-only 0   DIFFERS 0   errors 0

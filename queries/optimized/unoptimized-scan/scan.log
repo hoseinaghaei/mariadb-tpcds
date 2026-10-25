@@ -1,0 +1,10 @@
+  q68     20,803ms total   hot:  20,803ms   | REPEATED: current_addr x233,000 = 0ms | FULL SCAN: customer 233,000 rows | FULL SCAN: store_sales 11,519,024 rows
+  q46     12,537ms total   hot:  12,537ms   | REPEATED: current_addr x233,000 = 0ms | FULL SCAN: customer 233,000 rows | FULL SCAN: store_sales 11,519,024 rows
+  q77     17,872ms total   hot:  17,872ms   | REPEATED: store x240,716 = 0ms
+  q70     13,671ms total   hot:  13,671ms   | REPEATED: block-nl-join x365 = 0ms
+  q66     14,547ms total   hot:  14,547ms   | REPEATED: block-nl-join x365 = 0ms
+  q71      6,210ms total   hot:  6,210ms   | REPEATED: <derived2> x823 = 0ms
+  q87      4,653ms total   hot:  4,653ms   | REPEATED: store_sales x365 = 0ms | FULL SCAN: <derived2> 185,125 rows | FULL SCAN: <except2,3,4> 185,125 rows
+  q65      3,478ms total   hot:  3,478ms   | REPEATED: store_sales x365 = 0ms | FULL SCAN: <derived3> 497,777 rows
+  q82      1,148ms total   hot:  1,148ms   | REPEATED: item x419,684 = 0ms
+  q58        270ms total   hot:  270ms   | REPEATED: item x6,679 = 0ms

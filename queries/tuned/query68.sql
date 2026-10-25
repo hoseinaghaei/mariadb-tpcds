@@ -1,5 +1,5 @@
 -- query68
--- source: queries/mariadb/query68.sql  (no optimized version exists)
+-- source: queries/optimized/q68-sf4/query68_v1_datefirst.sql
 -- split materialisation at default: -1.9s is inside this host's noise
 
 SET SESSION sql_mode = CONCAT(@@sql_mode, ',IGNORE_SPACE,PIPES_AS_CONCAT');
@@ -12,22 +12,23 @@ select  c_last_name
        ,extended_price
        ,extended_tax
        ,list_price
- from (select ss_ticket_number
+ from (select straight_join
+              ss_ticket_number
              ,ss_customer_sk
              ,ca_city bought_city
-             ,sum(ss_ext_sales_price) extended_price 
+             ,sum(ss_ext_sales_price) extended_price
              ,sum(ss_ext_list_price) list_price
-             ,sum(ss_ext_tax) extended_tax 
-       from store_sales
-           ,date_dim
-           ,store
-           ,household_demographics
-           ,customer_address 
-       where store_sales.ss_sold_date_sk = date_dim.d_date_sk
-         and store_sales.ss_store_sk = store.s_store_sk  
-        and store_sales.ss_hdemo_sk = household_demographics.hd_demo_sk
-        and store_sales.ss_addr_sk = customer_address.ca_address_sk
-        and date_dim.d_dom between 1 and 2 
+             ,sum(ss_ext_tax) extended_tax
+       from date_dim
+       straight_join store_sales
+              on store_sales.ss_sold_date_sk = date_dim.d_date_sk
+       straight_join store
+              on store_sales.ss_store_sk = store.s_store_sk
+       straight_join household_demographics
+              on store_sales.ss_hdemo_sk = household_demographics.hd_demo_sk
+       straight_join customer_address
+              on store_sales.ss_addr_sk = customer_address.ca_address_sk
+       where date_dim.d_dom between 1 and 2
         and (household_demographics.hd_dep_count = 5 or
              household_demographics.hd_vehicle_count= 0)
         and date_dim.d_year in (1999,1999+1,1999+2)
