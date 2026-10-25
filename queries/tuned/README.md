@@ -58,14 +58,23 @@ Turning it off globally is worth 10.7%, but it **costs** four queries:
 
 | query | measured |
 |---|---:|
-| q23 | **+54.0s** |
+| ~~q23~~ | ~~+54.0s~~ — see below |
 | q4 | +14.6s |
 | q78 | +13.9s |
 | q57 | +3.2s |
 
-q23 alone gives back more than every winner except q59. Those four files say
-so in a comment, so it is clear the default was chosen deliberately rather
-than overlooked.
+Those files say so in a comment, so it is clear the default was chosen
+deliberately rather than overlooked.
+
+**q23 no longer belongs in this table.** Its +54.0s was measured against the
+original query text, whose `frequent_ss_items` CTE grouped four years of
+`store_sales` on a 30-character varchar — materialising that once really was
+worse than recomputing it 55,882 times. `queries/optimized/q23-sf4/` replaces
+the CTE with a single-table aggregate costing 3.0s, so the trade-off the
+number describes no longer exists, and it has been dropped from
+`build-tuned.py`'s `DELTA` rather than carried forward against a query that
+is not being run. The totals above (971.4s / 867.5s / 777.7s) also predate
+that rewrite.
 
 ## What is deliberately *not* set
 

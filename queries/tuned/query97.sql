@@ -19,7 +19,8 @@ csci as (
   group by cs_bill_customer_sk, cs_item_sk)
 select
    sum(c.customer_sk is null and s.customer_sk is not null) store_only
-  ,(select count(*) from csci) - sum(c.customer_sk is not null) catalog_only
+  ,(select count(*) from csci where customer_sk is not null)
+     - sum(c.customer_sk is not null) catalog_only
   ,sum(c.customer_sk is not null) store_and_catalog
 from ssci s
 left join csci c

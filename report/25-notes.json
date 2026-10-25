@@ -1,0 +1,162 @@
+{
+ "2": {
+  "author": "Claude",
+  "body": "**Optimized by Claude** \u2014 `queries/optimized/q2/query2_BEST.sql`\n\nBounds the `wscs` CTE to the needed date range instead of unioning all of store, catalog and web sales across every year.\n\nVerified at SF=4: original 13.1s \u2192 4.9s, **2.7x**, output byte-for-byte identical.\n\n*split materialisation OFF: measured -9.5s at SF=4*"
+ },
+ "4": {
+  "author": "riccio",
+  "body": "**Optimized by riccio** \u2014 `queries/optimized/q4/query4_BEST.sql`\n\nAggregates the two years once per channel on narrow surrogate keys, rather than building the full year-over-year CTE three times.\n\nVerified at SF=4: original 61.8s \u2192 18.4s, **3.4x**, output byte-for-byte identical.\n\n*split materialisation left ON: disabling it measured +14.6s (slower)*"
+ },
+ "5": {
+  "author": "riccio",
+  "body": "**Optimized by riccio** \u2014 `queries/optimized/q5/query5_BEST.sql`\n\nPushes the date filter into each of the six UNION branches, so every fact table is range-scanned instead of fully scanned then filtered.\n\nVerified at SF=4: original 32.9s \u2192 4.0s, **8.2x**, output byte-for-byte identical.\n\n*split materialisation OFF: measured -8.9s at SF=4*"
+ },
+ "7": {
+  "author": "Nafiz",
+  "body": "**Optimized by Nafiz** \u2014 `queries/optimized/Nafiz/tier4/q7/query7_BEST.sql`\n\nWired in and verified identical at commit 942fa2f. No individual before/after timing was taken, so no speedup is quoted; its contribution shows in the suite total."
+ },
+ "8": {
+  "author": "Nafiz",
+  "body": "**Optimized by Nafiz** \u2014 `queries/optimized/Nafiz/tier4/q8/query8_BEST.sql`\n\nWired in and verified identical at commit 942fa2f. No individual before/after timing was taken, so no speedup is quoted; its contribution shows in the suite total."
+ },
+ "10": {
+  "author": "Nafiz",
+  "body": "**Optimized by Nafiz** \u2014 `queries/optimized/Nafiz/tier4/q10/query10_BEST.sql`\n\nWired in and verified identical at commit 942fa2f. No individual before/after timing was taken, so no speedup is quoted; its contribution shows in the suite total."
+ },
+ "11": {
+  "author": "Nafiz",
+  "body": "**Optimized by Nafiz** \u2014 `queries/optimized/Nafiz/tier5/q11/query11_BEST.sql`\n\nWired in and verified identical at commit 942fa2f. No individual before/after timing was taken, so no speedup is quoted; its contribution shows in the suite total."
+ },
+ "14": {
+  "author": "Aysha",
+  "body": "**Optimized by Aysha** \u2014 `queries/optimized/Aysha/q14/Query-14-A/q14_A_Optimized.sql,`\n\nReplaces the repeated `date_dim` joins with `MIN/MAX(d_date_sk)` ranges, turns the eligibility check into `EXISTS`, and computes the average as `SUM/COUNT` rather than materialising a large UNION first.\n\nVerified at SF=4: original 191.7s \u2192 27.9s, **6.9x**, output byte-for-byte identical.\n\n> **Correction applied:** typo i_braknd_id -> i_brand_id (part B would not run at all)\n\n> **Correction applied:** part B emitted 8 columns; TPC-DS requires 12 (the ty_/ly_ key columns are repeated per year) - expanded, and its ORDER BY updated to the new aliases\n\n*split materialisation OFF: measured -17.0s at SF=4*"
+ },
+ "21": {
+  "author": "Aysha",
+  "body": "**Optimized by Aysha** \u2014 `queries/optimized/Aysha/q21/query21_optimized.sql`\n\nStops the derived table being merged, forces the join order so `date_dim` and `item` filter before `inventory` is touched.\n\nVerified at SF=4: original 2.1s \u2192 0.6s, **3.5x**, output byte-for-byte identical."
+ },
+ "22": {
+  "author": "Claude",
+  "body": "**Optimized by Claude** \u2014 `queries/optimized/q22/query22_BEST.sql`\n\nNarrows the `date_dim` range and drives from `inventory` through a covering index rather than joining `date_dim` first.\n\nVerified at SF=4: original 28.5s \u2192 22.9s, **1.2x**, output byte-for-byte identical.\n\n*split materialisation at default: -1.3s is inside this host's noise*"
+ },
+ "23": {
+  "author": "Claude",
+  "body": "**Optimized by Claude** \u2014 `queries/optimized/q23-sf4/query23_v3_densekeys.sql`\n\nWas the most expensive query in the suite by a factor of three. `ANALYZE FORMAT=JSON` showed its `frequent_ss_items` CTE being split-materialised **55,882 times** in one branch and 28,222 in the other \u2014 99.1s of the 208.1s the query spent under instrumentation.\n\n`split_materialized=off` was the wrong lever and had already measured +54.0s *slower*: materialising that CTE once meant grouping four years of `store_sales` on a 30-character varchar. The fix was to make the CTE cheap instead \u2014 drop the `item` join (its `substr(i_item_desc,1,30)` is functionally dependent on the unique `i_item_sk`, so it splits no group), swap `d_date` for `d_date_sk`, and order the GROUP BY to match `idx_ss_date_item_store_cover`.\n\nVerified at SF=4: original 160.7s \u2192 44.7s, **3.60x**, output byte-for-byte identical. The three CTEs were checked individually as well, since q23 returns a NULL and no rows at this scale and the final answer alone proves nothing. See `report/26-the-last-eleven.md`."
+ },
+ "27": {
+  "author": "Aysha",
+  "body": "**Optimized by Aysha** \u2014 `queries/optimized/Aysha/q27/q27_Optimized.sql`\n\nForces the join order so the demographics and date filters apply before `store_sales` is read.\n\nVerified at SF=4: original 5.2s \u2192 6.4s, **0.8x**, output byte-for-byte identical.\n\n*split materialisation OFF: measured -3.7s at SF=4*"
+ },
+ "31": {
+  "author": "riccio",
+  "body": "**Optimized by riccio** \u2014 `queries/optimized/q31/query31_BEST.sql`\n\nFilters each quarter early and pivots the three store/web comparisons into one pass instead of six CTE references.\n\nVerified at SF=4: original 1.2s \u2192 1.0s, **1.2x**, output byte-for-byte identical."
+ },
+ "33": {
+  "author": "Nafiz",
+  "body": "**Optimized by Nafiz** \u2014 `queries/optimized/Nafiz/tier4/q33/query33_BEST.sql`\n\nWired in and verified identical at commit 942fa2f. No individual before/after timing was taken, so no speedup is quoted; its contribution shows in the suite total."
+ },
+ "35": {
+  "author": "Claude",
+  "body": "**Optimized by Claude** \u2014 `queries/optimized/q35-sf4/query35_v1_keydate.sql`\n\nAysha's file for this query contained only `CREATE INDEX` statements, so there was no query to substitute; her indexes are in `sql/14_contributed_indexes.sql`.\n\nThe rewrite replaces the `date_dim` join inside each of the three `EXISTS` subqueries with a range on the fact table's own foreign key. That leaves each subquery naming exactly two columns, both carried in order by an existing index (`idx_ss_cust_date`, `idx_cs_cust_date`, `idx_ws_cust_date`), so all three existence checks become index-only probes.\n\nVerified at SF=4: original 1.7s \u2192 1.3s, **1.31x** (2.4x on a cold pass), output byte-for-byte identical."
+ },
+ "37": {
+  "author": "Nafiz",
+  "body": "**Optimized by Nafiz** \u2014 `queries/optimized/Nafiz/tier4/q37/query37_BEST.sql`\n\nWired in and verified identical at commit 942fa2f. No individual before/after timing was taken, so no speedup is quoted; its contribution shows in the suite total."
+ },
+ "38": {
+  "author": "",
+  "body": "**Not optimized.** Aysha's file contains only `CREATE INDEX` statements, so there is no query to substitute; its indexes are in `sql/14_contributed_indexes.sql`.\n\nA rewrite was written and measured \u2014 intersecting on `d_date_sk` instead of `d_date`, which is exact because the two are a bijection on `date_dim` \u2014 and it was **0.80x, slower**. The per-row `date_dim` probes it removes are not where q38 spends its time; the cost is building and intersecting three large `DISTINCT` sets keyed on two name columns. Kept with its measurements in `queries/optimized/q38-sf4/`."
+ },
+ "39": {
+  "author": "riccio",
+  "body": "**Optimized by riccio** \u2014 `queries/optimized/q39/query39_BEST.sql`\n\nKeeps each grouped inventory result ahead of its dimension lookups and keeps the two statements independent, so neither shares a materialised temp.\n\nVerified at SF=4: original 3.2s \u2192 1.2s, **2.8x**, output byte-for-byte identical."
+ },
+ "43": {
+  "author": "Aysha",
+  "body": "**Optimized by Aysha** \u2014 `queries/optimized/Aysha/q43/q43_Optimized.sql`\n\nDrives from a covering index on `store_sales(ss_sold_date_sk, ss_store_sk, ss_sales_price)` so the day-of-week pivot never touches the base table.\n\nVerified at SF=4: original 2.5s \u2192 1.9s, **1.3x**, output byte-for-byte identical.\n\n> **Correction applied:** removed index DDL: create index idx_date_year_sk_day on date_dim (d_year, d_dat; create index idx_ss_date_store_price on store_sales (ss_sold; analyze table date_dim, store_sales"
+ },
+ "46": {
+  "author": "Claude",
+  "body": "**Optimized by Claude** \u2014 `queries/optimized/q46-sf4/query46_v1_datefirst.sql`\n\nThe same defect and the same fix as q68. Less headroom because q46's date predicate is less selective \u2014 the gain comes from the predicate, not from `STRAIGHT_JOIN` itself.\n\nVerified at SF=4: 13, 12, 12s \u2192 7, 6, 6s, **1.9x**, output identical."
+ },
+ "47": {
+  "author": "Aysha",
+  "body": "**Optimized by Aysha** \u2014 `queries/optimized/Aysha/q47/q47_Optimized_3secs.sql`\n\nJoins `date_dim` first, replaces the three-way self-join on `rn` with `LAG`/`LEAD` so `v1` is built once instead of three times, and pre-aggregates on integer keys.\n\nVerified at SF=4: original 27.5s \u2192 9.1s, **3.0x**, output byte-for-byte identical.\n\n> **Correction applied:** named the select list: SELECT * had sum_sales and avg_monthly_sales transposed"
+ },
+ "51": {
+  "author": "riccio",
+  "body": "**Optimized by riccio** \u2014 `queries/optimized/q51/query51_BEST.sql`\n\nUnifies the store and web daily series into one scan before the window functions, instead of building two full CTEs.\n\nVerified at SF=4: original 26.9s \u2192 22.3s, **1.2x**, output byte-for-byte identical."
+ },
+ "54": {
+  "author": "Aysha",
+  "body": "**Optimized by Aysha** \u2014 `queries/optimized/Aysha/q54/q54_Optimized_V2.sql`\n\nFilters each fact table before the union, dedups before joining `customer`, and forces the join order.\n\nVerified at SF=4: original 6.3s \u2192 0.2s \u2014 ** EMPTY/ERROR **."
+ },
+ "57": {
+  "author": "Nafiz",
+  "body": "**Optimized by Nafiz** \u2014 `queries/optimized/Nafiz/tier5/q57/query57_BEST.sql`\n\nWired in and verified identical at commit 942fa2f. No individual before/after timing was taken, so no speedup is quoted; its contribution shows in the suite total."
+ },
+ "58": {
+  "author": "",
+  "body": "**Not optimized.** A rewrite resolving the week of 1998-03-14 to a key range at authoring time \u2014 replacing a join, an `IN` subquery and a scalar subquery over `date_dim`, three times over \u2014 measured **1.00x**. At 0.6s warm there was nothing to recover. Kept as a verified-equivalent alternative in `queries/optimized/q58-sf4/`."
+ },
+ "59": {
+  "author": "Claude",
+  "body": "**Optimized by Claude** \u2014 `queries/optimized/q59-sf4/query59_BEST.sql`\n\nTwo changes: `split_materialized=off`, because one of its two CTE references was being re-materialised 7,665 times; and bounding the CTE to the 105 weeks the outer query can read, out of 262.\n\nVerified at SF=4: original 162.5s \u2192 4.4s, **36.6x**, output byte-for-byte identical.\n\n*split materialisation OFF: measured -138.1s at SF=4*"
+ },
+ "65": {
+  "author": "",
+  "body": "**Not optimized.** q65 spells the same derived table out twice, so naming it once as a CTE looked like a free halving. It measured **0.97x** \u2014 no change \u2014 because MariaDB already recognises the two spellings as one derived table and materialises it once. Kept in `queries/optimized/q65-sf4/`."
+ },
+ "66": {
+  "author": "",
+  "body": "**Not optimized.** Two rewrites were measured. Aggregating on `ws_warehouse_sk`/`cs_warehouse_sk` and joining `warehouse` afterwards is **1.01x** \u2014 a dead heat, because the inner aggregation produces about one group per warehouse and narrowing a GROUP BY key pays in proportion to the number of groups, not rows.\n\nAdding a redundant date range on top of that made it **0.91x, slower**. That predicate is genuinely redundant \u2014 every row it admits the join already admitted \u2014 so it reads like a free hint, and it is not. Kept in `queries/optimized/q66-sf4/`."
+ },
+ "67": {
+  "author": "Aysha",
+  "body": "**Optimized by Aysha** \u2014 `queries/optimized/Aysha/q67/q67-v2-Optimized.sql`\n\nPre-computes the date-key range into session variables, then drives the ROLLUP off a single `store_sales` scan.\n\nVerified at SF=4: original 35.3s \u2192 26.5s, **1.3x**, output byte-for-byte identical."
+ },
+ "68": {
+  "author": "Claude",
+  "body": "**Optimized by Claude** \u2014 `queries/optimized/q68-sf4/query68_v1_datefirst.sql`\n\n`STRAIGHT_JOIN` from `date_dim` so the selective date filter drives the join instead of the plan scanning `store_sales` and probing the dimension per row.\n\nVerified at SF=4: 12, 11, 11s \u2192 2, 3, 2s, **4.9x**, output identical."
+ },
+ "70": {
+  "author": "Claude",
+  "body": "**Optimized by Claude** \u2014 `queries/optimized/q70-sf4/query70_v1_nosubquery.sql`\n\nIts `s_state in (...)` subquery looks like a top-5 filter and removes nothing: it groups by `s_state` and then partitions by `s_state`, so every partition holds one row, `rank()` is 1 everywhere and `ranking <= 5` admits all of them. Establishing that cost a second full pass over a 12-month window of `store_sales`. Deleting it preserves the answer exactly \u2014 this is a quirk of the published TPC-DS text, not a transcription error.\n\nAlso aggregates on `ss_store_sk` and joins `store` afterwards, so 2.3M rows are grouped on an integer rather than two varchars.\n\nVerified at SF=4: original 11.6s \u2192 3.6s, **3.22x**, output byte-for-byte identical."
+ },
+ "71": {
+  "author": "",
+  "body": "**Not optimized.** Replacing the three `date_dim` joins with key ranges measured **0.77x, slower**. The cost is the full scan of `item` to apply `i_manager_id = 1` \u2014 there is no index on that column \u2014 and the three-way union feeding a filesort; neither is touched.\n\nSeparately, this query's **output order is not deterministic**: `order by ext_price desc, i_brand_id` is not a total order, and 3,948 result rows collapse to 3,934 distinct sort keys, leaving 24 rows free to permute. A byte-for-byte diff of q71 can therefore report a difference between two correct runs, which is why the suite hashes both `md5` and `md5_sorted`. Kept in `queries/optimized/q71-sf4/`."
+ },
+ "72": {
+  "author": "Claude",
+  "body": "**Optimized by Claude** \u2014 `queries/optimized/q72/query72_BEST.sql`\n\nFixes the join order with `JOIN_PREFIX` so the date dimensions filter before `catalog_sales` and `inventory` are reached.\n\nVerified at SF=4: original 40.1s \u2192 10.1s, **4.0x**, output byte-for-byte identical.\n\n*split materialisation at default: -1.6s is inside this host's noise*"
+ },
+ "74": {
+  "author": "Nafiz",
+  "body": "**Optimized by Nafiz** \u2014 `queries/optimized/Nafiz/tier5/q74/query74_BEST.sql`\n\nWired in and verified identical at commit 942fa2f. No individual before/after timing was taken, so no speedup is quoted; its contribution shows in the suite total."
+ },
+ "77": {
+  "author": "",
+  "body": "**Not optimized.** A rewrite replacing all six `date_dim` joins with key ranges was measured at **0.73x on best-of-3**, with means of 6.8s against 7.0s \u2014 a wash inside very large variance (the original spanned 3.3\u201311.9s over three passes).\n\nThe real cost is elsewhere: the plan reaches `store_sales` through `idx_ss_date_cust`, which carries neither `ss_store_sk` nor the two profit columns, so every qualifying row costs a base-table fetch. A covering index would fix it, but no DDL was possible under the read-only analysis policy, and adding indexes to this schema has backfired before. Kept in `queries/optimized/q77-sf4/`."
+ },
+ "78": {
+  "author": "Claude",
+  "body": "**Optimized by Claude** \u2014 `queries/optimized/q78/query78_BEST.sql`\n\nFilters each of the three channels by year before the union, using a covering index on `store_sales`.\n\nVerified at SF=4: original 28.1s \u2192 19.9s, **1.4x**, output byte-for-byte identical.\n\n*split materialisation left ON: disabling it measured +13.9s (slower)*"
+ },
+ "82": {
+  "author": "Claude",
+  "body": "**Optimized by Claude** \u2014 `queries/optimized/q82-sf4/query82_v1_exists.sql`\n\nGroups by three item columns with no aggregate in the select list, which makes it a DISTINCT: the join multiplicity against `inventory` and `store_sales` is built at full cost and thrown away. Both joins are existence tests, so `EXISTS` is exact rather than approximate, and with the date filter reduced to a key range both subqueries become index-only (`idx_inv_item_date_sk`, `idx_ss_item_sk`).\n\nVerified at SF=4: original 0.8s \u2192 0.1s, **8.00x** \u2014 the largest ratio in the suite \u2014 on consistent passes, output byte-for-byte identical."
+ },
+ "87": {
+  "author": "",
+  "body": "**Not optimized.** The same rewrite as q38 \u2014 `EXCEPT` in place of `INTERSECT` \u2014 was written and measured at **0.80x, slower**, on all three passes.\n\nThat the two queries share a shape and regressed by the same factor is what makes the result trustworthy rather than noise. Kept in `queries/optimized/q87-sf4/`."
+ },
+ "88": {
+  "author": "Claude",
+  "body": "**Optimized by Claude** \u2014 `queries/optimized/q88/query88_BEST.sql`\n\nCollapses the eight separate time-bucket subqueries into one pass of `sum(case when ...)` over a single covering-index scan.\n\nVerified at SF=4: original 0.9s \u2192 0.1s, **6.2x**, output byte-for-byte identical."
+ },
+ "97": {
+  "author": "Aysha + Claude",
+  "body": "**Optimized by Aysha**, adapted \u2014 `queries/optimized/Aysha/q97/query97_BEST_no_temp_tables.sql`\n\nAysha's insight is the valuable part: the original emulates a FULL OUTER JOIN as `(LEFT JOIN) UNION ALL (RIGHT JOIN ... WHERE a IS NULL)`, reading both sides twice. One LEFT JOIN suffices if the catalog-only count is derived arithmetically \u2014 `catalog_only = (rows in csci) - (rows of csci that matched)` \u2014 which is exact because both CTEs `GROUP BY (customer_sk, item_sk)`, so each pair occurs at most once per side.\n\nHer file built the two sets as **temporary tables**, which are not acceptable for this project, so they are expressed as CTEs here. Nothing else of hers changed.\n\n> **Defect found and fixed in this pass.** The arithmetic needs `where customer_sk is not null` in that count, and the first version omitted it. `ss_customer_sk` and `cs_bill_customer_sk` are nullable, so both CTEs contain rows grouped under a NULL customer \u2014 2,569 of them in `csci` at SF=4. The original scores those as zero in all three columns (its case expressions all test `is not null`, and an equality join never matches NULL), so a bare `count(*)` added all 2,569 to `catalog_only`: **1,141,754 instead of 1,139,185**. Caught by `gen-25.py` comparing `md5_sorted` against the previous suite run.\n\nVerified at SF=4 after the fix: original 7.3s \u2192 3.8s, **1.92x**, output byte-for-byte identical."
+ }
+}

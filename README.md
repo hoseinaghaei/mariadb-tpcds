@@ -69,7 +69,7 @@ queries/
   run_query.py             run one query, time it, compare to answer set
   compare.py               base vs indexed
 
-report/                    15 documents, one per step
+report/                    27 documents, one per step
 
 windows/                   Windows setup, fully isolated from the above
   00..06 *.ps1             prerequisites -> build -> generate -> load -> run

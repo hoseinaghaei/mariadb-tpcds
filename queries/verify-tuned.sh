@@ -10,6 +10,13 @@
 #
 # Reports: IDENTICAL, row-order only (the ORDER BY is not a total order), or
 # DIFFERS with the row counts.
+#
+# THE TIMES PRINTED HERE ARE NOT SPEEDUPS.  Each pair runs the original first
+# and the tuned file second, so the second one inherits a warm buffer pool.
+# q66 is the control: `queries/tuned/query66.sql` IS the original, unchanged,
+# and it still prints 17.30s against 7.37s -- a 2.3x "gain" from cache alone.
+# For a real before/after use queries/optimized/compare-rewrite.sh, which
+# interleaves the passes and takes best-of-N.
 set -Eeuo pipefail
 
 REPO=/Users/hosseinaghaei/Desktop/projects/dw

@@ -74,15 +74,36 @@ OPTIMIZED = {
     # Claude, from the structural scan of the unoptimized queries
     68: "q68-sf4/query68_v1_datefirst.sql",
     46: "q46-sf4/query46_v1_datefirst.sql",
+    # Claude, second pass over the ten that were still on the original text.
+    # Ten were rewritten; these four are the ones that measured faster with
+    # byte-identical output.  The other six (38, 58, 65, 66, 77, 87) are kept
+    # in queries/optimized/q*-sf4/ with their measurements and are NOT
+    # substituted -- see each directory's README.
+    23: "q23-sf4/query23_v3_densekeys.sql",   # 160.7s -> 44.7s, 3.60x
+    70: "q70-sf4/query70_v1_nosubquery.sql",  #  11.6s ->  3.6s, 3.22x
+    35: "q35-sf4/query35_v1_keydate.sql",     #   1.7s ->  1.3s, 1.31x
+    82: "q82-sf4/query82_v1_exists.sql",      #   0.8s ->  0.1s, 8.00x
 }
 
-# q35 and q38 have "optimized" files containing only CREATE INDEX -- no query
-# to substitute.  Their indexes are already in sql/14_contributed_indexes.sql.
-INDEX_ONLY = {35, 38}
+# q38's "optimized" file contains only CREATE INDEX -- no query to
+# substitute.  Its indexes are already in sql/14_contributed_indexes.sql.
+# q35 was in this set until it got a real rewrite above.
+INDEX_ONLY = {38}
 
+# Per-query split_materialized measurements, seconds at SF=4, relative to
+# leaving it at the default.  Negative means turning it off helped.
+#
+# q23 used to sit here at +54.0.  That figure was measured against the
+# original query text, whose frequent_ss_items CTE grouped four years of
+# store_sales on a 30-character varchar -- materialising it once really was
+# worse than recomputing it 55,882 times.  queries/optimized/q23-sf4/ now
+# replaces that CTE with a single-table aggregate costing 3.0s, so the
+# trade-off the number describes no longer exists.  Dropped rather than
+# carried forward, so the generated file does not claim a measurement about
+# a query text it is not running.
 DELTA = {59: -138.1, 14: -17.0, 2: -9.5, 5: -8.9, 11: -5.6, 27: -3.7,
          68: -1.9, 72: -1.6, 46: -1.6, 22: -1.3,
-         57: +3.2, 78: +13.9, 4: +14.6, 23: +54.0}
+         57: +3.2, 78: +13.9, 4: +14.6}
 THRESHOLD = 3.0
 APPLY = sorted(q for q, d in DELTA.items() if d <= -THRESHOLD)
 WORSE = sorted(q for q, d in DELTA.items() if d > 0)
