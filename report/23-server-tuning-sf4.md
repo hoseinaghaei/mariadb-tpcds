@@ -177,3 +177,12 @@ pagesize/run-exclusive.sh <cnf> <tag> [<cnf> <tag>...]   # stops 3306 first
 Configs: `my-32k-sf4.cnf` (baseline), `-t4.cnf` (item 1 only),
 `-tuned.cnf` (T1/T2/T3). `run-cnf.sh` prints the peak memory budget before
 each run, so a kill can be attributed rather than guessed at.
+
+---
+
+## Shareable version
+
+A version of this report written for the author of the tuning list, with the
+verdict per item and the open questions back to them:
+
+  https://claude.ai/artifact/33mJ3a4jVsDx5EGAMnbagn
