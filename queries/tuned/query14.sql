@@ -1,12 +1,14 @@
 -- query14
 -- source: queries/optimized/Aysha/q14/Query-14-A/q14_A_Optimized.sql, queries/optimized/Aysha/q14/Query-14-B/Q14-B-Optimized.sql
--- correction: typo i_braknd_id -> i_brand_id (part B would not run at all)
 -- correction: part B emitted 8 columns; TPC-DS requires 12 (the ty_/ly_ key columns are repeated per year) - expanded, and its ORDER BY updated to the new aliases
 -- split materialisation OFF: measured -17.0s at SF=4
 
 SET SESSION sql_mode = CONCAT(@@sql_mode, ',IGNORE_SPACE,PIPES_AS_CONCAT');
 SET SESSION optimizer_switch = 'split_materialized=off';
 
+SET SESSION join_buffer_size = 268435456;
+SET SESSION tmp_table_size = 536870912;
+SET SESSION max_heap_table_size = 536870912;
 select * from (
   select channel, i_brand_id, i_class_id, i_category_id, sum(sales), sum(number_sales)
   from (

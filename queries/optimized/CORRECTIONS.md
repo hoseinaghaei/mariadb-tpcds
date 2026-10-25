@@ -13,7 +13,15 @@ Verified by running both versions and comparing output byte for byte.
 
 ## q14 (Aysha) — two issues, part B
 
-### 1. A typo means part B has never executed
+### 1. A typo means part B has never executed — **fixed at source 2026-10-25**
+
+> Aysha corrected this in her own files (commit 3385d40), so the build no
+> longer patches it. The guard in `build-tuned.py` stays in case it returns.
+> The same update removed a stray `explain` prefix on part A, which the
+> build had been silently stripping — worth knowing, because with it in
+> place the file returns a query plan rather than a result. Issue 2 below is
+> still corrected by the build.
+
 
 `Query-14-B/Q14-B-Optimized.sql`, line 16:
 

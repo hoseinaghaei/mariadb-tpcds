@@ -67,6 +67,8 @@ Was the most expensive query in the suite by a factor of three. `ANALYZE FORMAT=
 
 Verified at SF=4: original 160.7s → 44.7s, **3.60x**, output byte-for-byte identical. The three CTEs were checked individually as well, since q23 returns a NULL and no rows at this scale and the final answer alone proves nothing. See `report/26-the-last-eleven.md`.
 
+**Nafiz also optimized q23**, pushed separately — `queries/optimized/Nafiz/q23/`, **38.0x at SF=1** (54.293s → 1.427s) using five `TEMPORARY TABLE`s. Re-expressed as CTEs (temporary tables are not accepted here) and measured at SF=4, his approach is **2.1x slower** than the adopted rewrite: 53.9s against 111.8s, output identical. His pruning is not weak but *perfect* — 9 best customers and 0 candidate items at SF=4 — and MariaDB simply does not exploit it: the driving scan stays at 11,535,675 index entries either way, with an eq_ref probe added per row. Kept as `queries/optimized/q23-sf4/query23_v4_nafiz_cte.sql` with the measurement.
+
 ### 2. q4 — 46.0s at SF=4, 6.1s at SF=1
 
 **Optimized by riccio** — `queries/optimized/q4/query4_BEST.sql`
@@ -117,13 +119,15 @@ Wired in and verified identical at commit 942fa2f. No individual before/after ti
 
 ### 8. q14 — 24.0s at SF=4, 3.2s at SF=1
 
-**Optimized by Aysha** — `queries/optimized/Aysha/q14/Query-14-A/q14_A_Optimized.sql,`
+**Optimized by Aysha** — `queries/optimized/Aysha/q14/Query-14-A/q14_A_Optimized.sql` and `Query-14-B/Q14-B-Optimized.sql`
 
 Replaces the repeated `date_dim` joins with `MIN/MAX(d_date_sk)` ranges, turns the eligibility check into `EXISTS`, and computes the average as `SUM/COUNT` rather than materialising a large UNION first.
 
-Verified at SF=4: original 191.7s → 27.9s, **6.9x**, output byte-for-byte identical.
+Verified at SF=4 after her 2026-10-25 update: original 240.1s → 57.6s, **4.17x**, output byte-for-byte identical (202 rows). Those absolute figures are inflated — an unrelated process held the machine at load 11 during the run — but the passes are interleaved, so the ratio holds.
 
-> **Correction applied:** typo i_braknd_id -> i_brand_id (part B would not run at all)
+**She fixed the `i_braknd_id` typo at source**, so `build-tuned.py` no longer has to patch it; the guard stays in place in case it returns. Her files also no longer carry the stray `explain` prefix that the build had been stripping. One correction is still applied: part B emits 8 columns where TPC-DS requires 12.
+
+Her update also re-enabled three `SET SESSION` lines — `join_buffer_size` 256M (above our standing 64M) and `tmp_table_size`/`max_heap_table_size` 512M (*below* our standing 1536M). A/B-ed at SF=4 with and without them: **1.03x, no measurable difference**, output identical. They are left in place rather than stripped, since they neither help nor hurt under the standing configuration.
 
 > **Correction applied:** part B emitted 8 columns; TPC-DS requires 12 (the ty_/ly_ key columns are repeated per year) - expanded, and its ORDER BY updated to the new aliases
 

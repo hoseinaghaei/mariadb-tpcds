@@ -122,6 +122,35 @@ unique), swapping `d_date` for `d_date_sk`, and reordering the GROUP BY to
 
 The CTE returns **1,423 rows**.
 
+#### A second q23, from Nafiz, that does not transfer
+
+Nafiz pushed his own q23 while this was being written: **38.0x at SF=1**
+(54.293s → 1.427s), built on five `TEMPORARY TABLE`s. The project does not
+accept temporary tables, so his two ideas were re-expressed as CTEs and
+measured against the adopted rewrite. Both ideas are good — prune the
+frequent-item test to items a *best* customer actually bought in July 1999,
+and compute both customer aggregates in one pass instead of two — and he
+independently verified the same date-key bounds.
+
+At SF=4 it is **2.1x slower** (53.9s against 111.8s, interleaved, output
+identical).
+
+The reason is worth more than the result. The pruning is not weak, it is
+*perfect*: at SF=4 there are **9 best customers and 0 candidate items**, so
+the correct answer is that the CTE is empty. MariaDB does not exploit that.
+`EXPLAIN` shows the driving scan unchanged at 11,535,675 index entries in
+both shapes; the semi-join adds an eq_ref probe into the materialised
+candidate set for every one of those rows. An empty set short-circuits each
+probe and never avoids the scan, so the pruned version pays the full cost
+plus 11.5M lookups.
+
+His temporary tables are probably why it behaves differently at SF=1:
+materialising the candidate set as a real table gives the optimizer a
+concrete tiny relation to drive from, which a CTE in that position does not
+become. That is a point in favour of his approach on its own terms — and a
+reminder that "same query, expressed differently" is not a safe assumption
+about plans.
+
 ### q70: a top-5 filter that is not one
 
 ```sql

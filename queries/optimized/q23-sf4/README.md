@@ -115,3 +115,64 @@ conservative figure and ~4x as the mean-to-mean one.
 
 Worth noting how small `frequent_ss_items` is: **1,423 rows**. The original
 plan rebuilt that 55,882 times per branch.
+
+## v4: Nafiz's approach, and why it is not adopted here
+
+Nafiz pushed `queries/optimized/Nafiz/q23/` with a **38.0x** result at SF=1
+(54.293s → 1.427s median). His BEST builds five `TEMPORARY TABLE`s, which
+this project does not accept, so `query23_v4_nafiz_cte.sql` keeps his two
+ideas as CTEs:
+
+1. **Prune by customer first.** An item can only matter if a *best* customer
+   bought it through catalog or web in July 1999. Compute those candidate
+   items first and test frequency only for them. This is a valid pushdown —
+   the outer filter is `item in frequent AND customer in best`, so an item
+   outside the candidate set cannot reach the result however frequent it is.
+   It is also the idea v3 missed.
+2. **One pass for both customer aggregates.** A `CASE` inside a single
+   `GROUP BY` yields the all-dates total and the date-windowed total
+   together, where the original scans twice.
+
+He also independently verified the same date-key bounds v3 uses.
+
+Measured head to head at SF=4, interleaved, two passes, output identical:
+
+| | pass 1 | pass 2 | best |
+|---|---:|---:|---:|
+| v3 | 67.0s | 53.9s | **53.9s** |
+| v4 | 114.4s | 111.8s | 111.8s |
+
+**v4 is 2.1x slower.** (Both figures are inflated — an unrelated process was
+holding the machine at load 11 — but the comparison is interleaved, so the
+ratio holds.)
+
+### Why a 38x win at SF=1 becomes a 2x loss at SF=4
+
+Not because the pruning is weak. It is *perfect*: at SF=4 there are **9 best
+customers and 0 candidate items**. The correct answer is that
+`frequent_ss_items` is empty and the query has nothing to do.
+
+MariaDB does not exploit that. `EXPLAIN` on the two CTE shapes:
+
+```
+v3   store_sales  range  idx_ss_sold_date_sk  rows 11,535,675  Using index
+v4   store_sales  range  idx_ss_sold_date_sk  rows 11,535,675  Using index
+     <subquery2>  eq_ref distinct_key         rows 1
+     catalog_sales ... MATERIALIZED
+```
+
+The driving scan is **identical** — 11.5M index entries either way. The
+semi-join does not shrink it; it adds an eq_ref probe into the materialized
+candidate set for every one of those 11.5M rows. An empty candidate set
+short-circuits each probe but never avoids the scan, so v4 pays v3's full
+cost plus 11.5M lookups.
+
+Nafiz's temporary tables are likely why his version behaves differently at
+SF=1: materialising the candidate set as a real table gives the optimizer a
+concrete, tiny relation to drive from, which a CTE in this position does not
+become.
+
+This is the same lesson the rest of this batch kept teaching, in its sharpest
+form: **an additional predicate that is provably selective — here, provably
+empty — still costs if it does not change the access path.** See
+`report/26-the-last-eleven.md`.

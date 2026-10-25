@@ -21,10 +21,13 @@ SOCK="$LAB/s32-sf4.sock"
 ME=$(id -un)
 PRE="SET SESSION sql_mode=CONCAT(@@sql_mode,',IGNORE_SPACE,PIPES_AS_CONCAT');"
 
-N=${1:?usage: compare-rewrite.sh <n> <rewrite.sql> [passes]}
-NEW=${2:?usage: compare-rewrite.sh <n> <rewrite.sql> [passes]}
+N=${1:?usage: compare-rewrite.sh <n> <rewrite.sql> [passes] [baseline.sql]}
+NEW=${2:?usage: compare-rewrite.sh <n> <rewrite.sql> [passes] [baseline.sql]}
 PASSES=${3:-3}
-OLD="$REPO/queries/mariadb/query$N.sql"
+# Baseline defaults to the adapted TPC-DS original, but can be any file --
+# useful for A/B-ing two variants of the same query against each other, e.g.
+# one tuned file with a contributor's SET SESSION lines and one without.
+OLD=${4:-"$REPO/queries/mariadb/query$N.sql"}
 
 [[ -f "$OLD" ]] || { echo "no such original: $OLD" >&2; exit 1; }
 [[ -f "$NEW" ]] || { echo "no such rewrite: $NEW" >&2; exit 1; }
