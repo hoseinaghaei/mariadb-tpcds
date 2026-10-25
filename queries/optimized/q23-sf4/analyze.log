@@ -1,0 +1,25 @@
+  split into 2 statements
+=== statement 1
+          ms  node                                    loops         rows  key
+      90,201                                              1         None  
+      56,400  query_specifications                        1         None  
+      33,801  query_specifications                        1         None  
+      30,782  materialized                            55882         None  
+      15,537  materialized                            28222         None  
+      12,485  materialized                             1987         None  
+      10,918  materialized                             1034         None  
+      10,138  subqueries                                  1         None  
+      10,138  materialized                                1         None  
+      10,124  materialized                                1         None  
+=== statement 2
+          ms  node                                    loops         rows  key
+      85,101                                              1         None  
+      53,273  query_specifications                        1         None  
+      31,828  query_specifications                        1         None  
+      29,995  materialized                            55882         None  
+      15,320  materialized                            28222         None  
+      11,213  materialized                             1987         None  
+      10,305  materialized                             1034         None  
+       9,866  subqueries                                  1         None  
+       9,866  materialized                                1         None  
+       9,853  materialized                                1         None  

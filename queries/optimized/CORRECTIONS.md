@@ -144,7 +144,43 @@ in `sql/14_contributed_indexes.sql`.
 
 ---
 
-## q97 (Aysha) — not a defect, our harness was wrong
+## q97 (Aysha) — temporary tables replaced with CTEs
+
+**This project does not permit temporary tables.** `query97_BEST.sql` builds
+`ssci_t` and `csci_t` with `CREATE TEMPORARY TABLE`, so it cannot be used as
+written.
+
+`query97_BEST_no_temp_tables.sql` (added alongside it) expresses the same two
+sets as CTEs. Nothing else changes, and **the valuable part of the
+optimization is kept** — the original emulates a FULL OUTER JOIN as
+
+```sql
+(ssci LEFT JOIN csci) UNION ALL (ssci RIGHT JOIN csci WHERE ssci.key IS NULL)
+```
+
+which reads both sides twice. Aysha's version does one LEFT JOIN and derives
+the catalog-only count arithmetically:
+
+```sql
+catalog_only = (select count(*) from csci) - sum(c.customer_sk is not null)
+```
+
+That is exact because both CTEs `GROUP BY (customer_sk, item_sk)`, so each
+pair occurs at most once per side and a match cannot be double-counted. Good
+idea; it just needs CTEs rather than temporary tables.
+
+Two notes if you re-work it:
+
+- The temp tables carried `KEY k (customer_sk, item_sk)`. A CTE cannot be
+  indexed, so the join may be slower. If it is, that is the cost of the
+  constraint, not a flaw in the approach.
+- The original ends with `limit 100`, which your version drops. The result is
+  a single row so it makes no difference, but it is retained in the
+  replacement to keep the statement identical in shape.
+
+---
+
+## q97 — and separately, our harness was wrong
 
 `query97_BEST.sql` creates `ssci_t` and `csci_t` as temporary tables and then
 uses them. We previously reported it as broken with
@@ -155,7 +191,8 @@ ERROR 1146 (42S02): Table 'tpcds.ssci_t' doesn't exist
 
 That was **our** fault: the old runner split files on `;` and ran each
 statement in a separate connection, so the temp tables vanished between
-statements. Fed whole, the query is fine. Apologies for the misreport.
+statements. Fed whole, the query ran correctly. Apologies for the misreport —
+though the temp tables had to go regardless, for the reason above.
 
 ---
 

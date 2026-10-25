@@ -60,7 +60,7 @@ OPTIMIZED = {
     72: "q72/query72_BEST.sql",
     78: "q78/query78_BEST.sql",
     88: "q88/query88_BEST.sql",
-    97: "Aysha/q97/query97_BEST.sql",
+    97: "Aysha/q97/query97_BEST_no_temp_tables.sql",   # temp tables not permitted
     # Nafiz, merged 2026-10-25.  He also has q31 and q51, but riccio's are
     # already verified here; worth comparing the two later.
     7:  "Nafiz/tier4/q7/query7_BEST.sql",

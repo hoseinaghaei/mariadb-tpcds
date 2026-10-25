@@ -1,23 +1,28 @@
 -- query97
--- source: queries/optimized/Aysha/q97/query97_BEST.sql
+-- source: queries/optimized/Aysha/q97/query97_BEST_no_temp_tables.sql
 
 SET SESSION sql_mode = CONCAT(@@sql_mode, ',IGNORE_SPACE,PIPES_AS_CONCAT');
 
-DROP TEMPORARY TABLE IF EXISTS ssci_t;
-DROP TEMPORARY TABLE IF EXISTS csci_t;
-CREATE TEMPORARY TABLE ssci_t (customer_sk INT, item_sk INT, KEY k (customer_sk, item_sk))
-AS SELECT ss_customer_sk customer_sk, ss_item_sk item_sk
-   FROM store_sales, date_dim
-   WHERE ss_sold_date_sk = d_date_sk AND d_month_seq BETWEEN 1176 AND 1176 + 11
-   GROUP BY ss_customer_sk, ss_item_sk;
-CREATE TEMPORARY TABLE csci_t (customer_sk INT, item_sk INT, KEY k (customer_sk, item_sk))
-AS SELECT cs_bill_customer_sk customer_sk, cs_item_sk item_sk
-   FROM catalog_sales, date_dim
-   WHERE cs_sold_date_sk = d_date_sk AND d_month_seq BETWEEN 1176 AND 1176 + 11
-   GROUP BY cs_bill_customer_sk, cs_item_sk;
-SELECT
-  SUM(c.customer_sk IS NULL AND s.customer_sk IS NOT NULL) AS store_only,
-  (SELECT COUNT(customer_sk) FROM csci_t) - SUM(c.customer_sk IS NOT NULL) AS catalog_only,
-  SUM(c.customer_sk IS NOT NULL) AS store_and_catalog
-FROM ssci_t s
-LEFT JOIN csci_t c ON s.customer_sk = c.customer_sk AND s.item_sk = c.item_sk;
+with ssci as (
+  select ss_customer_sk customer_sk
+        ,ss_item_sk item_sk
+  from store_sales, date_dim
+  where ss_sold_date_sk = d_date_sk
+    and d_month_seq between 1176 and 1176 + 11
+  group by ss_customer_sk, ss_item_sk),
+csci as (
+  select cs_bill_customer_sk customer_sk
+        ,cs_item_sk item_sk
+  from catalog_sales, date_dim
+  where cs_sold_date_sk = d_date_sk
+    and d_month_seq between 1176 and 1176 + 11
+  group by cs_bill_customer_sk, cs_item_sk)
+select
+   sum(c.customer_sk is null and s.customer_sk is not null) store_only
+  ,(select count(*) from csci) - sum(c.customer_sk is not null) catalog_only
+  ,sum(c.customer_sk is not null) store_and_catalog
+from ssci s
+left join csci c
+  on s.customer_sk = c.customer_sk
+ and s.item_sk = c.item_sk
+limit 100;
