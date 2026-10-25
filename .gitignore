@@ -55,3 +55,6 @@ pagesize/*.log
 DSGen-software-code-4.0.0/data-sf4/
 pagesize/data-*-sf4/
 pagesize/*-sf4.sock
+
+# Docker reproduction output (regenerate with ./reproduce.sh)
+/results/
