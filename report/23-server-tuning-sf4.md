@@ -4,6 +4,13 @@ A list of ten tuning changes, supplied by someone who knows MariaDB
 internals, tested on **32K pages / SF=4 / `innodb_stats_persistent_sample_pages=160`
 / tier 4 and 5 (40 queries)**, against a measured baseline of **2403.4s**.
 
+> **Corrected.** The 2.90x below came from a run in which q59 happened to get
+> a plan 10x faster than the one it normally gets. Re-measured, T1 is
+> **971.4s (2.47x)**; with `split_materialized=off` it is **867.5s (2.77x)**,
+> and applied per query **777.7s (3.09x)**. The attribution of the T2
+> regression to histograms was also wrong. See "Correction: q59 and split
+> materialisation" at the end.
+
 ## Result
 
 | run | what it adds | total | vs baseline |
@@ -186,3 +193,76 @@ A version of this report written for the author of the tuning list, with the
 verdict per item and the open questions back to them:
 
   https://claude.ai/artifact/33mJ3a4jVsDx5EGAMnbagn
+
+
+---
+
+# Correction: q59 and split materialisation
+
+Two claims in this report were wrong. Both trace to one query.
+
+## What was wrong
+
+**1. The 2.90x is not reproducible.** T1's 829.8s contains q59 at 15.3s. In
+twelve subsequent runs q59 measured ~152-187s with byte-identical output, and
+T1's configuration rebuilt exactly still gave 166.4s and 170.9s. Re-measured
+under identical conditions, T1 is **971.4s**.
+
+**2. The T2 histogram regression was misattributed.** This report said
+histograms cost 13% "entirely to q59". The cause was not histograms: q59 flips
+between two plans, and the T2 run drew the slow one. Clearing
+`mysql.column_stats` to zero changed nothing (157.8s).
+
+## The real cause
+
+`ANALYZE FORMAT=JSON` on q59:
+
+| node | ms | loops |
+|---|---:|---:|
+| `materialized` | **164,024** | **7,665** |
+| `materialized` | 2,351 | 1 |
+
+q59 references its CTE twice. One reference materialises once in 2.4s; the
+other is **re-materialised 7,665 times, once per outer row**, for 164s of a
+167s query. That is split materialisation (lateral derived) — sound for a
+selective lookup, ruinous for a full aggregate over 15.5M rows. The two plans
+are the two timings: ~14s without the split, ~155s with it.
+
+Six other causes were eliminated by direct test first — histograms, stale
+InnoDB statistics, `join_cache_level=8`, MRR, cache residency and
+`use_stat_tables` — and are listed in
+`queries/optimized/q59-sf4/README.md` so they are not re-investigated.
+
+## Corrected figures
+
+| configuration | total | vs 2403.4s baseline |
+|---|---:|---:|
+| T1, as originally published | 829.8s | 2.90x |
+| **T1, re-measured** | **971.4s** | **2.47x** |
+| **T1 + `split_materialized=off` globally** | **867.5s** | **2.77x** |
+| **best of each, per query** | **777.7s** | **3.09x** |
+
+`split_materialized=off` is **not** a good global setting despite being worth
+12x on q59 alone. It costs q23 +54s, q4 +15s and q78 +14s, so suite-wide it
+is worth only 10.7%. It belongs per query:
+
+```sql
+SET SESSION optimizer_switch = 'split_materialized=off';   -- for q59 only
+```
+
+39 of 40 answers are identical between the two configurations; the exception
+is q71, whose `md5_sorted` matches, so it differs only in the order of tied
+rows.
+
+## What to take from it
+
+The tuning in this report is worth about **2.5x reliably**, 2.77x with the
+split setting applied globally, and 3.09x applied per query. The direction of
+every finding stands; the headline figure was optimistic by roughly 17%
+because one query in one run drew a lucky plan.
+
+The method lesson is that a suite total is only as stable as its least stable
+query. q59 alone swings 140s on a ~900s total — 15% — which is wider than
+most of the effects being measured. A benchmark containing a plan-unstable
+query cannot resolve a 5-10% difference, and this report compared several
+configurations that differed by less than that.
