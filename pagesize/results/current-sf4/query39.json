@@ -1,0 +1,14 @@
+{
+ "query": 39,
+ "tag": "current-sf4",
+ "scale": 4,
+ "page_kb": 32,
+ "sample_pages": 160,
+ "seconds": 1.8,
+ "buffer_pool_bytes": 8589934592,
+ "tmp_table_size": 1610612736,
+ "rows": 488,
+ "md5": "07614a77fac66c61a51767c39feb00c2",
+ "md5_sorted": "e27540dcf02566f0e1fc5075c73d85a1",
+ "status": "OK"
+}

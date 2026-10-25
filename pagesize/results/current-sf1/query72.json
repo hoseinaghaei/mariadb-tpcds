@@ -1,0 +1,14 @@
+{
+ "query": 72,
+ "tag": "current-sf1",
+ "scale": 1,
+ "page_kb": 32,
+ "sample_pages": 160,
+ "seconds": 1.0,
+ "buffer_pool_bytes": 8589934592,
+ "tmp_table_size": 1610612736,
+ "rows": 100,
+ "md5": "774489b29214441a6113c50953a04fbf",
+ "md5_sorted": "c6164e719920c8ea4b64518e5ad5d2ab",
+ "status": "OK"
+}
