@@ -218,8 +218,13 @@ def report(runs, tot, anoms):
                "|---" * (len(es) + 2) + "|"]
         for q in allq:
             vals = [(runs[(e, s)].get(q) or {}).get("seconds") for e in es]
-            good = [v for v in vals if v]
-            r = f"{max(good)/min(good):.1f}x" if len(good) == len(es) and min(good) else "—"
+            # `is not None` and not a truth test: a query that measured 0.0s
+            # really was measured, and treating it as missing would quietly
+            # drop it.  The ratio is still undefined when the faster side is
+            # zero, which is what the dash means here.
+            got = [v for v in vals if v is not None]
+            r = (f"{max(got)/min(got):.1f}x"
+                 if len(got) == len(es) and min(got) > 0 else "—")
             md.append(f"| q{q} | " + " | ".join(fmt(v) for v in vals) + f" | {r} |")
         md.append("")
 

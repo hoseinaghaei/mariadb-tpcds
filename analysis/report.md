@@ -1,11 +1,12 @@
 # Benchmark results across scale factors
 
-Generated 2026-10-26 14:53. 2 runs, 40 queries.
+Generated 2026-10-26 15:05. 3 runs, 40 queries.
 
 ## Totals
 
 | environment | scale | queries | errors | total |
 |---|---:|---:|---:|---:|
+| docker | 1 | 40 | 0 | 124.5s |
 | macos | 1 | 40 | 0 | 82.9s |
 | macos | 4 | 40 | 0 | 400.9s |
 
@@ -58,6 +59,51 @@ Per-query response time at each scale factor.
 | q88 | 0.1s | 0.4s | — |
 | q97 | 0.8s | 3.8s | 4.7x |
 
+## macOS against the container at SF=1
+
+| query | docker | macos | ratio |
+|---|---|---|---|
+| q2 | 2.4s | 3.5s | 1.5x |
+| q4 | 19.5s | 7.3s | 2.7x |
+| q5 | 3.1s | 0.7s | 4.4x |
+| q7 | 1.9s | 1.4s | 1.4x |
+| q8 | 0.5s | 0.4s | 1.2x |
+| q10 | 0.1s | 0.1s | 1.0x |
+| q11 | 7.3s | 5.6s | 1.3x |
+| q14 | 4.0s | 3.5s | 1.1x |
+| q21 | 0.3s | 0.2s | 1.5x |
+| q22 | 23.3s | 3.2s | 7.3x |
+| q23 | 10.1s | 10.2s | 1.0x |
+| q27 | 1.6s | 1.5s | 1.1x |
+| q31 | 0.4s | 0.4s | 1.0x |
+| q33 | 0.1s | 0.2s | 2.0x |
+| q35 | 1.7s | 3.9s | 2.3x |
+| q37 | 0.0s | 0.3s | — |
+| q38 | 1.0s | 1.8s | 1.8x |
+| q39 | 0.4s | 0.5s | 1.2x |
+| q43 | 0.8s | 0.7s | 1.1x |
+| q46 | 1.5s | 1.7s | 1.1x |
+| q47 | 2.5s | 2.0s | 1.2x |
+| q51 | 6.3s | 5.2s | 1.2x |
+| q54 | 0.1s | 0.1s | 1.0x |
+| q57 | 2.0s | 1.5s | 1.3x |
+| q58 | 0.1s | 0.1s | 1.0x |
+| q59 | 1.3s | 1.2s | 1.1x |
+| q65 | 0.5s | 1.0s | 2.0x |
+| q66 | 1.4s | 1.9s | 1.4x |
+| q67 | 12.0s | 6.5s | 1.8x |
+| q68 | 0.9s | 0.6s | 1.5x |
+| q70 | 0.7s | 0.6s | 1.2x |
+| q71 | 0.6s | 0.7s | 1.2x |
+| q72 | 3.0s | 1.2s | 2.5x |
+| q74 | 6.5s | 5.8s | 1.1x |
+| q77 | 1.0s | 1.8s | 1.8x |
+| q78 | 3.5s | 3.3s | 1.1x |
+| q82 | 0.1s | 0.1s | 1.0x |
+| q87 | 1.1s | 1.3s | 1.2x |
+| q88 | 0.1s | 0.1s | 1.0x |
+| q97 | 0.8s | 0.8s | 1.0x |
+
 ## Flagged
 
 ### warn
@@ -79,6 +125,13 @@ Per-query response time at each scale factor.
 |---|---|---|
 | SUB-LINEAR | q2 | macos: 3.5s at SF=1 -> 6.8s at SF=4 = 1.9x for 4x the data |
 | SUB-LINEAR | q35 | macos: 3.9s at SF=1 -> 3.9s at SF=4 = 1.0x for 4x the data |
+| ENVIRONMENT GAP | q5 | SF=1: macos 0.7s vs docker 3.1s = 4.4x |
+| ENVIRONMENT GAP | q22 | SF=1: macos 3.2s vs docker 23.3s = 7.3x |
+| DOMINATES | q4 | docker SF=1: 19.5s, 16% of the run |
+| EMPTY | q8 | docker SF=1: returned no rows |
+| DOMINATES | q22 | docker SF=1: 23.3s, 19% of the run |
+| EMPTY | q54 | docker SF=1: returned no rows |
+| EMPTY | q58 | docker SF=1: returned no rows |
 | EMPTY | q8 | macos SF=1: returned no rows |
 | DOMINATES | q23 | macos SF=1: 10.2s, 12% of the run |
 | EMPTY | q54 | macos SF=1: returned no rows |
