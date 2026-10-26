@@ -1,4 +1,4 @@
-USE tpcds;
+USE tpcds_sf4;
 
 DROP TABLE IF EXISTS q67_rollup;
 
