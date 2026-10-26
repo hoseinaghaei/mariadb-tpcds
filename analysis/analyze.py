@@ -88,12 +88,43 @@ def find_anomalies(runs, tot):
     a = []
 
     # --- correctness first -------------------------------------------------
+    #
+    # A scale factor does NOT identify a database -- (scale, seed) does.
+    # dsdgen with a different -RNGSEED builds different data at the same
+    # scale, and then every answer differs legitimately.  That is not a
+    # hypothetical: the macOS SF=4 dataset here was generated with
+    # `dsdgen -SCALE 4` and no seed (report/21), while the container uses
+    # seed 10, and comparing them reported 37 "mismatches" that were nothing
+    # of the kind.
+    #
+    # The runs do not all record their seed, so it is inferred from the data
+    # instead: if several queries return DIFFERENT ROW COUNTS, the databases
+    # differ, and no per-query answer comparison between them means anything.
+    # One differing row count could be a genuine bug; several cannot be.
     scales = sorted({s for _, s in runs})
     for s in scales:
         envs = sorted(e for e, sc in runs if sc == s)
         if len(envs) < 2:
             continue
-        for q in sorted(set().union(*[set(runs[(e, s)]) for e in envs])):
+        qs = sorted(set().union(*[set(runs[(e, s)]) for e in envs]))
+
+        differing_rows = [q for q in qs
+                          if len({runs[(e, s)][q]["rows"] for e in envs
+                                  if q in runs[(e, s)]
+                                  and runs[(e, s)][q]["status"] == "OK"}) > 1]
+        if len(differing_rows) > 1:
+            a.append(("DIFFERENT DATASET", "—",
+                      f"SF={s}: {' and '.join(envs)} disagree on the row count for "
+                      f"{len(differing_rows)} queries "
+                      f"({', '.join('q%d' % q for q in differing_rows[:6])}"
+                      f"{', ...' if len(differing_rows) > 6 else ''}). "
+                      f"These are different databases -- almost certainly a "
+                      f"different dsdgen -RNGSEED -- so their answers are not "
+                      f"comparable and no per-query check was made. Timings "
+                      f"remain broadly indicative.", "critical"))
+            continue      # answers are meaningless; do not flag them one by one
+
+        for q in qs:
             hashes = {}
             for e in envs:
                 rec = runs[(e, s)].get(q)

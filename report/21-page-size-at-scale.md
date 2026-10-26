@@ -99,6 +99,11 @@ memory.
 ## Method
 
 - SF=4 generated with `dsdgen -SCALE 4` into `DSGen-software-code-4.0.0/data-sf4`
+  — **without `-RNGSEED 10`**, unlike the SF=1 data. The two SF=4 databases in
+  this project are therefore different: the container generates SF=4 with seed
+  10, the macOS host does not. Their timings are comparable; their answers are
+  not, and `analysis/analyze.py` detects and reports this rather than
+  flagging 37 false answer mismatches
   (4.3 GB, 5m21s). dsdgen warns `Selected scale factor is NOT valid for result
   publication` — fine for an experiment, not a publishable TPC-DS number.
 - Separate instances on ports 3500+KB, datadirs `pagesize/data-<P>k-sf4`, so

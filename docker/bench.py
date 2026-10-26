@@ -136,7 +136,13 @@ def main():
 
     print(f"=== {tag} TOTAL {total:.1f}s ({total/60:.1f} min) over "
           f"{len(items)} queries, {errors} errors", flush=True)
+    # Record what database this was: a scale factor alone does not identify
+    # one.  dsdgen with a different -RNGSEED builds different data at the same
+    # scale, and then answers differ legitimately.  Comparing two runs without
+    # knowing both seeds produced 37 bogus "answer mismatches" once.
     json.dump({'tag': tag, 'total_seconds': round(total, 1),
+               'scale': int(os.environ.get('SCALE', 0)) or None,
+               'rngseed': os.environ.get('RNGSEED'),
                'queries': len(items), 'errors': errors,
                'page_kb': page, 'sample_pages': sample, 'indexes': nidx,
                'buffer_pool_bytes': pool, 'queryset': which},

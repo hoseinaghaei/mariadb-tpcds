@@ -314,6 +314,7 @@ run_one() {   # $1 = tag, $2 = extra cnf block
   write_cnf "$2"
   chown mysql:mysql "$DATA/my.cnf"
   start_server
+  RNGSEED="$RNGSEED" SCALE="$SCALE" \
   python3 /usr/local/bin/bench.py "$SOCK" "$RESULTS/$1" "$1" "$QUERYSET" \
     | tee "$RESULTS/$1.log"
 }
