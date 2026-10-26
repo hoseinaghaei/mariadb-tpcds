@@ -331,11 +331,51 @@ say "7/7  Benchmarking"
 # by-product of any run rather than a second pass over the suite.
 $CLI -e "FLUSH INDEX_STATISTICS" >/dev/null 2>&1 || \
   note "could not flush INDEX_STATISTICS (userstat off?); usage report will be skipped"
+# Prove the live server matches sql/tpcds-tuned.cnf -- the standing
+# configuration every published figure was measured on -- rather than
+# assuming the cnf block was written correctly and applied.  A setting that
+# silently failed to take would otherwise be invisible until someone noticed
+# the numbers were wrong.
+check_settings() {
+  [[ -f "$PROJECT/sql/tpcds-tuned.cnf" ]] || return 0
+  $CLI -N -B -e "select 1" >/dev/null 2>&1 || return 0
+  python3 - "$PROJECT/sql/tpcds-tuned.cnf" "$SOCK" <<'PY'
+import subprocess, sys, re
+cnf, sock = sys.argv[1], sys.argv[2]
+def to_bytes(v):
+    m = re.fullmatch(r'(\d+)([KMG]?)', v.strip().upper())
+    if not m: return None
+    return int(m.group(1)) * {'':1, 'K':1024, 'M':1024**2, 'G':1024**3}[m.group(2)]
+want = {}
+for line in open(cnf):
+    line = line.split('#')[0].strip()
+    if '=' not in line or line.startswith('['): continue
+    k, v = (x.strip() for x in line.split('=', 1))
+    want[k] = v.strip("'\"")
+q = subprocess.run(['mariadb', f'--socket={sock}', '-u', 'root', '-N', '-B',
+                    '-e', "show variables"], capture_output=True, text=True)
+have = dict(l.split('\t', 1) for l in q.stdout.strip().splitlines() if '\t' in l)
+bad = []
+for k, v in sorted(want.items()):
+    got = have.get(k)
+    if got is None:
+        bad.append((k, v, "not a variable here")); continue
+    wb, gb = to_bytes(v), to_bytes(got)
+    ok = (wb == gb) if (wb is not None and gb is not None) else (got.strip("'\"") == v)
+    if not ok:
+        bad.append((k, v, got))
+print(f"          standing config: {len(want)-len(bad)}/{len(want)} settings match")
+for k, v, got in bad:
+    print(f"            DIFFERS  {k}: want {v}, have {got}")
+PY
+}
+
 run_one() {   # $1 = tag, $2 = extra cnf block
   stop_server
   write_cnf "$2"
   chown mysql:mysql "$DATA/my.cnf"
   start_server
+  [[ -n "$2" ]] && check_settings
   RNGSEED="$RNGSEED" SCALE="$SCALE" \
   python3 /usr/local/bin/bench.py "$SOCK" "$RESULTS/$1" "$1" "$QUERYSET" \
     | tee "$RESULTS/$1.log"
