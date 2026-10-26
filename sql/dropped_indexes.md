@@ -1,5 +1,21 @@
 # Indexes we build without, and why
 
+> ## ⚠ This list is not yet trustworthy for the container
+>
+> The usage evidence behind it was collected on the **macOS host** — and at
+> SF=4 on a dataset generated without `-RNGSEED 10`, which is a *different
+> database*. It describes what those instances read, not what the container
+> reads.
+>
+> Building this set in the container measured **738.3s at SF=4 against
+> 491.4s for the full set**, and **156.9s at SF=1 against 114.8s** — the
+> opposite of the 13% improvement the macOS evidence predicted.
+>
+> The container therefore still builds the full index set by default.
+> `KEPT_INDEXES=1` opts into this one. The list has to be re-derived from
+> container measurements before it means anything here.
+
+
 Generated 2026-10-26 22:37 by `scripts/build-index-set.py`.
 
 A new database builds **39 secondary indexes**. **128 others — 16,826 MB (16.4 GB) — are not built.**

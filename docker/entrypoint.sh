@@ -317,9 +317,14 @@ say "5/7  Creating indexes"
 # pages stop competing with data pages for the buffer pool.  What is left out
 # and why is in sql/dropped_indexes.md; everything ever built is still in
 # sql/all_indexes.sql and restores with one command.
+# KEPT_INDEXES=1 builds only the measured-useful set.  OFF by default: see
+# the warning in sql/dropped_indexes.md -- the usage evidence behind that set
+# was collected on the macOS host, and at SF=4 on a dataset generated without
+# -RNGSEED 10, so it does not describe what THIS database reads.  Building it
+# here measured 738.3s at SF=4 against 491.4s for the full set.  The list has
+# to be re-derived from container measurements before it can be trusted.
 KEPT="$PROJECT/sql/indexes_kept.sql"
-if [[ "${FULL_INDEXES:-0}" == "1" || ! -f "$KEPT" ]]; then
-  [[ -f "$KEPT" ]] || note "sql/indexes_kept.sql missing; building the full set"
+if [[ "${KEPT_INDEXES:-0}" != "1" || ! -f "$KEPT" ]]; then
   WANT_IDX=167; SRC="the full historical set (sql/05, 11, 14)"
 else
   WANT_IDX=$(grep -ciE '^CREATE +(UNIQUE +)?INDEX' "$KEPT" || echo 0)
@@ -483,7 +488,7 @@ stop_server
 # shape as scripts/index-usefulness.sh produces on the host, so the analysis
 # does not care which environment a report came from.
 say "Index usage"
-if $CLI -N -B -e "select @@userstat" 2>/dev/null | grep -qx 1; then
+if $CLI -N -B -e "select @@userstat" 2>/dev/null | grep -qiE '^(1|ON)$'; then
   $CLI -B -N tpcds > "$RESULTS/index-usage-sf$SCALE.tsv" <<'SQL'
 SELECT s.TABLE_NAME, s.INDEX_NAME,
        ROUND(IFNULL(z.stat_value,0) * @@innodb_page_size / 1048576, 1) AS mb,
