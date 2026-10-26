@@ -47,13 +47,20 @@ if ! docker info >/dev/null 2>&1; then
 fi
 
 IMAGE=tpcds-mariadb
-RESULTS="$PWD/results"
+# Where per-query JSON lands.  run-scales.sh points this at a per-scale
+# directory so one scale factor's results do not overwrite another's.
+RESULTS="${RESULTS_DIR:-$PWD/results}"
 mkdir -p "$RESULTS"
 
 # A named volume holds the generated data and the database between runs, so a
 # second run skips generation and loading.  Remove it with:
 #   docker volume rm tpcds-data
-VOLUME=tpcds-data
+#
+# run-scales.sh overrides this per scale factor (tpcds-data-sf1, -sf2, ...)
+# so that re-running one scale does not force every other to be regenerated.
+# One volume per scale costs disk -- roughly 3 GB at SF=1 and 35 GB at SF=4 --
+# and buys back hours of reload and index time on any repeat run.
+VOLUME="${VOLUME:-tpcds-data}"
 
 echo "==> building image (first run compiles the toolchain layer; later runs are cached)"
 docker build -q -t "$IMAGE" \

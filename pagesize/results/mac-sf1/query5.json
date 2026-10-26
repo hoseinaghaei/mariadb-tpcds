@@ -1,0 +1,14 @@
+{
+ "query": 5,
+ "tag": "mac-sf1",
+ "scale": 1,
+ "page_kb": 32,
+ "sample_pages": 160,
+ "seconds": 0.7,
+ "buffer_pool_bytes": 8589934592,
+ "tmp_table_size": 1610612736,
+ "rows": 100,
+ "md5": "e8d342cffe35124e763049e517464200",
+ "md5_sorted": "544668d7a26548caf13afa4c86c873a9",
+ "status": "OK"
+}
