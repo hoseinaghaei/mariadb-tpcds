@@ -24,12 +24,44 @@ collects the version history into one table for report assembly.
 | [`q88`](q88/) | 33s | **0.25s** | **~130x** |
 | [`q78`](q78/) | 27.2s | **8.5s** | **3.2x** |
 
-`query<N>_BEST.sql` in each folder is the version to use.
+`query<N>_BEST.sql` in each completed folder is its selected version.
+
+## Riccardo's Tier 4 results — local SF=4, seed=10
+
+The five folders now contain selected `query<N>_BEST.sql` files and READMEs
+with the query's meaning, development comparisons, plan observations,
+correctness checks and rerun commands. The selected files were renamed from
+the latest measured candidates without changing their SQL. The `v0` originals
+remain unchanged; the `v1` files are baseline-copy placeholders.
+
+| Query | Original | Selected | Observed ratio | Final correctness check |
+|---|---:|---:|---:|---|
+| [Q82](q82/README.md) | 0.732s | **0.687s** | 1.07x | 5 identical ordered rows |
+| [Q37](q37/README.md) | 1.049s | **0.804s** | 1.30x | 4 identical ordered rows |
+| [Q65](q65/README.md) | 91.718s | **45.167s** | 2.03x | Same 100-row multiset; tied-row order differs |
+| [Q70](q70/README.md) | 93.248s | **24.549s** | 3.80x | 3 identical ordered rows |
+| [Q87](q87/README.md) | 145.224s | **55.183s** | 2.63x | Identical scalar count: 184693 |
+
+These are separate **single original-then-selected pairs**, not medians, on
+Riccardo's Linux/MariaDB 10.11.14 database with primary keys only and a 2 GiB
+buffer pool. Do not combine them with the author's indexed/SF=1 timings above.
+The final pairs were checked interactively without saving raw trial artifacts.
+All five also passed session-local nonempty fixtures. Remeasure on the final
+group machine and datasets before using the ratios as final benchmark results.
+Q82's small final difference needs repetition; its rejected v2 was much slower.
+
+**Q65 has not passed the strict ordered-result comparator.** Its complete
+100-row multiset matched, while rows tied on the original ORDER BY keys changed
+order. Its README explains the LIMIT/tie caveat; do not label it byte-identical.
+The [earlier Tier 4 workflow](../../experiments/tier4/README.md) remains a
+preparation guide; use the per-query READMEs for the current files and findings.
 
 ## Ground rules
 
-1. **Output must not change.** Every timing here is backed by a byte-identical
-   diff of the full result against the unmodified query.
+1. **Output must not change.** The original author's timings above use a
+   byte-identical diff against the unmodified query. Riccardo's SF=4 checks
+   distinguish exact ordered agreement from the explicitly documented Q65
+   tie-order difference; that query has not passed the strict comparator.
 2. **Ablate.** Separate the contributions — for q72 the intuition was that the
    rewritten join order mattered; measurement showed it was worth 14% while the
    hint was worth 55x.
