@@ -62,11 +62,17 @@ python3 "$LAB/bench-tuned.py" "$SOCK" "idxuse-sf$SF" --timeout 5400 | tail -1
 
 echo "=== collecting"
 $CLI -B -N tpcds > "$OUT/index-usage-sf$SF.tsv" <<'SQL'
+-- Three states, not two.  An index that is IGNORED cannot be read however
+-- useful it would be, so counting it as "never read" and proposing to drop
+-- it is circular -- idx_ss_date_store_profit (512 MB) was listed as a drop
+-- candidate on exactly that basis.  It is reported separately instead.
 SELECT s.TABLE_NAME, s.INDEX_NAME,
        ROUND(IFNULL(z.stat_value,0) * @@innodb_page_size / 1048576, 1) AS mb,
        IFNULL(u.ROWS_READ, 0) AS rows_read,
-       IF(IFNULL(u.ROWS_READ,0) > 0, 'used', 'UNUSED') AS verdict
-FROM (SELECT DISTINCT TABLE_SCHEMA, TABLE_NAME, INDEX_NAME
+       CASE WHEN s.IGNORED = 'YES'          THEN 'IGNORED'
+            WHEN IFNULL(u.ROWS_READ,0) > 0  THEN 'used'
+            ELSE 'UNUSED' END AS verdict
+FROM (SELECT DISTINCT TABLE_SCHEMA, TABLE_NAME, INDEX_NAME, IGNORED
       FROM information_schema.STATISTICS WHERE TABLE_SCHEMA='tpcds') s
 LEFT JOIN information_schema.INDEX_STATISTICS u
        ON u.TABLE_SCHEMA = s.TABLE_SCHEMA
@@ -84,8 +90,9 @@ python3 - "$OUT/index-usage-sf$SF.tsv" "$SF" > "$OUT/index-usage-sf$SF.md" <<'PY
 import sys, collections
 rows = [l.rstrip("\n").split("\t") for l in open(sys.argv[1]) if l.strip()]
 sf = sys.argv[2]
-used   = [r for r in rows if r[4] == 'used']
-unused = [r for r in rows if r[4] == 'UNUSED']
+used    = [r for r in rows if r[4] == 'used']
+unused  = [r for r in rows if r[4] == 'UNUSED']
+ignored = [r for r in rows if r[4] == 'IGNORED']
 mb = lambda rs: sum(float(r[2]) for r in rs)
 print(f"# Index usefulness at SF={sf}\n")
 print("Counters zeroed, then the 40 tier-4/5 queries in `queries/tuned/` run "
@@ -94,8 +101,20 @@ print("Counters zeroed, then the 40 tier-4/5 queries in `queries/tuned/` run "
 print(f"| | indexes | disk |")
 print(f"|---|---:|---:|")
 print(f"| read at least once | {len(used)} | {mb(used):,.0f} MB |")
-print(f"| never read | {len(unused)} | **{mb(unused):,.0f} MB** |")
+print(f"| enabled but never read | {len(unused)} | **{mb(unused):,.0f} MB** |")
+if ignored:
+    print(f"| currently IGNORED | {len(ignored)} | {mb(ignored):,.0f} MB |")
 print(f"| total | {len(rows)} | {mb(rows):,.0f} MB |\n")
+if ignored:
+    print("The IGNORED ones are listed separately because they **cannot** be "
+          "read — the optimizer is not allowed to use them — so a zero read "
+          "count says nothing about whether they are worth keeping. Counting "
+          "them as dead weight would be circular.\n")
+    print("| table | index | MB |")
+    print("|---|---|---:|")
+    for r in sorted(ignored, key=lambda r: -float(r[2])):
+        print(f"| {r[0]} | `{r[1]}` | {float(r[2]):,.1f} |")
+    print()
 if unused:
     print("## Never read, largest first\n")
     print("| table | index | MB |")

@@ -171,6 +171,7 @@ innodb_page_size               = ${PAGE_SIZE}K
 innodb_buffer_pool_size        = $BUFFER_POOL
 innodb_stats_persistent_sample_pages = $SAMPLE_PAGES
 
+userstat                       = 1
 innodb_flush_log_at_trx_commit = 1
 innodb_flush_method            = O_DIRECT
 innodb_file_per_table          = ON
@@ -302,6 +303,20 @@ else
 fi
 note "$($CLI -N -B -e "select concat(count(distinct table_name,index_name),' indexes') from information_schema.statistics where table_schema='tpcds'")"
 
+# PRUNE_INDEXES=1 drops the indexes that no scale factor read -- the list in
+# sql/drop_unused_indexes.sql, produced by scripts/prune-indexes.py from the
+# usage reports at SF=1 and SF=4.  Off by default, because the published
+# figures were measured with the full index set and changing it silently
+# would make a reproduction not reproduce.
+#
+# Everything dropped comes back with:  mariadb tpcds < sql/all_indexes.sql
+if [[ "${PRUNE_INDEXES:-0}" == "1" && -f "$PROJECT/sql/drop_unused_indexes.sql" ]]; then
+  before=$($CLI -N -B -e "select count(distinct table_name,index_name) from information_schema.statistics where table_schema='tpcds'")
+  $CLI tpcds < "$PROJECT/sql/drop_unused_indexes.sql"
+  after=$($CLI -N -B -e "select count(distinct table_name,index_name) from information_schema.statistics where table_schema='tpcds'")
+  note "pruned unused indexes: $before -> $after"
+fi
+
 say "6/7  Refreshing optimizer statistics"
 TBLS=$($CLI -N -B -e "select group_concat(table_name) from information_schema.tables where table_schema='tpcds'")
 $CLI tpcds -e "analyze table $TBLS" >/dev/null
@@ -309,6 +324,13 @@ note "done"
 
 # ---------------------------------------------------------------- 7. benchmark
 say "7/7  Benchmarking"
+
+# Zero the index read counters here, so whatever INDEX_STATISTICS reports
+# afterwards covers exactly the benchmark and not the loading, indexing and
+# ANALYZE that preceded it.  Costs nothing and makes the usage report a
+# by-product of any run rather than a second pass over the suite.
+$CLI -e "FLUSH INDEX_STATISTICS" >/dev/null 2>&1 || \
+  note "could not flush INDEX_STATISTICS (userstat off?); usage report will be skipped"
 run_one() {   # $1 = tag, $2 = extra cnf block
   stop_server
   write_cnf "$2"
@@ -360,6 +382,36 @@ esac
 stop_server
 
 # ---------------------------------------------------------------- report
+# Index usage, as a by-product: the counters were zeroed just before the
+# benchmark, so this is exactly what the query set read.  Written in the same
+# shape as scripts/index-usefulness.sh produces on the host, so the analysis
+# does not care which environment a report came from.
+say "Index usage"
+if $CLI -N -B -e "select @@userstat" 2>/dev/null | grep -qx 1; then
+  $CLI -B -N tpcds > "$RESULTS/index-usage-sf$SCALE.tsv" <<'SQL'
+SELECT s.TABLE_NAME, s.INDEX_NAME,
+       ROUND(IFNULL(z.stat_value,0) * @@innodb_page_size / 1048576, 1) AS mb,
+       IFNULL(u.ROWS_READ, 0) AS rows_read,
+       CASE WHEN s.IGNORED = 'YES'         THEN 'IGNORED'
+            WHEN IFNULL(u.ROWS_READ,0) > 0 THEN 'used'
+            ELSE 'UNUSED' END AS verdict
+FROM (SELECT DISTINCT TABLE_SCHEMA, TABLE_NAME, INDEX_NAME, IGNORED
+      FROM information_schema.STATISTICS WHERE TABLE_SCHEMA='tpcds') s
+LEFT JOIN information_schema.INDEX_STATISTICS u
+       ON u.TABLE_SCHEMA=s.TABLE_SCHEMA AND u.TABLE_NAME=s.TABLE_NAME
+      AND u.INDEX_NAME=s.INDEX_NAME
+LEFT JOIN mysql.innodb_index_stats z
+       ON z.database_name=s.TABLE_SCHEMA AND z.table_name=s.TABLE_NAME
+      AND z.index_name=s.INDEX_NAME AND z.stat_name='size'
+ORDER BY verdict DESC, mb DESC, s.TABLE_NAME, s.INDEX_NAME;
+SQL
+  note "$(awk -F'\t' '$5=="UNUSED"{n++; m+=$3} END{printf "%d never read, %.1f GB", n, m/1024}' \
+          "$RESULTS/index-usage-sf$SCALE.tsv")"
+  note "wrote results/index-usage-sf$SCALE.tsv"
+else
+  note "userstat is off; no usage report"
+fi
+
 say "Results"
 python3 - "$RESULTS" "$PROFILE" <<'PY'
 import json, sys, os, glob
