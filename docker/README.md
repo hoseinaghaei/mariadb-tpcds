@@ -36,7 +36,7 @@ Any of these can be overridden as `KEY=VALUE` after the profile:
 | `SCALE` | 1 | dsdgen scale factor |
 | `RNGSEED` | 10 | dsdgen random seed — **leave this alone** to match the published answers |
 | `PAGE_SIZE` | 32 | 4, 8, 16, 32 or 64 |
-| `BUFFER_POOL` | 2G | `innodb_buffer_pool_size` |
+| `BUFFER_POOL` | 8G | `innodb_buffer_pool_size` — **the published configuration**; needs ~10G given to Docker |
 | `SAMPLE_PAGES` | 160 | `innodb_stats_persistent_sample_pages` |
 | `QUERYSET` | tuned | which SQL to run — see below |
 | `TUNED` | tuned | which server settings — `baseline`, `tuned` or `both` |
@@ -109,9 +109,11 @@ the server empties the buffer pool but not the OS cache, so a "cold" run is
 partly warm, and every page is cached twice.
 
 On Linux, direct I/O works, so this container is the more trustworthy venue.
-Expect absolute times to differ from the macOS figures in `report/` — at
-SF=1 with a 1 GB pool, q51 took 167s here against single-digit seconds on
-macOS.
+Expect absolute times to differ from the macOS figures in `report/`. At SF=1
+the same suite measured 114.8s in the container against 69.2s on macOS, and
+the gap is not uniform: q22 was 6.7x slower here while q37 was faster and q23
+a dead heat. (An older note recorded q51 at 167s here — that was measured
+with a 1 GB pool, before every profile moved to the published 8G.)
 
 ## Indexes: one file to put them all back
 
@@ -153,11 +155,48 @@ you need the disk back; ignore when the question is whether it pays.
 
 ## Resource notes
 
-- `full` wants 12G+ given to the Docker VM for its 8G pool; otherwise run it
-  as `./reproduce.sh full BUFFER_POOL=4G`.
+- **Every profile** uses an 8G buffer pool, so Docker needs ~10G of memory
+  (Docker Desktop > Settings > Resources). `reproduce.sh` checks this before
+  starting and fails with the numbers rather than letting MariaDB fail to
+  start 300 seconds later. If you cannot spare it, override explicitly —
+  `./reproduce.sh quick BUFFER_POOL=4G` — and say so when reporting, because
+  a smaller pool is a different experiment, not a smaller one.
 - The `tpcds-data` volume holds the generated data and the database: about
   3 GB at SF=1, about 35 GB at SF=4. Remove it with `docker volume rm
   tpcds-data`.
+
+## Does it reproduce the exact configuration?
+
+Yes — deliberately, and the run proves it rather than asserting it. After
+applying the tuning block the entrypoint reads `sql/tpcds-tuned.cnf`, queries
+`SHOW VARIABLES`, and prints `standing config: N/13 settings match`, naming
+any that do not.
+
+Pinned to `pagesize/my-32k-sf4-t1exact.cnf`, the instance every published
+figure was measured on:
+
+| | |
+|---|---|
+| MariaDB | 13.0.2 (same build family as the macOS host) |
+| page size | 32K |
+| buffer pool | **8G, on every profile** |
+| statistics | `innodb_stats_persistent_sample_pages = 160` |
+| the 13 tuned settings | `sql/tpcds-tuned.cnf` verbatim |
+| also pinned | `innodb_log_file_size` 96M, `innodb_io_capacity` 200, `innodb_write_io_threads` 4, `innodb_doublewrite` ON, `skip_name_resolve`, `max_statement_time` 3600 |
+| data | `dsdgen -RNGSEED 10` |
+| indexes | `sql/05`, `11`, `14` |
+| queries | `queries/tuned/` |
+
+The last four of the "also pinned" group were previously left at MariaDB's
+defaults. The defaults happened to equal the macOS values, but *happens to
+agree* is not reproducible — a future release changing one would silently
+move every number.
+
+**What still differs, and cannot be fixed by configuration:**
+`innodb_flush_method=O_DIRECT` genuinely works on Linux and is a no-op on
+macOS, and CPU count and disk speed are properties of the machine. Identical
+settings therefore give identical *answers* everywhere, but not identical
+*times*.
 
 ## Verification built into a run
 

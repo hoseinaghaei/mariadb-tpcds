@@ -11,8 +11,10 @@
 # benchmark.  Results land in results/sf<N>/ and a manifest is written to
 # results/manifest.json, which analysis/collect.py reads.
 #
-# WHY THE BUFFER POOL IS HELD CONSTANT.  It defaults to 4G for every scale
-# factor and is deliberately NOT scaled up with the data.  A scaling curve
+# WHY THE BUFFER POOL IS HELD CONSTANT.  It defaults to 8G for every scale
+# factor -- the value sql/tpcds-tuned.cnf and the retired macOS instance used,
+# so the numbers are comparable with everything already published -- and is
+# deliberately NOT scaled up with the data.  A scaling curve
 # measured with a pool that grows alongside the dataset conflates two
 # variables and mostly measures the pool.  Holding it fixed is what makes the
 # curve mean something: at SF=1 the working set fits, and somewhere above it
@@ -59,7 +61,7 @@ have_pool=0
 for o in ${OVERRIDES[@]+"${OVERRIDES[@]}"}; do
   [[ "$o" == BUFFER_POOL=* ]] && have_pool=1
 done
-(( have_pool )) || OVERRIDES+=("BUFFER_POOL=4G")
+(( have_pool )) || OVERRIDES+=("BUFFER_POOL=8G")
 
 command -v docker >/dev/null 2>&1 || { echo "docker is not installed" >&2; exit 1; }
 docker info >/dev/null 2>&1 || { echo "the docker daemon is not running" >&2; exit 1; }

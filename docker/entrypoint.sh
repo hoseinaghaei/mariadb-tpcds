@@ -25,14 +25,14 @@ case "${PROFILE:-quick}" in
   quick)
     # 32K and sample 160 are the standing configuration (sql/tpcds-tuned.cnf);
     # stock settings were retired on 2026-10-25 after measuring 2.94x at SF=1.
-    : "${SCALE:=1}" "${PAGE_SIZE:=32}" "${BUFFER_POOL:=2G}" "${SAMPLE_PAGES:=160}"
+    : "${SCALE:=1}" "${PAGE_SIZE:=32}" "${BUFFER_POOL:=8G}" "${SAMPLE_PAGES:=160}"
     : "${QUERYSET:=tuned}" "${TUNED:=tuned}" "${RNGSEED:=10}" ;;
   full)
     # reproduces the shape of report 23: SF=4, 32K pages, 8G pool, sample 160
     : "${SCALE:=4}" "${PAGE_SIZE:=32}" "${BUFFER_POOL:=8G}" "${SAMPLE_PAGES:=160}"
     : "${QUERYSET:=tuned}" "${TUNED:=tuned}" "${RNGSEED:=10}" ;;
   smoke)
-    : "${SCALE:=1}" "${PAGE_SIZE:=32}" "${BUFFER_POOL:=1G}" "${SAMPLE_PAGES:=160}"
+    : "${SCALE:=1}" "${PAGE_SIZE:=32}" "${BUFFER_POOL:=8G}" "${SAMPLE_PAGES:=160}"
     : "${QUERYSET:=tuned}" "${TUNED:=tuned}" "${RNGSEED:=10}" ;;
   *) echo "unknown PROFILE: $PROFILE (use quick, full or smoke)" >&2; exit 1 ;;
 esac
@@ -179,8 +179,19 @@ innodb_adaptive_hash_index     = OFF
 character_set_server           = utf8mb4
 collation_server               = utf8mb4_general_ci
 local_infile                   = 1
-max_statement_time             = 7200
 secure_file_priv               =
+
+# Pinned to match pagesize/my-32k-sf4-t1exact.cnf, the instance every
+# published figure was measured on.  These were previously left at MariaDB's
+# defaults: the defaults happened to agree, but "happens to agree" is not
+# reproducible -- a future release changing one of them would silently move
+# the numbers.
+innodb_log_file_size           = 96M
+innodb_io_capacity             = 200
+innodb_write_io_threads        = 4
+innodb_doublewrite             = ON
+skip_name_resolve
+max_statement_time             = 3600
 $1
 EOF
 }

@@ -67,14 +67,37 @@ docker build -q -t "$IMAGE" \
   --build-arg "MARIADB_TAG=${MARIADB_TAG:-13.0.2}" \
   docker/ >/dev/null
 
-# Memory advice: the full profile asks for an 8G buffer pool, which needs the
-# Docker VM to be given appreciably more than 8G.  Warn rather than fail.
-if [[ "$PROFILE" == "full" ]]; then
-  AVAIL=$(docker info --format '{{.MemTotal}}' 2>/dev/null || echo 0)
-  if (( AVAIL > 0 && AVAIL < 12000000000 )); then
-    echo "WARNING: Docker reports $((AVAIL/1000000000))G of memory; the 'full'" >&2
-    echo "         profile wants 12G+ for an 8G buffer pool. Raise Docker's" >&2
-    echo "         memory limit, or run: ./reproduce.sh full BUFFER_POOL=4G" >&2
+# Memory.  EVERY profile now asks for an 8G buffer pool, because that is what
+# pagesize/my-32k-sf4-t1exact.cnf used and every published figure was measured
+# with.  A smaller pool is a different experiment, not a smaller one -- the
+# whole point of several findings in report/ is the working set outgrowing the
+# pool, and halving it moves that boundary.
+#
+# So this is checked for all profiles, not just `full`, and it fails rather
+# than warns: an 8G pool on a VM with less simply will not start, and a
+# 300-second "server did not start" says nothing useful.
+POOL_G=$(printf '%s' "${BUFFER_POOL:-8G}" | sed 's/[Gg]$//')
+AVAIL=$(docker info --format '{{.MemTotal}}' 2>/dev/null || echo 0)
+if [[ "$POOL_G" =~ ^[0-9]+$ ]] && (( AVAIL > 0 )); then
+  NEED=$(( (POOL_G + 2) * 1000000000 ))        # pool plus room for the server
+  if (( AVAIL < NEED )); then
+    cat >&2 <<EOF
+
+ERROR: Docker has $((AVAIL/1000000000))G of memory; a ${POOL_G}G buffer pool needs about $((NEED/1000000000))G.
+
+  The buffer pool is ${POOL_G}G on every profile because that is the
+  configuration every published figure was measured with
+  (sql/tpcds-tuned.cnf, pagesize/my-32k-sf4-t1exact.cnf).  Running a
+  smaller one is a different experiment, not a smaller one.
+
+  Either raise Docker Desktop > Settings > Resources > Memory,
+  or accept a different configuration explicitly and say so when
+  reporting the numbers:
+
+      ./reproduce.sh $PROFILE BUFFER_POOL=4G
+
+EOF
+    exit 1
   fi
 fi
 
