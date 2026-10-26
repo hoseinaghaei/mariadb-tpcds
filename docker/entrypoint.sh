@@ -87,6 +87,24 @@ cp -r "$PROJECT"/DSGen-software-code-4.0.0/tools/. "$BUILD"/
 # The committed makefile targets macOS; Linux needs OS=LINUX, which selects
 # gcc, lex, yacc and the LINUX block in config.h.
 sed -i 's/^OS[[:space:]]*=.*/OS = LINUX/' "$BUILD/makefile"
+
+# The TPC-DS v4.0.0 sources are C89-era and do not compile with a modern gcc
+# as-is.  Two separate problems, both hit when the base image moved from
+# Ubuntu 24.04 (gcc 13) to 26.04 (gcc 15) along with MariaDB 13.0.2:
+#
+#   * gcc 15 defaults to C23, which REMOVED K&R function definitions.
+#     date.c:570 is one: getDateWeightFromJulian(jDay, nDistribution) with
+#     the parameter types declared on the following lines.  -std=gnu17 keeps
+#     them legal (deprecated, but accepted).
+#   * gcc 14 promoted implicit-int, implicit-function-declaration,
+#     int-conversion, incompatible-pointer-types and return-mismatch from
+#     warnings to errors.  The toolkit trips several; demote them again.
+#
+# -fcommon was already in the makefile for the same class of reason (gcc 10
+# made -fno-common the default).  Nothing here changes generated data: these
+# are diagnostics settings, not code generation.
+sed -i 's|^LINUX_CFLAGS\(.*\)$|LINUX_CFLAGS\1 -std=gnu17 -Wno-error=implicit-int -Wno-error=implicit-function-declaration -Wno-error=int-conversion -Wno-error=incompatible-pointer-types -Wno-error=return-mismatch|' \
+    "$BUILD/makefile"
 ( cd "$BUILD" && make -s dsdgen 2>&1 | tail -5 ) || {
   echo "ERROR: dsdgen build failed" >&2; exit 1; }
 [[ -x "$BUILD/dsdgen" ]] || { echo "ERROR: dsdgen not produced" >&2; exit 1; }
