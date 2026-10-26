@@ -1,0 +1,14 @@
+{
+ "query": 65,
+ "tag": "q77idx-on-1",
+ "scale": 4,
+ "page_kb": 32,
+ "sample_pages": 160,
+ "seconds": 3.9,
+ "buffer_pool_bytes": 8589934592,
+ "tmp_table_size": 1610612736,
+ "rows": 100,
+ "md5": "157956c59102b66f40a0628ab8059ffb",
+ "md5_sorted": "de174a613a04068b42807dbbc18cbad8",
+ "status": "OK"
+}

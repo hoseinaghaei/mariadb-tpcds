@@ -25,15 +25,42 @@
 --  clustered-key suffix).  Existing store_sales index storage is ~340 MB, so
 --  this more than doubles it.  That is the trade being measured.
 --
---  THIS IS NOT YET ADOPTED.  Adding indexes to this schema has backfired
---  before: six added at once made 16K/SF=1 40% SLOWER, because they displaced
---  data pages from the buffer pool.  Run pagesize/test-q77-index.sh, which
---  measures the whole tier-4/5 suite with the index IGNORED and then NOT
---  IGNORED, before believing it helps.
+--  MEASURED 2026-10-26, SF=4, four full tier-4/5 passes alternating
+--  IGNORED / NOT IGNORED (pagesize/test-q77-index.sh).  Actual size: 512 MB.
 --
---  If it does not pay, leave it IGNORED rather than dropping it:
---  ALTER INDEX ... IGNORED is metadata-only and reverses in ~0.15s, and
---  "unused" depends on the configuration (report/17, report/22).
+--  Only two queries show a CONSISTENT effect -- both passes with the index
+--  beating both passes without it:
+--
+--      q70   3.5, 4.2s  ->  1.4, 1.3s      ~2.9x
+--      q5   10.1, 13.1s ->  5.8, 3.9s      ~2.4x
+--
+--  Nothing regressed consistently.  The apparent losses -- q22 +13.6s,
+--  q14 +11.0s, q67 +6.6s -- are all one bad pass: the first NOT IGNORED run
+--  totalled 591.8s against 371.5s for the second, and inflated every long
+--  query in it.  Suite totals cannot resolve this at all (IGNORED 380.0 and
+--  509.9s, NOT IGNORED 591.8 and 371.5s).
+--
+--  THE IRONY: q77, which this index was built for, shows NO consistent
+--  benefit (11.0, 7.3s -> 15.3, 5.7s).  Its `ss` CTE does read exactly these
+--  four columns, but it is one of six CTEs -- the other five hit
+--  store_returns, catalog_sales, catalog_returns, web_sales and web_returns
+--  -- so making a sixth of the query index-only is lost in the noise.  q5 and
+--  q70 benefit because this access pattern is nearly all of what they do.
+--  q5 reads ss_store_sk, ss_sold_date_sk, ss_ext_sales_price and
+--  ss_net_profit and nothing else from store_sales.
+--
+--  VERDICT: worth enabling.  Two reproducible multiples, no reproducible
+--  regression, for 512 MB -- which does more than double store_sales's ~340 MB
+--  of existing index storage.  But the suite-level gain is NOT demonstrable
+--  on this host; do not claim one.
+--
+--  It is left IGNORED by the test script, which is the state every committed
+--  result was measured in.  To enable it deliberately:
+--
+--      ALTER TABLE store_sales ALTER INDEX idx_ss_date_store_profit NOT IGNORED;
+--
+--  Never DROP it: ALTER INDEX ... IGNORED is metadata-only, reverses in
+--  ~0.15s, and "unused" depends on the configuration (report/17, report/22).
 -- ==========================================================================
 SET SESSION alter_algorithm='INPLACE';
 

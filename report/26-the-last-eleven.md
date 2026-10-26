@@ -243,20 +243,54 @@ are both correct. The suite already hashes results twice (`md5` and
 `md5_sorted`) and `verify-tuned.sh` classifies row-order-only differences
 separately — q71 is the live example of why.
 
-## What could not be tried
+## The one index, built and measured
+
+The covering index below was created and measured after this report was first
+written: `idx_ss_date_store_profit (ss_sold_date_sk, ss_store_sk,
+ss_net_profit, ss_ext_sales_price)`, 512 MB, four full tier-4/5 passes at
+SF=4 alternating `IGNORED` / `NOT IGNORED`.
+
+**It does not help q77, the query it was built for** (11.0, 7.3s → 15.3,
+5.7s — overlapping). It helps two queries it was not built for, consistently,
+both passes beating both passes:
+
+| | IGNORED | NOT IGNORED | |
+|---|---|---|---:|
+| q70 | 3.5, 4.2s | 1.4, 1.3s | **~2.9x** |
+| q5 | 10.1, 13.1s | 5.8, 3.9s | **~2.4x** |
+
+Nothing regressed consistently. The apparent losses — q22 +13.6s, q14
++11.0s, q67 +6.6s — are one bad pass: the first `NOT IGNORED` run totalled
+591.8s against 371.5s for the second and inflated every long query in it.
+**Suite totals cannot resolve this experiment at all**: 380.0 and 509.9s with
+the index off, 591.8 and 371.5s with it on.
+
+The reason q77 misses out is structural. Its `ss` CTE does read exactly those
+four columns, but it is one of six CTEs — the others aggregate
+`store_returns`, `catalog_sales`, `catalog_returns`, `web_sales` and
+`web_returns` — so making a sixth of the query index-only vanishes into the
+spread. q5 and q70 benefit because this access pattern is nearly all of what
+they do; q5 reads those four columns from `store_sales` and nothing else.
+
+The diagnosis was right and the remedy was aimed at the wrong query. Worth
+enabling for q5 and q70, at 512 MB — which more than doubles `store_sales`'s
+existing ~340 MB of index storage — but **no suite-level gain is
+demonstrable on this host, and none should be claimed.**
+
+## Where the diagnosis came from
 
 q77's plan reaches `store_sales` through
 `idx_ss_date_cust (ss_sold_date_sk, ss_customer_sk)`, which carries neither
 `ss_store_sk` nor the two profit columns it needs, so every qualifying row
-costs a base-table fetch. A covering index on
-`(ss_sold_date_sk, ss_store_sk, ss_net_profit, ss_ext_sales_price)` would
-make that CTE index-only. q70's aggregate reads the same columns and would
-benefit too — it is already 3.22x faster without it, but its remaining cost
-is base-table fetches for `ss_net_profit`.
+costs a base-table fetch. That is what prompted the covering index above.
 
-It was not tried: this analysis ran under a read-only policy that permits no
-DDL. It is also not obviously safe — the last time six indexes were added to
-this schema, 16K/SF=1 got **40% slower** — so it would need the same
-before/after discipline applied to the whole suite rather than to one query.
+The analysis session itself ran under a read-only policy permitting no DDL,
+so the index had to be created by hand rather than from here — which is why
+it is a separate script (`pagesize/test-q77-index.sh`) and a separate
+measurement rather than part of the sweep.
 
-Recorded as the open lead.
+It is also why it was measured with `ALTER INDEX ... IGNORED` rather than by
+creating and dropping: the storage and the cache state are then identical on
+both sides and only the optimizer's permission to use it changes. The
+precaution was warranted — the last time six indexes were added to this
+schema, 16K/SF=1 got **40% slower**.
