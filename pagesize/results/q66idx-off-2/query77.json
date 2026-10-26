@@ -1,0 +1,14 @@
+{
+ "query": 77,
+ "tag": "q66idx-off-2",
+ "scale": 4,
+ "page_kb": 32,
+ "sample_pages": 160,
+ "seconds": 8.5,
+ "buffer_pool_bytes": 8589934592,
+ "tmp_table_size": 1610612736,
+ "rows": 86,
+ "md5": "1e56b8676cf9bb7c64b48c029a6496ee",
+ "md5_sorted": "36f50dc477be2b2ec88950ba10199fa5",
+ "status": "OK"
+}

@@ -5,8 +5,15 @@ Counters zeroed, then the 40 tier-4/5 queries in `queries/tuned/` run once. `UNU
 | | indexes | disk |
 |---|---:|---:|
 | read at least once | 55 | 16,165 MB |
-| never read | 136 | **17,426 MB** |
+| enabled but never read | 135 | **16,914 MB** |
+| currently IGNORED | 1 | 512 MB |
 | total | 191 | 33,591 MB |
+
+The IGNORED ones are listed separately because they **cannot** be read — the optimizer is not allowed to use them — so a zero read count says nothing about whether they are worth keeping. Counting them as dead weight would be circular.
+
+| table | index | MB |
+|---|---|---:|
+| store_sales | `idx_ss_date_store_profit` | 511.8 |
 
 ## Never read, largest first
 
@@ -16,7 +23,6 @@ Counters zeroed, then the 40 tier-4/5 queries in `queries/tuned/` run once. `UNU
 | inventory | `idx_inv_item_sk` | 1,030.0 |
 | inventory | `idx_inv_warehouse_sk` | 1,030.0 |
 | store_sales | `idx_ss_q61` | 640.0 |
-| store_sales | `idx_ss_date_store_profit` | 511.8 |
 | store_sales | `idx_ss_date_store_price` | 469.7 |
 | store_sales | `idx_ss_qty_q28` | 469.7 |
 | store_sales | `idx_store_sales_quantity_2` | 469.7 |
@@ -42,6 +48,7 @@ Counters zeroed, then the 40 tier-4/5 queries in `queries/tuned/` run once. `UNU
 | catalog_sales | `idx_cs_bill_cdemo_sk` | 177.2 |
 | catalog_sales | `idx_cs_bill_customer_sk` | 177.2 |
 | catalog_sales | `idx_cs_bill_hdemo_sk` | 177.2 |
+| catalog_sales | `idx_cs_call_center_sk` | 177.2 |
 
 ### Turning them off
 
@@ -52,7 +59,6 @@ ALTER TABLE inventory ALTER INDEX idx_inv_date_sk IGNORED;
 ALTER TABLE inventory ALTER INDEX idx_inv_item_sk IGNORED;
 ALTER TABLE inventory ALTER INDEX idx_inv_warehouse_sk IGNORED;
 ALTER TABLE store_sales ALTER INDEX idx_ss_q61 IGNORED;
-ALTER TABLE store_sales ALTER INDEX idx_ss_date_store_profit IGNORED;
 ALTER TABLE store_sales ALTER INDEX idx_ss_date_store_price IGNORED;
 ALTER TABLE store_sales ALTER INDEX idx_ss_qty_q28 IGNORED;
 ALTER TABLE store_sales ALTER INDEX idx_store_sales_quantity_2 IGNORED;
@@ -78,6 +84,7 @@ ALTER TABLE catalog_sales ALTER INDEX idx_cs_bill_addr_sk IGNORED;
 ALTER TABLE catalog_sales ALTER INDEX idx_cs_bill_cdemo_sk IGNORED;
 ALTER TABLE catalog_sales ALTER INDEX idx_cs_bill_customer_sk IGNORED;
 ALTER TABLE catalog_sales ALTER INDEX idx_cs_bill_hdemo_sk IGNORED;
+ALTER TABLE catalog_sales ALTER INDEX idx_cs_call_center_sk IGNORED;
 ```
 
 Restore everything with `mariadb tpcds < sql/all_indexes.sql`.
@@ -90,7 +97,7 @@ Restore everything with `mariadb tpcds < sql/all_indexes.sql`.
 | store_sales | `idx_ss_sold_date_sk` | 35,172,464 | 341.4 |
 | store_sales | `idx_ss_sold_date_sk_store_sales_price` | 15,352,151 | 469.7 |
 | inventory | `PRIMARY` | 12,282,535 | 2,528.0 |
-| customer | `PRIMARY` | 11,698,755 | 57.1 |
+| customer | `PRIMARY` | 11,698,751 | 57.1 |
 | catalog_sales | `idx_cs_date_cover` | 7,040,380 | 375.8 |
 | store | `PRIMARY` | 5,464,445 | 0.0 |
 | store_sales | `idx_ss_date_cust` | 4,981,496 | 425.6 |
@@ -100,4 +107,4 @@ Restore everything with `mariadb tpcds < sql/all_indexes.sql`.
 | store_sales | `idx_ss_date_item_store_cover` | 2,694,696 | 469.7 |
 | web_sales | `idx_ws_date_addr_item_price` | 2,686,075 | 127.2 |
 | catalog_sales | `PRIMARY` | 2,384,346 | 1,836.0 |
-| item | `PRIMARY` | 2,121,750 | 27.0 |
+| item | `PRIMARY` | 2,097,748 | 27.0 |

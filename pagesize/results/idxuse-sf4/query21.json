@@ -4,7 +4,7 @@
  "scale": 4,
  "page_kb": 32,
  "sample_pages": 160,
- "seconds": 2.0,
+ "seconds": 0.7,
  "buffer_pool_bytes": 8589934592,
  "tmp_table_size": 1610612736,
  "rows": 100,

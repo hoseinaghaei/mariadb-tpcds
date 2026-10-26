@@ -1,0 +1,14 @@
+{
+ "query": 47,
+ "tag": "idxuse-sf1",
+ "scale": 1,
+ "page_kb": 32,
+ "sample_pages": 160,
+ "seconds": 1.8,
+ "buffer_pool_bytes": 8589934592,
+ "tmp_table_size": 1610612736,
+ "rows": 100,
+ "md5": "49c5e84302e4f6612945d36b3095420a",
+ "md5_sorted": "32f6fe6091a79e2f290fd864178b7197",
+ "status": "OK"
+}

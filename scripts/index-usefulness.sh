@@ -30,6 +30,7 @@
 #     mariadb tpcds < sql/all_indexes.sql
 set -Eeuo pipefail
 
+
 REPO=/Users/hosseinaghaei/Desktop/projects/dw
 LAB=$REPO/pagesize
 SF="${1:-4}"
@@ -39,6 +40,11 @@ case "$SF" in
   4) CNF="$LAB/my-32k-sf4-t1exact.cnf"; SOCK="$LAB/s32-sf4.sock" ;;
   *) echo "only SF=1 and SF=4 are built on this host (got $SF)" >&2; exit 1 ;;
 esac
+# Guard the datadir this scale actually needs, not a fixed one: SF=1 and
+# SF=4 live in different directories and either could be rebuilt alone.
+source "$LAB/require-local-db.sh"
+require_local_db "$LAB/$([[ "$SF" == 1 ]] && echo data-32k || echo data-32k-sf4)" || exit 1
+
 OUT=$REPO/analysis
 mkdir -p "$OUT"
 

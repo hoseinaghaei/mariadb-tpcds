@@ -1,0 +1,14 @@
+{
+ "query": 82,
+ "tag": "q66idx-on-2",
+ "scale": 4,
+ "page_kb": 32,
+ "sample_pages": 160,
+ "seconds": 0.1,
+ "buffer_pool_bytes": 8589934592,
+ "tmp_table_size": 1610612736,
+ "rows": 7,
+ "md5": "fefb1db1c3ca6a9a0616dfaf7b99e67a",
+ "md5_sorted": "247d94dbd79945100af3799f69ab6f09",
+ "status": "OK"
+}

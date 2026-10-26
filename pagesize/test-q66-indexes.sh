@@ -42,6 +42,12 @@
 # last measurements taken at load average 8.95 drifted q23 by 2x.
 set -Eeuo pipefail
 
+# The local macOS databases were removed on 2026-10-26; see
+# pagesize/require-local-db.sh.  Fail immediately and say so, rather than
+# spending 300s in a start-up retry loop that ends in "did not start".
+source /Users/hosseinaghaei/Desktop/projects/dw/pagesize/require-local-db.sh
+require_local_db /Users/hosseinaghaei/Desktop/projects/dw/pagesize/data-32k-sf4 || exit 1
+
 REPO=/Users/hosseinaghaei/Desktop/projects/dw
 LAB=$REPO/pagesize
 CNF="$LAB/my-32k-sf4-t1exact.cnf"

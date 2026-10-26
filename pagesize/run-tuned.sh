@@ -8,6 +8,12 @@
 # otherwise look like "no effect".
 set -Eeuo pipefail
 
+# The local macOS databases were removed on 2026-10-26; see
+# pagesize/require-local-db.sh.  Fail immediately and say so, rather than
+# spending 300s in a start-up retry loop that ends in "did not start".
+source /Users/hosseinaghaei/Desktop/projects/dw/pagesize/require-local-db.sh
+require_local_db /Users/hosseinaghaei/Desktop/projects/dw/pagesize/data-32k-sf4 || exit 1
+
 TAG="${1:?usage: run-tuned.sh <TAG> [--analyze-persistent] [--dump-pct N]}"; shift
 ANALYZE=0; DUMPPCT=""
 while [[ $# -gt 0 ]]; do

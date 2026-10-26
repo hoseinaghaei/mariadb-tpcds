@@ -3,6 +3,12 @@
 # in one pass so both see the same OS cache state.  Comparing runs made hours
 # apart is what produced the unexplained 8.6% gap.
 set -Eeuo pipefail
+# The local macOS databases were removed on 2026-10-26; see
+# pagesize/require-local-db.sh.  Fail immediately and say so, rather than
+# spending 300s in a start-up retry loop that ends in "did not start".
+source /Users/hosseinaghaei/Desktop/projects/dw/pagesize/require-local-db.sh
+require_local_db /Users/hosseinaghaei/Desktop/projects/dw/pagesize/data-32k-sf4 || exit 1
+
 LAB=/Users/hosseinaghaei/Desktop/projects/dw/pagesize
 ME=$(id -un); SOCK="$LAB/s32-sf4.sock"
 SERVICE=$(brew services list 2>/dev/null | awk 'NR>1 && $1 ~ /^mariadb(@|$)/ && $2=="started" {print $1; exit}')
