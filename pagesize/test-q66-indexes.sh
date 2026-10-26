@@ -133,7 +133,14 @@ done
 if cmp -s /tmp/q66-ours.out /tmp/q66-hers.out; then echo "  OUTPUT: IDENTICAL"
 elif diff -q <(sort /tmp/q66-ours.out) <(sort /tmp/q66-hers.out) >/dev/null; then
   echo "  OUTPUT: same rows, different order"
-else echo "  OUTPUT: ** DIFFERS **"; diff /tmp/q66-ours.out /tmp/q66-hers.out | head -10; fi
+else
+  # `diff | head` exits non-zero when the files differ, and under
+  # `set -Eeuo pipefail` that ended the script here -- so the whole
+  # collateral-damage stage below silently never ran the first time.  The
+  # same trap the entrypoint documents for `awk && { }`.
+  echo "  OUTPUT: ** DIFFERS **"
+  diff /tmp/q66-ours.out /tmp/q66-hers.out | head -10 || true
+fi
 
 # ----------------------------------------- 3. collateral damage, whole suite
 echo

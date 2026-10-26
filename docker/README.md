@@ -113,6 +113,44 @@ Expect absolute times to differ from the macOS figures in `report/` — at
 SF=1 with a 1 GB pool, q51 took 167s here against single-digit seconds on
 macOS.
 
+## Indexes: one file to put them all back
+
+`sql/all_indexes.sql` holds **every secondary index** in the schema — 167 of
+them across 19 tables, generated from the live database by
+`scripts/dump-indexes.py` so it cannot drift from what is actually there.
+
+```bash
+mariadb tpcds < sql/all_indexes.sql        # restore all of them
+python3 scripts/dump-indexes.py            # regenerate the file
+```
+
+That file is what makes experimenting with indexes safe: dropping one stops
+being a one-way door.
+
+To find out which ones are earning their keep:
+
+```bash
+./scripts/index-usefulness.sh 4            # or 1
+```
+
+It zeroes `INDEX_STATISTICS`, runs the 40 tier-4/5 queries once, and writes
+`analysis/index-usage-sf<N>.tsv` and `.md` — every index with its size, rows
+read, and a used/unused verdict, the total disk held by never-read indexes,
+and ready-to-paste statements for switching the idle ones off.
+
+### "Unused" is not a property of an index
+
+It is a property of an index **and** a workload **and** a configuration. This
+project measured the same index set at 16K and at 32K pages and got
+*different* answers about which members were idle (`report/17`, `report/22`),
+and separately made 16K/SF=1 **40% slower** by adding six indexes at once.
+Both mistakes are easy to make in opposite directions.
+
+So the report emits `ALTER TABLE t ALTER INDEX i IGNORED` rather than `DROP`.
+Ignoring is metadata-only, takes about 0.15s, reverses instantly, and leaves
+the index on disk so the decision can be measured and then unmade. Drop when
+you need the disk back; ignore when the question is whether it pays.
+
 ## Resource notes
 
 - `full` wants 12G+ given to the Docker VM for its 8G pool; otherwise run it
