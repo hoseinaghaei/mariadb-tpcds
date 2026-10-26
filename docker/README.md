@@ -66,6 +66,31 @@ separately, which would discard every `SET` before its query ran.
 clone has it. The container mounts `/project` read-only and cannot regenerate
 it; if it is missing, the run stops and says so.
 
+### Does the container reproduce the host's answers?
+
+Yes, and it is checked rather than assumed. Comparing the smoke profile's
+results against the macOS run at SF=1, query by query, on the hash of the
+sorted output:
+
+| | |
+|---|---|
+| Docker | Linux, MariaDB 11.4.13, 32K pages |
+| macOS | MariaDB 13.0.2, 32K pages |
+| **`md5_sorted` agreement** | **40 / 40** |
+
+Two different operating systems and two different major MariaDB versions
+produce the same answers for all forty tier-4/5 queries.
+
+Getting there required `RNGSEED`. Before it was pinned, the same comparison
+found **36 of 40 disagreeing** — q4 returning 8 rows against 6, q31 56
+against 44. Nothing was broken: `dsdgen` without `-RNGSEED` simply builds a
+different database, so the container was reproducing the method and not the
+results. Leave `RNGSEED=10` alone unless you want a different dataset.
+
+Response times still differ between the two, and should — different kernels,
+different I/O paths, and `innodb_flush_method=O_DIRECT` actually works on
+Linux.
+
 ```bash
 ./reproduce.sh quick SCALE=2 PAGE_SIZE=32 BUFFER_POOL=4G
 ```
