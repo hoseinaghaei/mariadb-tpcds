@@ -19,6 +19,31 @@ query candidates, measurement protocol and remaining submission work.
 
 ---
 
+## Reproducing the results — one command
+
+Everything runs in a Linux container; the repository is mounted read-only, so
+a run cannot modify it. Results land in `./results/`.
+
+```sh
+./reproduce.sh            # quick: SF=1, 32K pages, ~20 min
+./reproduce.sh smoke      # smallest run, ~10 min
+./reproduce.sh full       # SF=4, 32K pages, 8G pool, ~3 h, needs 12G RAM
+```
+
+A default run measures **both** of this project's contributions together: the
+tuned server settings *and* the team's optimized queries (`queries/tuned/`,
+33 of the 40 tier-4/5 queries rewritten). Two knobs separate them —
+`QUERYSET` picks the SQL, `TUNED` picks the server settings:
+
+```sh
+./reproduce.sh quick QUERYSET=tier45 TUNED=both    # server tuning alone
+./reproduce.sh quick QUERYSET=tuned  TUNED=tuned   # + the query rewrites
+```
+
+Full detail in [`docker/README.md`](docker/README.md).
+
+---
+
 ## What this is
 
 Starting from the TPC-DS toolkit as downloaded from

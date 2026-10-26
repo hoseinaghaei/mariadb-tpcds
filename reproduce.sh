@@ -2,13 +2,21 @@
 #
 # reproduce.sh — one command to reproduce the TPC-DS benchmark in Docker.
 #
-#   ./reproduce.sh                 quick profile  (SF=1, 16K pages, ~20 min)
-#   ./reproduce.sh smoke           smallest run, baseline only (~10 min)
+#   ./reproduce.sh                 quick profile  (SF=1, 32K pages, ~20 min)
+#   ./reproduce.sh smoke           smallest run (~10 min)
 #   ./reproduce.sh full            SF=4, 32K pages, 8G pool (~3 h, needs 12G RAM)
 #   ./reproduce.sh quick SCALE=2 PAGE_SIZE=32
 #
 # Everything runs inside a Linux container.  The repository is mounted
 # read-only, so a run cannot modify it; results land in ./results/.
+#
+# By default a run measures BOTH of the project's contributions together:
+# the tuned server settings AND the team's optimized queries
+# (queries/tuned/, 33 of the 40 rewritten).  To separate them, hold one
+# fixed -- QUERYSET picks the SQL, TUNED picks the server settings:
+#
+#   ./reproduce.sh quick QUERYSET=tier45 TUNED=both   # server tuning alone
+#   ./reproduce.sh quick QUERYSET=tuned  TUNED=tuned  # + the query rewrites
 set -Eeuo pipefail
 
 cd "$(dirname "$0")"

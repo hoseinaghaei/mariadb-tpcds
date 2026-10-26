@@ -1,7 +1,26 @@
 #!/usr/bin/env python3
 """Run the TPC-DS query set against the container's MariaDB and record timings.
 
-usage: bench.py <socket> <outdir> <tag> [all|tier45]
+usage: bench.py <socket> <outdir> <tag> [all|tier45|tuned]
+
+Three query sets:
+
+  all      the 99 adapted TPC-DS queries, unoptimized
+  tier45   the 40 tier-4/5 queries, unoptimized
+  tuned    the same 40, but running queries/tuned/ -- the team's optimized
+           query where one exists (33 of 40), the adapted original otherwise
+
+`tuned` is the default, because it is what the project's results are about.
+Use `tier45` to measure the server tuning on its own, with the query text
+held constant.
+
+HOW `tuned` IS RUN, AND WHY IT DIFFERS.  Files in queries/tuned/ carry their
+own `SET SESSION` lines -- sql_mode for every query, split_materialized=off
+for six, and three buffer settings that Aysha's q14 sets -- so each file is
+fed WHOLE on stdin and executed in one session.  The other two sets split on
+';' and send each statement separately, which would put every SET in its own
+connection and discard it before the query ran.  That is not a stylistic
+difference: it is the whole point of those files.
 
 Records per query: wall time, row count, and two hashes of the output --
 one verbatim, one with the data rows sorted.  The pair distinguishes a real
@@ -19,6 +38,7 @@ import subprocess, sys, os, json, time, hashlib, re, glob
 
 PROJECT = "/project"
 QDIR = f"{PROJECT}/queries/mariadb"
+TDIR = f"{PROJECT}/queries/tuned"
 PRE = ("SET SESSION sql_mode="
        "CONCAT(@@sql_mode,',IGNORE_SPACE,PIPES_AS_CONCAT');")
 
@@ -37,7 +57,9 @@ def tier45():
 
 def main():
     sock, outdir, tag = sys.argv[1], sys.argv[2], sys.argv[3]
-    which = sys.argv[4] if len(sys.argv) > 4 else 'tier45'
+    which = sys.argv[4] if len(sys.argv) > 4 else 'tuned'
+    if which not in ('all', 'tier45', 'tuned'):
+        sys.exit(f"query set must be all, tier45 or tuned (got {which})")
     os.makedirs(outdir, exist_ok=True)
 
     base = ['mariadb', f'--socket={sock}', '-u', 'root', '-B',
@@ -54,30 +76,49 @@ def main():
                    "from information_schema.statistics "
                    "where table_schema='tpcds'") or 0)
 
-    wanted = list(range(1, 100)) if which == 'all' else tier45()
+    if which == 'tuned':
+        items = sorted(
+            ((int(re.search(r'query(\d+)', p).group(1)), p)
+             for p in glob.glob(f"{TDIR}/query*.sql")))
+        if not items:
+            sys.exit(f"no tuned queries under {TDIR}; run queries/build-tuned.py")
+    else:
+        wanted = list(range(1, 100)) if which == 'all' else tier45()
+        items = [(n, f"{QDIR}/query{n}.sql") for n in wanted
+                 if os.path.exists(f"{QDIR}/query{n}.sql")]
+
     print(f"=== {tag}: {page}K pages, {pool/2**30:.0f}G pool, sample={sample}, "
-          f"{nidx} indexes, {len(wanted)} queries ({which})", flush=True)
+          f"{nidx} indexes, {len(items)} queries ({which})", flush=True)
 
     total, errors = 0.0, 0
-    for n in wanted:
-        path = f"{QDIR}/query{n}.sql"
-        if not os.path.exists(path):
-            continue
-        stmts = [s.strip() for s in open(path).read().split(';') if s.strip()]
+    for n, path in items:
         out, err, t0 = [], None, time.time()
-        for st in stmts:
-            p = subprocess.run(base + ['-e', PRE + st],
-                               capture_output=True, text=True, timeout=7200)
+        if which == 'tuned':
+            # Whole file, one session: its SET SESSION lines must reach the
+            # query.  It may also hold more than one statement (q14, q23).
+            with open(path) as fh:
+                p = subprocess.run(base, stdin=fh, capture_output=True,
+                                   text=True, timeout=7200)
             if p.returncode:
                 e = [l for l in p.stderr.strip().splitlines() if 'ERROR' in l]
                 err = (e[0] if e else p.stderr.strip())[:200]
-                break
-            out.append(p.stdout)
+            else:
+                out.append(p.stdout)
+        else:
+            stmts = [s.strip() for s in open(path).read().split(';') if s.strip()]
+            for st in stmts:
+                p = subprocess.run(base + ['-e', PRE + st],
+                                   capture_output=True, text=True, timeout=7200)
+                if p.returncode:
+                    e = [l for l in p.stderr.strip().splitlines() if 'ERROR' in l]
+                    err = (e[0] if e else p.stderr.strip())[:200]
+                    break
+                out.append(p.stdout)
         secs = round(time.time() - t0, 1)
         total += secs
 
-        r = {'query': n, 'tag': tag, 'page_kb': page, 'sample_pages': sample,
-             'indexes': nidx, 'seconds': secs}
+        r = {'query': n, 'tag': tag, 'queryset': which, 'page_kb': page,
+             'sample_pages': sample, 'indexes': nidx, 'seconds': secs}
         if err:
             r.update(status='ERROR', detail=err)
             errors += 1
@@ -94,9 +135,9 @@ def main():
               f"rows={r.get('rows','-')} {r.get('detail','')}", flush=True)
 
     print(f"=== {tag} TOTAL {total:.1f}s ({total/60:.1f} min) over "
-          f"{len(wanted)} queries, {errors} errors", flush=True)
+          f"{len(items)} queries, {errors} errors", flush=True)
     json.dump({'tag': tag, 'total_seconds': round(total, 1),
-               'queries': len(wanted), 'errors': errors,
+               'queries': len(items), 'errors': errors,
                'page_kb': page, 'sample_pages': sample, 'indexes': nidx,
                'buffer_pool_bytes': pool, 'queryset': which},
               open(f"{outdir}/_summary.json", 'w'), indent=1)
