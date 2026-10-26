@@ -480,7 +480,11 @@ case "$TUNED" in
   *) echo "TUNED must be baseline, tuned or both (got $TUNED)" >&2; exit 1 ;;
 esac
 
-stop_server
+# NOT here: INDEX_STATISTICS lives in memory, so shutting the server
+# down discards every read counter.  The usage stage below needs them,
+# so the server stays up until after it has been read.  This cost the
+# index work its evidence: the stage ran, failed to connect, printed
+# 'userstat is off', and sent the whole analysis to the macOS numbers.
 
 # ---------------------------------------------------------------- report
 # Index usage, as a by-product: the counters were zeroed just before the
@@ -510,8 +514,14 @@ SQL
           "$RESULTS/index-usage-sf$SCALE.tsv")"
   note "wrote results/index-usage-sf$SCALE.tsv"
 else
-  note "userstat is off; no usage report"
+  # Say what it actually reported.  "userstat is off" was printed for every
+  # run while userstat was on, because `select @@userstat` returns ON and the
+  # test looked for 1 -- a silent failure that cost the index work its
+  # evidence and sent it to the macOS numbers instead.
+  note "no usage report: @@userstat = '$($CLI -N -B -e "select @@userstat" 2>&1 | head -1)'"
 fi
+
+stop_server
 
 say "Results"
 python3 - "$RESULTS" "$PROFILE" <<'PY'
