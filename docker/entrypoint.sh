@@ -406,7 +406,18 @@ for k, v in sorted(want.items()):
     if got is None:
         bad.append((k, v, "not a variable here")); continue
     wb, gb = to_bytes(v), to_bytes(got)
-    ok = (wb == gb) if (wb is not None and gb is not None) else (got.strip("'\"") == v)
+    if wb is not None and gb is not None:
+        ok = wb == gb
+    elif ',' in v and '=' in v:
+        # Flag sets like optimizer_switch: the server reports all 40 flags,
+        # so comparing the whole string can never match.  Check that each
+        # flag we asked for is present with the value we asked for.
+        have_flags = dict(f.split('=', 1) for f in got.split(',') if '=' in f)
+        ok = all(have_flags.get(f.split('=')[0]) == f.split('=')[1]
+                 for f in v.split(',') if '=' in f)
+        got = "flags present" if ok else got[:120] + "..."
+    else:
+        ok = got.strip("'\"") == v
     if not ok:
         bad.append((k, v, got))
 print(f"          standing config: {len(want)-len(bad)}/{len(want)} settings match")
