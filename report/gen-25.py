@@ -23,16 +23,23 @@ REPO = os.path.dirname(HERE)
 RES = f"{REPO}/pagesize/results"
 OUT = f"{HERE}/25-query-by-query.md"
 
-SF4 = sys.argv[1] if len(sys.argv) > 1 else "current-sf4"
-SF1 = sys.argv[2] if len(sys.argv) > 2 else "current-sf1"
+SF4 = sys.argv[1] if len(sys.argv) > 1 else "sf4"
+SF1 = sys.argv[2] if len(sys.argv) > 2 else "sf1"
 
 
 def load(tag):
-    out = {}
-    for p in glob.glob(f"{RES}/{tag}/query*.json"):
-        d = json.load(open(p))
-        out[d['query']] = d
-    return out
+    """Accept a tag under pagesize/results, a container results directory, or
+    a path.  The macOS instances were retired on 2026-10-26, so the canonical
+    numbers now come from results/sf<N>/tuned; older pagesize/results/<tag>
+    runs still load for historical comparison."""
+    for cand in (tag,
+                 f"{RES}/{tag}",
+                 f"{REPO}/results/{tag}",
+                 f"{REPO}/results/{tag}/tuned"):
+        if glob.glob(f"{cand}/query*.json"):
+            return {json.load(open(p))['query']: json.load(open(p))
+                    for p in glob.glob(f"{cand}/query*.json")}
+    return {}
 
 
 PREAMBLE = """# The 40 tier-4/5 queries: what each optimization does
@@ -82,12 +89,12 @@ previous run caught.
 
 CAVEATS = """## Caveats
 
-- Measured on **macOS, where `innodb_flush_method=O_DIRECT` has no effect**
-  (`pagesize/test-odirect.sh`): InnoDB's reads are served by the OS file
-  cache and a server restart does not clear it. Both runs are equally
-  affected, so the SF=4/SF=1 comparison holds, but absolute times would
-  differ on Linux. `./reproduce.sh full` runs the matching configuration in a
-  container.
+- Measured **in the Linux container** (`./run-scales.sh 1 4`), MariaDB
+  13.0.2, 32K pages, 8 GB pool, data generated with `-RNGSEED 10`. The macOS
+  instances were retired on 2026-10-26 once the container could do
+  everything they were for; earlier editions of this table were measured
+  there, where `innodb_flush_method=O_DIRECT` is accepted but has no effect,
+  so absolute times are not comparable across the two.
 - **One run each, and the whole table moves between runs.** This suite was
   run twice back to back on identical files and settings: **408.7s and
   475.4s**, a 16% spread on the total, with no change to anything measured.
@@ -126,9 +133,22 @@ def main():
     # and the current total is NOT the contribution of any one of them.  It
     # is used here only to detect answers that changed, which is a yes/no
     # question and does not care how old the baseline is.
-    moved = [q for q in qs if q in prev4
-             and prev4[q].get('md5_sorted') and a[q].get('md5_sorted')
-             and prev4[q]['md5_sorted'] != a[q]['md5_sorted']]
+    # ...but a scale factor does not identify a database, (scale, seed) does.
+    # The macOS SF=4 data was generated with no -RNGSEED while the container
+    # uses seed 10, so comparing them reports every query as "changed".  If
+    # several queries disagree on ROW COUNT the databases differ and no
+    # answer comparison is meaningful; one differing count could be a bug,
+    # several cannot be.
+    rowdiff = [q for q in qs if q in prev4
+               and a[q].get('status') == 'OK' and prev4[q].get('status') == 'OK'
+               and a[q].get('rows') != prev4[q].get('rows')]
+    if len(rowdiff) > 1:
+        moved, different_db = [], len(rowdiff)
+    else:
+        different_db = 0
+        moved = [q for q in qs if q in prev4
+                 and prev4[q].get('md5_sorted') and a[q].get('md5_sorted')
+                 and prev4[q]['md5_sorted'] != a[q]['md5_sorted']]
 
     L = [PREAMBLE]
     L.append(f"**Totals: SF=4 {t4:.1f}s, SF=1 {t1:.1f}s.** "
@@ -137,6 +157,12 @@ def main():
     if moved:
         L.append(f"> **Answers changed since the previous run: {moved}.** "
                  f"Investigate before trusting any figure below.\n")
+    elif different_db:
+        L.append(f"> Not compared against the older macOS baseline: "
+                 f"{different_db} queries return a different number of rows, "
+                 f"because that dataset was generated without `-RNGSEED 10` "
+                 f"and is therefore a different database. Timings are "
+                 f"comparable; answers are not.\n")
 
     L.append("| # | query | SF=4 | SF=1 | SF4/SF1 | optimized by |")
     L.append("|---|---|---:|---:|---:|---|")

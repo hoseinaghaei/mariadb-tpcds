@@ -1,6 +1,6 @@
 # Benchmark results across scale factors
 
-Generated 2026-10-26 16:48. 4 runs, 40 queries.
+Generated 2026-10-26 21:17. 5 runs, 40 queries.
 
 ## Totals
 
@@ -8,6 +8,7 @@ Generated 2026-10-26 16:48. 4 runs, 40 queries.
 |---|---:|---:|---:|---:|
 | docker | 1 | 40 | 0 | 114.8s |
 | docker | 4 | 40 | 0 | 491.4s |
+| docker-pruned | 1 | 40 | 0 | 100.0s |
 | macos | 1 | 40 | 0 | 69.2s |
 | macos | 4 | 40 | 0 | 565.7s |
 
@@ -107,48 +108,48 @@ Per-query response time at each scale factor.
 
 ## macOS against the container at SF=1
 
-| query | docker | macos | ratio |
-|---|---|---|---|
-| q2 | 4.3s | 2.6s | 1.7x |
-| q4 | 10.2s | 6.5s | 1.6x |
-| q5 | 1.3s | 0.7s | 1.9x |
-| q7 | 1.7s | 1.3s | 1.3x |
-| q8 | 0.5s | 0.3s | 1.7x |
-| q10 | 0.1s | 0.1s | 1.0x |
-| q11 | 7.0s | 5.1s | 1.4x |
-| q14 | 4.2s | 3.3s | 1.3x |
-| q21 | 0.3s | 0.2s | 1.5x |
-| q22 | 22.9s | 3.4s | 6.7x |
-| q23 | 10.7s | 10.8s | 1.0x |
-| q27 | 1.8s | 1.5s | 1.2x |
-| q31 | 0.4s | 0.3s | 1.3x |
-| q33 | 0.3s | 0.1s | 3.0x |
-| q35 | 2.1s | 1.3s | 1.6x |
-| q37 | 0.1s | 0.2s | 2.0x |
-| q38 | 1.3s | 1.2s | 1.1x |
-| q39 | 0.4s | 0.4s | 1.0x |
-| q43 | 0.7s | 0.7s | 1.0x |
-| q46 | 2.6s | 1.3s | 2.0x |
-| q47 | 2.9s | 1.7s | 1.7x |
-| q51 | 5.6s | 4.3s | 1.3x |
-| q54 | 0.1s | 0.1s | 1.0x |
-| q57 | 1.9s | 1.4s | 1.4x |
-| q58 | 0.1s | 0.1s | 1.0x |
-| q59 | 1.3s | 1.1s | 1.2x |
-| q65 | 0.3s | 0.3s | 1.0x |
-| q66 | 1.3s | 1.2s | 1.1x |
-| q67 | 12.1s | 6.2s | 2.0x |
-| q68 | 1.0s | 0.6s | 1.7x |
-| q70 | 0.8s | 0.6s | 1.3x |
-| q71 | 0.6s | 0.5s | 1.2x |
-| q72 | 2.2s | 0.9s | 2.4x |
-| q74 | 6.2s | 4.5s | 1.4x |
-| q77 | 1.0s | 0.7s | 1.4x |
-| q78 | 3.1s | 2.5s | 1.2x |
-| q82 | 0.1s | 0.0s | — |
-| q87 | 0.4s | 0.3s | 1.3x |
-| q88 | 0.1s | 0.1s | 1.0x |
-| q97 | 0.8s | 0.8s | 1.0x |
+| query | docker | docker-pruned | macos | ratio |
+|---|---|---|---|---|
+| q2 | 4.3s | 2.6s | 2.6s | 1.7x |
+| q4 | 10.2s | 8.9s | 6.5s | 1.6x |
+| q5 | 1.3s | 1.4s | 0.7s | 2.0x |
+| q7 | 1.7s | 1.5s | 1.3s | 1.3x |
+| q8 | 0.5s | 0.4s | 0.3s | 1.7x |
+| q10 | 0.1s | 0.1s | 0.1s | 1.0x |
+| q11 | 7.0s | 6.0s | 5.1s | 1.4x |
+| q14 | 4.2s | 3.6s | 3.3s | 1.3x |
+| q21 | 0.3s | 0.2s | 0.2s | 1.5x |
+| q22 | 22.9s | 17.0s | 3.4s | 6.7x |
+| q23 | 10.7s | 9.6s | 10.8s | 1.1x |
+| q27 | 1.8s | 1.6s | 1.5s | 1.2x |
+| q31 | 0.4s | 0.4s | 0.3s | 1.3x |
+| q33 | 0.3s | 0.1s | 0.1s | 3.0x |
+| q35 | 2.1s | 1.4s | 1.3s | 1.6x |
+| q37 | 0.1s | 0.2s | 0.2s | 2.0x |
+| q38 | 1.3s | 1.4s | 1.2s | 1.2x |
+| q39 | 0.4s | 0.4s | 0.4s | 1.0x |
+| q43 | 0.7s | 0.9s | 0.7s | 1.3x |
+| q46 | 2.6s | 1.6s | 1.3s | 2.0x |
+| q47 | 2.9s | 2.5s | 1.7s | 1.7x |
+| q51 | 5.6s | 5.3s | 4.3s | 1.3x |
+| q54 | 0.1s | 0.1s | 0.1s | 1.0x |
+| q57 | 1.9s | 1.8s | 1.4s | 1.4x |
+| q58 | 0.1s | 0.1s | 0.1s | 1.0x |
+| q59 | 1.3s | 1.4s | 1.1s | 1.3x |
+| q65 | 0.3s | 0.3s | 0.3s | 1.0x |
+| q66 | 1.3s | 2.7s | 1.2s | 2.3x |
+| q67 | 12.1s | 11.5s | 6.2s | 2.0x |
+| q68 | 1.0s | 0.8s | 0.6s | 1.7x |
+| q70 | 0.8s | 0.7s | 0.6s | 1.3x |
+| q71 | 0.6s | 0.6s | 0.5s | 1.2x |
+| q72 | 2.2s | 1.9s | 0.9s | 2.4x |
+| q74 | 6.2s | 5.9s | 4.5s | 1.4x |
+| q77 | 1.0s | 0.9s | 0.7s | 1.4x |
+| q78 | 3.1s | 2.8s | 2.5s | 1.2x |
+| q82 | 0.1s | 0.2s | 0.0s | — |
+| q87 | 0.4s | 0.3s | 0.3s | 1.3x |
+| q88 | 0.1s | 0.1s | 0.1s | 1.0x |
+| q97 | 0.8s | 0.8s | 0.8s | 1.0x |
 
 ## macOS against the container at SF=4
 
@@ -257,6 +258,11 @@ Per-query response time at each scale factor.
 | EMPTY | q54 | docker SF=4: returned no rows |
 | EMPTY | q58 | docker SF=4: returned no rows |
 | DOMINATES | q67 | docker SF=4: 51.6s, 11% of the run |
+| EMPTY | q8 | docker-pruned SF=1: returned no rows |
+| DOMINATES | q22 | docker-pruned SF=1: 17.0s, 17% of the run |
+| EMPTY | q54 | docker-pruned SF=1: returned no rows |
+| EMPTY | q58 | docker-pruned SF=1: returned no rows |
+| DOMINATES | q67 | docker-pruned SF=1: 11.5s, 12% of the run |
 | EMPTY | q8 | macos SF=1: returned no rows |
 | DOMINATES | q23 | macos SF=1: 10.8s, 16% of the run |
 | EMPTY | q54 | macos SF=1: returned no rows |

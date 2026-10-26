@@ -34,10 +34,26 @@ REPO = os.path.dirname(HERE)
 # Directories that hold per-query JSON, and how to read an environment and a
 # scale factor out of their names.  Anything that does not match is skipped
 # rather than guessed at.
+def _docker_env(path):
+    """Label a container run by its directory, not just 'docker'.
+
+    results/sf1/ and results/sf1-pruned/ are both docker runs at SF=1 -- the
+    second with 127 unused indexes dropped -- and labelling both 'docker'
+    made one silently overwrite the other.  Anything after the scale number
+    becomes part of the environment name instead.
+    """
+    name = os.path.basename(os.path.dirname(path))  # .../sf1-pruned/tuned -> sf1-pruned
+    m = re.match(r'sf(\d+)(.*)$', name)
+    suffix = (m.group(2) or "").strip("-_") if m else ""
+    return f"docker-{suffix}" if suffix else "docker"
+
+
 SOURCES = [
     # (glob of result directories, environment, how to get the scale)
-    (f"{REPO}/results/sf*/tuned", "docker", lambda p: int(re.search(r'/sf(\d+)/', p).group(1))),
-    (f"{REPO}/pagesize/results/mac-sf*", "macos", lambda p: int(re.search(r'mac-sf(\d+)$', p).group(1))),
+    (f"{REPO}/results/sf*/tuned", _docker_env,
+     lambda p: int(re.match(r'sf(\d+)', os.path.basename(os.path.dirname(p))).group(1))),
+    (f"{REPO}/pagesize/results/mac-sf*", "macos",
+     lambda p: int(re.search(r'mac-sf(\d+)$', p).group(1))),
 ]
 
 
@@ -60,10 +76,11 @@ def _scale_from_summary(d):
 def collect(verbose=False):
     rows = []
     seen = []
-    for pattern, env, scale_of in SOURCES:
+    for pattern, env_spec, scale_of in SOURCES:
         for d in sorted(glob.glob(pattern)):
             if not os.path.isdir(d):
                 continue
+            env = env_spec(d) if callable(env_spec) else env_spec
             try:
                 scale = scale_of(d)
             except Exception:
