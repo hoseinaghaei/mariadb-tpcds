@@ -73,7 +73,20 @@ def _scale_from_summary(d):
     return None
 
 
-def collect(verbose=False):
+# What the reports show by default.  Five runs were being mixed into one
+# document -- macOS at two scales, the container at two, and a container run
+# with 127 indexes dropped -- which makes a reader work out which numbers
+# belong together before they can read anything.  They mostly do not: the
+# macOS SF=4 dataset was generated without -RNGSEED 10, so it is a different
+# database, and the pruned run is a side experiment that exists at SF=1 only.
+#
+# The default is therefore the canonical container runs, which are complete
+# at both scales and use the published configuration.  collect(only=None)
+# returns everything for our own comparisons.
+DEFAULT_ONLY = ("docker",)
+
+
+def collect(verbose=False, only=DEFAULT_ONLY):
     rows = []
     seen = []
     for pattern, env_spec, scale_of in SOURCES:
@@ -81,6 +94,10 @@ def collect(verbose=False):
             if not os.path.isdir(d):
                 continue
             env = env_spec(d) if callable(env_spec) else env_spec
+            if only is not None and env not in only:
+                if verbose:
+                    print(f"  excluded ({env}): {os.path.relpath(d, REPO)}")
+                continue
             try:
                 scale = scale_of(d)
             except Exception:
@@ -117,7 +134,8 @@ def collect(verbose=False):
 
 
 def main():
-    rows = collect(verbose=True)
+    everything = "--all" in sys.argv
+    rows = collect(verbose=True, only=None if everything else DEFAULT_ONLY)
     if not rows:
         sys.exit(1)
     out = f"{HERE}/results.csv"

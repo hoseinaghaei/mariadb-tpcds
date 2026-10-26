@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Compare benchmark runs across scale factors and environments.
 
-    python3 analysis/analyze.py            # everything it can find
+    python3 analysis/analyze.py            # the container runs (what to share)
+    python3 analysis/analyze.py --all      # plus macOS and the pruned run
     python3 analysis/analyze.py --open     # and open the HTML report
 
 Reads whatever ./run-scales.sh and pagesize/run-scales-mac.sh have produced
@@ -51,7 +52,7 @@ import json, os, sys, csv, statistics, datetime, webbrowser
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
-from collect import collect                      # noqa: E402
+from collect import collect, DEFAULT_ONLY        # noqa: E402
 import charts                                    # noqa: E402
 
 SUPERLINEAR = 1.5      # time ratio / data ratio above this
@@ -359,7 +360,11 @@ def md_to_html(md):
 
 
 def main():
-    rows = collect(verbose=True)
+    # Default to the canonical container runs.  --all adds the macOS runs and
+    # the pruned experiment, which are useful to us and only confusing in a
+    # document someone else has to read.
+    everything = "--all" in sys.argv
+    rows = collect(verbose=True, only=None if everything else DEFAULT_ONLY)
     if not rows:
         sys.exit("no results found")
     with open(f"{HERE}/results.csv", "w", newline="") as fh:

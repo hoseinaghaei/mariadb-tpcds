@@ -35,8 +35,17 @@ reporting the numbers.
 ## 2. Analyse
 
 ```bash
-python3 analysis/analyze.py          # or --open to open the report
+python3 analysis/analyze.py          # the container runs — this is the one to share
+python3 analysis/analyze.py --all    # plus macOS and the pruned experiment
+python3 analysis/analyze.py --open   # and open the HTML report
 ```
+
+**The default is the container runs only.** Five runs were being mixed into
+one document — macOS at two scales, the container at two, and a container
+run with 127 indexes dropped — and most of them do not belong side by side:
+the macOS SF=4 dataset was generated without `-RNGSEED 10`, so it is a
+different database, and the pruned run exists at SF=1 only. `--all` brings
+them back for our own comparisons.
 
 Writes three files:
 
