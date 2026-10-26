@@ -14,13 +14,16 @@ volume (`tpcds-data`), which a second run reuses to skip generation.
 
 ## What a run does
 
-1. Builds `dsdgen` from the TPC-DS sources with `OS=LINUX`
+1. Builds `dsdgen` from the TPC-DS sources with `OS=LINUX` (and `-std=gnu17`
+   plus a few `-Wno-error=` flags — the C89-era toolkit does not compile
+   under gcc 15, which defaults to C23 and has removed K&R definitions)
 2. Generates scale-factor data
 3. Initialises MariaDB at the chosen `innodb_page_size`
 4. Creates the schema and loads the data
 5. Creates all 188 indexes (`sql/05`, `11`, `14`)
 6. `ANALYZE TABLE`
-7. Benchmarks the tier-4/5 query set, baseline and tuned
+7. Benchmarks the query set chosen by `QUERYSET` under the settings chosen
+   by `TUNED`
 
 Then prints the totals, the ratio, and an answer cross-check.
 
@@ -72,21 +75,14 @@ Yes, and it is checked rather than assumed. Comparing the smoke profile's
 results against the macOS run at SF=1, query by query, on the hash of the
 sorted output:
 
-| | |
-|---|---|
-| Docker | Linux, MariaDB 11.4.13, 32K pages *(see note)* |
-| macOS | MariaDB 13.0.2, 32K pages |
-| **`md5_sorted` agreement** | **40 / 40** |
+| run | Docker | macOS | agreement |
+|---|---|---|---|
+| matched versions | Linux, **13.0.2** | **13.0.2** | **40 / 40** |
+| earlier, mismatched | Linux, 11.4.13 | 13.0.2 | **40 / 40** |
 
-Two different operating systems produced the same answers for all forty
-tier-4/5 queries.
-
-> **Note.** That check ran on `mariadb:11.4.13`, which was the image default
-> at the time; the host is 13.0.2. The image has since been pinned to
-> `mariadb:13.0.2` so the container differs from the host in operating system
-> only, not in server version. The 40/40 result above therefore holds across
-> *both* an OS change and a two-major-version gap, which is the stronger
-> claim — but it is re-checked on 13.0.2 as well.
+The container is pinned to `mariadb:13.0.2`, the host's exact version, so a
+run differs in operating system only. Both checks pass, which also says the
+answers are stable across a two-major-version gap.
 
 Getting there required `RNGSEED`. Before it was pinned, the same comparison
 found **36 of 40 disagreeing** — q4 returning 8 rows against 6, q31 56
