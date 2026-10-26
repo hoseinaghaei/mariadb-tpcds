@@ -7,7 +7,10 @@
 # writes goes to /data (scratch) and /results (bind-mounted back to the host),
 # so a run never modifies the repository.
 
-ARG MARIADB_TAG=11.4
+# Matches the macOS host the published results were measured on
+# (13.0.2-MariaDB-log for osx10.21 on arm64, Homebrew), so a container run
+# differs from the host in operating system only, not in server version.
+ARG MARIADB_TAG=13.0.2
 FROM mariadb:${MARIADB_TAG}
 
 # dsdgen needs a C toolchain, yacc and lex.  procps/iproute2 are for the

@@ -3,9 +3,9 @@
 One command, Linux container, nothing installed on the host but Docker:
 
 ```bash
-./reproduce.sh            # quick   SF=1, 16K pages, baseline vs tuned (~25 min)
-./reproduce.sh smoke      # smallest, baseline only                    (~20 min)
-./reproduce.sh full       # SF=4, 32K pages, 8G pool, as report 23     (~3 h)
+./reproduce.sh            # quick   SF=1, 32K pages, tuned queries + config (~25 min)
+./reproduce.sh smoke      # smallest run, same shape                        (~20 min)
+./reproduce.sh full       # SF=4, 32K pages, 8G pool, as report 23          (~3 h)
 ```
 
 Results land in `./results/`. The repository is mounted **read-only**, so a
@@ -37,7 +37,7 @@ Any of these can be overridden as `KEY=VALUE` after the profile:
 | `SAMPLE_PAGES` | 160 | `innodb_stats_persistent_sample_pages` |
 | `QUERYSET` | tuned | which SQL to run — see below |
 | `TUNED` | tuned | which server settings — `baseline`, `tuned` or `both` |
-| `MARIADB_TAG` | 11.4 | base image tag |
+| `MARIADB_TAG` | 13.0.2 | base image tag — matches the macOS host exactly |
 
 `QUERYSET` and `TUNED` are separate knobs that unfortunately share a word.
 **`QUERYSET` chooses the SQL; `TUNED` chooses the server settings.**
@@ -74,12 +74,19 @@ sorted output:
 
 | | |
 |---|---|
-| Docker | Linux, MariaDB 11.4.13, 32K pages |
+| Docker | Linux, MariaDB 11.4.13, 32K pages *(see note)* |
 | macOS | MariaDB 13.0.2, 32K pages |
 | **`md5_sorted` agreement** | **40 / 40** |
 
-Two different operating systems and two different major MariaDB versions
-produce the same answers for all forty tier-4/5 queries.
+Two different operating systems produced the same answers for all forty
+tier-4/5 queries.
+
+> **Note.** That check ran on `mariadb:11.4.13`, which was the image default
+> at the time; the host is 13.0.2. The image has since been pinned to
+> `mariadb:13.0.2` so the container differs from the host in operating system
+> only, not in server version. The 40/40 result above therefore holds across
+> *both* an OS change and a two-major-version gap, which is the stronger
+> claim — but it is re-checked on 13.0.2 as well.
 
 Getting there required `RNGSEED`. Before it was pinned, the same comparison
 found **36 of 40 disagreeing** — q4 returning 8 rows against 6, q31 56

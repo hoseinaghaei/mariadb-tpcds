@@ -57,7 +57,7 @@ VOLUME=tpcds-data
 
 echo "==> building image (first run compiles the toolchain layer; later runs are cached)"
 docker build -q -t "$IMAGE" \
-  --build-arg "MARIADB_TAG=${MARIADB_TAG:-11.4}" \
+  --build-arg "MARIADB_TAG=${MARIADB_TAG:-13.0.2}" \
   docker/ >/dev/null
 
 # Memory advice: the full profile asks for an 8G buffer pool, which needs the

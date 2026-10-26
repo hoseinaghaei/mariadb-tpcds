@@ -201,16 +201,22 @@ say "3/7  Initialising MariaDB with ${PAGE_SIZE}K pages"
 # mismatch is caught instantly and repaired by rebuilding it.  That is safe:
 # the datadir is a cache, and the generated .dat files it loads from live at
 # $DSDATA, outside it.  Stage 4 reloads automatically.
+# The marker also carries the server version.  A datadir written by one major
+# MariaDB release is not safely reused by another -- the image was moved from
+# 11.4 to 13.0.2 to match the macOS host, and a 11.4 datadir left in the
+# volume would otherwise be handed to a 13.0.2 server.
 PSMARK=$DATADIR/.innodb_page_size
+SRVVER=$(mariadbd --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+WANT_DD="${PAGE_SIZE}:${SRVVER}"
 if [[ -d "$DATADIR/mysql" ]]; then
   had=$(cat "$PSMARK" 2>/dev/null || echo unknown)
-  if [[ "$had" == "$PAGE_SIZE" ]]; then
-    note "datadir already initialised at ${PAGE_SIZE}K, reusing"
+  if [[ "$had" == "$WANT_DD" ]]; then
+    note "datadir already initialised at ${PAGE_SIZE}K by $SRVVER, reusing"
   else
     if [[ "$had" == unknown ]]; then
-      note "datadir predates the page-size marker; rebuilding to be sure"
+      note "datadir predates the page-size/version marker; rebuilding to be sure"
     else
-      note "datadir was built at ${had}K, need ${PAGE_SIZE}K -- rebuilding"
+      note "datadir is page:version $had, need $WANT_DD -- rebuilding"
     fi
     note "(the generated data under $DSDATA is kept; only the database is rebuilt)"
     rm -rf "$DATADIR"
@@ -224,7 +230,7 @@ else
   mariadb-install-db --defaults-file="$DATA/my.cnf" --user=mysql \
       --datadir="$DATADIR" --auth-root-authentication-method=normal \
       >"$DATA/install.log" 2>&1 || { tail -20 "$DATA/install.log" >&2; exit 1; }
-  echo "$PAGE_SIZE" > "$PSMARK"
+  echo "$WANT_DD" > "$PSMARK"
 fi
 chown -R mysql:mysql "$DATA"
 start_server
