@@ -104,8 +104,8 @@
   "body": "**Optimized by Claude** \u2014 `queries/optimized/q59-sf4/query59_BEST.sql`\n\nTwo changes: `split_materialized=off`, because one of its two CTE references was being re-materialised 7,665 times; and bounding the CTE to the 105 weeks the outer query can read, out of 262.\n\nVerified at SF=4: original 162.5s \u2192 4.4s, **36.6x**, output byte-for-byte identical.\n\n*split materialisation OFF: measured -138.1s at SF=4*"
  },
  "65": {
-  "author": "",
-  "body": "**Not optimized.** q65 spells the same derived table out twice, so naming it once as a CTE looked like a free halving. It measured **0.97x** \u2014 no change \u2014 because MariaDB already recognises the two spellings as one derived table and materialises it once. Kept in `queries/optimized/q65-sf4/`."
+  "author": "classmate",
+  "body": "**Optimized by a classmate** \u2014 `queries/optimized/q65/query65_BEST.sql`\n\nOne store/item aggregation instead of the duplicated derived table, a full-store window average, and early date-key filtering.\n\nMeasured head to head at SF=4 against the rewrite attempted here, three interleaved passes with identical output (101 rows): **2.6, 2.7, 2.8s against 1.6, 1.7, 1.8s \u2014 1.62x**, winning every pass.\n\nThat is the right outcome. The attempt in `queries/optimized/q65-sf4/` measured **0.97x**, no change, because its premise was wrong: MariaDB already materialises the duplicated derived table once, so naming it as a CTE told the optimizer nothing it had not already worked out. Their version attacks the aggregation itself.\n\nTheir own README measures on a very different machine \u2014 Ryzen 5 3500U, 6.7 GiB RAM, MariaDB 10.11.14, 2 GiB pool, primary keys only \u2014 where the original takes 91.7s against 3.3s here. Those figures do not transfer; the 1.62x above was measured in this environment."
  },
  "66": {
   "author": "",
@@ -148,8 +148,8 @@
   "body": "**Optimized by Claude** \u2014 `queries/optimized/q82-sf4/query82_v1_exists.sql`\n\nGroups by three item columns with no aggregate in the select list, which makes it a DISTINCT: the join multiplicity against `inventory` and `store_sales` is built at full cost and thrown away. Both joins are existence tests, so `EXISTS` is exact rather than approximate, and with the date filter reduced to a key range both subqueries become index-only (`idx_inv_item_date_sk`, `idx_ss_item_sk`).\n\nVerified at SF=4: original 0.8s \u2192 0.1s, **8.00x** \u2014 the largest ratio in the suite \u2014 on consistent passes, output byte-for-byte identical."
  },
  "87": {
-  "author": "",
-  "body": "**Not optimized.** The same rewrite as q38 \u2014 `EXCEPT` in place of `INTERSECT` \u2014 was written and measured at **0.80x, slower**, on all three passes.\n\nThat the two queries share a shape and regressed by the same factor is what makes the result trustworthy rather than noise. Kept in `queries/optimized/q87-sf4/`."
+  "author": "classmate",
+  "body": "**Optimized by a classmate** \u2014 `queries/optimized/q87/query87_BEST.sql`\n\n`STRAIGHT_JOIN` on each of the three `DISTINCT` branches, fixing the join order rather than changing what is computed.\n\nMeasured head to head at SF=4 against the rewrite attempted here, three interleaved passes with identical output: **3.9, 3.9, 4.6s against 1.1, 1.1, 1.2s \u2014 3.55x**, winning every pass.\n\nThe attempt in `queries/optimized/q87-sf4/` measured **0.80x**, slower. Its diagnosis was right about where q87 spends its time \u2014 building and differencing three large `DISTINCT` sets keyed on two name columns \u2014 and wrong about the remedy: it replaced the `date_dim` joins with key ranges, which is not where the cost is. Their version leaves what is computed alone and fixes the order it is computed in."
  },
  "88": {
   "author": "Claude",

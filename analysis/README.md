@@ -12,7 +12,7 @@ Two steps: produce runs, then analyse them.
 
 Each scale factor is a full reproduction — generate, load, index, `ANALYZE`,
 benchmark — inside the Linux container, writing to `results/sf<N>/`. Budget
-roughly 20 min at SF=1 rising to ~3 h at SF=4, and about 60 GB of Docker
+roughly 20 min at SF=1 rising to ~3 h at SF=4, and about 115 GB of Docker
 volumes for all four. Each scale keeps its own volume, so re-running one
 later skips generation and loading.
 

@@ -22,12 +22,19 @@
 # TIME AND DISK.  Each scale factor is generated and loaded from scratch the
 # first time, and index creation dominates.  Rough budget on a laptop:
 #
-#     SF=1   ~20 min      ~3 GB
-#     SF=2   ~40 min      ~7 GB
-#     SF=3   ~1.5 h      ~15 GB
-#     SF=4   ~3 h        ~35 GB
+#     SF=1   ~20 min     ~12 GB
+#     SF=2   ~40 min     ~23 GB
+#     SF=3   ~1.5 h      ~35 GB
+#     SF=4   ~3 h        ~46 GB
 #
-# so the default four-scale sweep is most of a working day and ~60 GB.  Each
+# Those are MEASURED, not estimated: the SF=1 volume here came to 11.8 GB
+# (1.2 GB of .dat files, the rest database plus 188 indexes), and the rest
+# scale from it.  The disk that has to hold them is Docker's virtual disk,
+# not the host's -- see the preflight check below, which exists because the
+# first SF=4 attempt died 14 minutes in with "No space left on device" on a
+# host that had 287 GB free.
+#
+# So the default four-scale sweep is most of a working day and ~115 GB.  Each
 # scale keeps its own Docker volume (tpcds-data-sf<N>), so re-running one
 # later skips generation and loading entirely.  Reclaim with:
 #
@@ -56,6 +63,55 @@ done
 
 command -v docker >/dev/null 2>&1 || { echo "docker is not installed" >&2; exit 1; }
 docker info >/dev/null 2>&1 || { echo "the docker daemon is not running" >&2; exit 1; }
+
+# Disk, before spending an hour finding out.  The space that matters is
+# inside Docker's VM, not on the host: on macOS the VM has its own fixed
+# virtual disk, and a host with 287 GB free can still fail with
+# "No space left on device" partway through generating data.  That is
+# exactly how the first SF=4 attempt here died, 14 minutes in.
+#
+# Observed footprint: SF=1 fills an 11.8 GB volume (1.2 GB of .dat files and
+# the rest database plus 188 indexes), and it scales with the data, so budget
+# about 11 GB per unit of scale factor and ask for a little headroom.
+# df the container's own root filesystem: that lives on the VM's virtual
+# disk, which is the thing that runs out.  Do NOT bind-mount the host's /
+# and measure that -- on Docker Desktop it is shared through virtiofs and
+# reports something unrelated (1G here, against the VM's real 11G free).
+free_gb=$(docker run --rm alpine:3 df -BG / 2>/dev/null \
+          | awk 'NR==2{gsub("G","",$4); print $4+0}')
+if [[ -n "${free_gb:-}" ]]; then
+  # Only scale factors whose volume does not already exist need new space;
+  # a scale that has been run before reuses its volume and needs headroom
+  # only.  Without this, re-running SF=1 would be refused for want of 15G
+  # it is not going to ask for.
+  need=4
+  biggest=0
+  for s in "${SFS[@]}"; do
+    (( s > biggest )) && biggest=$s
+    docker volume inspect "tpcds-data-sf$s" >/dev/null 2>&1 || need=$(( need + s * 11 ))
+  done
+  echo "==> docker vm disk : ${free_gb}G free, about ${need}G needed for SF=${SFS[*]}"
+  if (( free_gb < need )); then
+    cat >&2 <<EOF
+
+ERROR: not enough space inside Docker's VM.
+       ${free_gb}G free, about ${need}G needed for scale factors ${SFS[*]}.
+
+       This is Docker's virtual disk, not your host disk.  Options:
+         * raise the disk size in Docker Desktop > Settings > Resources
+         * reclaim space:   docker system df -v        (see what is large)
+                            docker volume rm <name>    (named volumes)
+         * run fewer or smaller scale factors:  ./run-scales.sh 1 2
+
+       Each scale factor keeps its own volume (tpcds-data-sf<N>), so you can
+       also run them one at a time and remove each when you have its results:
+         ./run-scales.sh 4  &&  docker volume rm tpcds-data-sf4
+EOF
+    exit 1
+  fi
+else
+  echo "==> docker vm disk : could not measure; continuing" >&2
+fi
 
 echo "==> scale factors : ${SFS[*]}"
 echo "==> held constant : ${OVERRIDES[*]}"

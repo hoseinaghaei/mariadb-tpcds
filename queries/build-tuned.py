@@ -83,6 +83,22 @@ OPTIMIZED = {
     70: "q70-sf4/query70_v1_nosubquery.sql",  #  11.6s ->  3.6s, 3.22x
     35: "q35-sf4/query35_v1_keydate.sql",     #   1.7s ->  1.3s, 1.31x
     82: "q82-sf4/query82_v1_exists.sql",      #   0.8s ->  0.1s, 8.00x
+    # Five queries were optimized twice, independently (commits c56bfbc,
+    # f871372).  Measured head to head here at SF=4, three interleaved
+    # passes, every pair returning identical output
+    # (queries/optimized/compare-classmates.sh):
+    #
+    #     q65   ours 2.6s   theirs 1.6s   theirs wins all three passes
+    #     q87   ours 3.9s   theirs 1.1s   theirs wins all three passes
+    #     q70   ours 2.6s   theirs 3.5s   ours wins warm; their pass 1 was cold
+    #     q82   ours 0.1s   theirs 0.3s   ours
+    #     q37   ours 0.3s   theirs 0.3s   tie, Nafiz's stays
+    #
+    # The two theirs win are exactly the two where the rewrite attempted here
+    # failed -- q65 measured 0.97x and q87 0.80x against the original, and
+    # both were rejected.  Their approaches succeed where those did not.
+    65: "q65/query65_BEST.sql",               # theirs, 1.62x over ours
+    87: "q87/query87_BEST.sql",               # theirs, 3.55x over ours
 }
 
 # q38's "optimized" file contains only CREATE INDEX -- no query to

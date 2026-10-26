@@ -1,5 +1,17 @@
 # q65 — the duplicated subquery was already being shared
 
+> **Superseded.** A classmate's `queries/optimized/q65/query65_BEST.sql` was
+> measured head to head against this one at SF=4 — three interleaved passes,
+> identical output — and won every pass: **2.6, 2.7, 2.8s against 1.6, 1.7,
+> 1.8s, 1.62x**. It is what `queries/tuned/query65.sql` now uses.
+>
+> That is the right outcome. The rewrite below measured **0.97x** — no change
+> — because its premise was wrong: MariaDB already materialises the duplicated
+> derived table once, so naming it as a CTE told the optimizer nothing it had
+> not worked out. Their version attacks the aggregation itself instead.
+>
+> Kept for the negative result, which still stands.
+
 `query65_v1_sharedcte.sql` is correct and produces byte-identical output (101
 rows). It makes no measurable difference, so the original stays.
 

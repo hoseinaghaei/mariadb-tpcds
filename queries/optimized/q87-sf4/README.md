@@ -1,5 +1,18 @@
 # q87 — rewritten, measured, not adopted
 
+> **Superseded.** A classmate's `queries/optimized/q87/query87_BEST.sql` was
+> measured head to head against this one at SF=4 — three interleaved passes,
+> identical output — and won decisively: **3.9, 3.9, 4.6s against 1.1, 1.1,
+> 1.2s, 3.55x**. It is what `queries/tuned/query87.sql` now uses.
+>
+> The rewrite below measured **0.80x** — slower — and the reasoning for why is
+> still worth reading, because it was right about where q87's time goes and
+> wrong about what to do with that. Their version uses `STRAIGHT_JOIN` to fix
+> the join order of the three `DISTINCT` branches, which is the part this one
+> left untouched.
+>
+> Kept for the negative result, which still stands.
+
 `query87_v1_keydate.sql` is correct and produces byte-identical output. It is
 slower, so it stays here as a recorded negative result.
 

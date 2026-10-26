@@ -47,6 +47,43 @@ nothing changed. The honest statement is the per-query one: q23 3.60x, q70
 All 40 answers were checked against the previous suite run by `md5_sorted`:
 **40/40 identical.**
 
+## Two of the rejections were later beaten by someone else
+
+A classmate independently optimized five of these queries (commits c56bfbc,
+f871372). Measured head to head here at SF=4 — three interleaved passes
+each, every pair returning identical output:
+
+| query | ours | theirs | |
+|---|---:|---:|---|
+| q65 | 2.6s | **1.6s** | theirs, 1.62x — wins all three passes |
+| q87 | 3.9s | **1.1s** | theirs, 3.55x — wins all three passes |
+| q70 | **2.6s** | 3.5s | ours; their pass 1 was a cold outlier |
+| q82 | **0.1s** | 0.3s | ours |
+| q37 | 0.3s | 0.3s | a tie; Nafiz's stays |
+
+**The two they win are exactly the two where the rewrite here failed** — q65
+measured 0.97x and q87 0.80x against the original, and both were rejected
+above. The diagnoses were not useless, but the remedies were aimed wrongly:
+
+- On **q65** the premise was simply false. The rewrite assumed the duplicated
+  derived table was being computed twice; MariaDB already materialises it
+  once, so naming it as a CTE told the optimizer nothing. Theirs attacks the
+  aggregation itself.
+- On **q87** the diagnosis was right and the remedy was not. Both agree the
+  cost is in building and differencing three large `DISTINCT` sets keyed on
+  two name columns. The attempt here then replaced the `date_dim` joins with
+  key ranges — which is not where that cost lives — while theirs leaves what
+  is computed alone and uses `STRAIGHT_JOIN` to fix the order it is computed
+  in.
+
+Worth noting how the comparison had to be done. Their q65 README is admirably
+explicit about its environment, and it is a different world: Ryzen 5 3500U,
+6.7 GiB RAM, MariaDB 10.11.14, a 2 GiB pool and **primary keys only**. Their
+q65 "original" takes 91.7s where ours takes 3.3s — almost all of that gap is
+the 188 secondary indexes they do not have. Carrying their speedups over
+unmeasured would have been meaningless in either direction, which is what
+`queries/optimized/compare-classmates.sh` exists for.
+
 ## The one technique, and why it only worked half the time
 
 Every one of the eleven rewrites rests on the same observation. The TPC-DS
