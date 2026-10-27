@@ -73,9 +73,19 @@ def origins():
 
 
 def usage(sf):
-    p = f"{ANA}/index-usage-sf{sf}.tsv"
-    if not os.path.exists(p):
-        sys.exit(f"missing {p} -- run ./scripts/index-usefulness.sh {sf}")
+    # Prefer the container's own report.  The macOS files describe a
+    # different machine -- at SF=1, with identical data and the same MariaDB
+    # version, the two disagreed about 6 of 188 indexes, three of which the
+    # container reads and macOS does not.  Pruning on the wrong machine's
+    # evidence is what made SF=4 50% slower.
+    cands = [f"{REPO}/results/usage-sf{sf}/index-usage-sf{sf}.tsv",
+             f"{REPO}/results/sf{sf}/index-usage-sf{sf}.tsv",
+             f"{ANA}/index-usage-sf{sf}.tsv"]
+    found = [c for c in cands if os.path.exists(c)]
+    if not found:
+        sys.exit(f"no index usage report for SF={sf} -- run ./run-scales.sh {sf}")
+    p = found[0]
+    print(f"  SF={sf} usage from {os.path.relpath(p, REPO)}")
     out = {}
     for line in open(p):
         f = line.rstrip("\n").split("\t")
@@ -154,13 +164,20 @@ def main():
          "These came from the reference repository, from our own optimizer "
          "experiments, and from indexes classmates contributed. They are not "
          "wrong; the 40 tier-4/5 queries simply never read them, at either "
-         "scale factor, under this configuration.",
+         "scale factor, under this configuration — **as measured inside the "
+         "container itself**. An earlier version of this list was derived "
+         "from macOS measurements and was wrong: at SF=1, with identical "
+         "data and the same MariaDB version, the two environments disagreed "
+         "about 6 of 188 indexes, three of which the container reads and "
+         "macOS does not.",
          "",
-         "Dropping them is not only free, it is faster: with 127 of them gone "
-         "the suite ran **114.8s → 100.0s at SF=1 with identical answers**, "
-         "because index pages stop competing with data pages for the buffer "
-         "pool. The same effect in reverse once made 16K/SF=1 **40% slower** "
-         "when six indexes were added.",
+         "**On timing, this list makes no promise.** An earlier attempt "
+         "claimed dropping indexes made the suite faster; that rested on two "
+         "noisy measurements and is withdrawn. Five runs of the *unchanged* "
+         "full set at SF=1 measured 114.8, 142.0, 191.6, 200.7 and 205.2s — "
+         "a spread far wider than any index effect being looked for. What "
+         "this list rests on instead is read counters, which are exact: an "
+         "index was read or it was not.",
          "",
          "## Getting them back",
          "",

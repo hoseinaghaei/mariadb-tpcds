@@ -1,28 +1,12 @@
 # Indexes we build without, and why
 
-> ## ⚠ This list is not yet trustworthy for the container
->
-> The usage evidence behind it was collected on the **macOS host** — and at
-> SF=4 on a dataset generated without `-RNGSEED 10`, which is a *different
-> database*. It describes what those instances read, not what the container
-> reads.
->
-> Building this set in the container measured **738.3s at SF=4 against
-> 491.4s for the full set**, and **156.9s at SF=1 against 114.8s** — the
-> opposite of the 13% improvement the macOS evidence predicted.
->
-> The container therefore still builds the full index set by default.
-> `KEPT_INDEXES=1` opts into this one. The list has to be re-derived from
-> container measurements before it means anything here.
+Generated 2026-10-27 01:12 by `scripts/build-index-set.py`.
 
+A new database builds **37 secondary indexes**. **130 others — 16,685 MB (16.3 GB) — are not built.**
 
-Generated 2026-10-26 22:37 by `scripts/build-index-set.py`.
+These came from the reference repository, from our own optimizer experiments, and from indexes classmates contributed. They are not wrong; the 40 tier-4/5 queries simply never read them, at either scale factor, under this configuration — **as measured inside the container itself**. An earlier version of this list was derived from macOS measurements and was wrong: at SF=1, with identical data and the same MariaDB version, the two environments disagreed about 6 of 188 indexes, three of which the container reads and macOS does not.
 
-A new database builds **39 secondary indexes**. **128 others — 16,826 MB (16.4 GB) — are not built.**
-
-These came from the reference repository, from our own optimizer experiments, and from indexes classmates contributed. They are not wrong; the 40 tier-4/5 queries simply never read them, at either scale factor, under this configuration.
-
-Dropping them is not only free, it is faster: with 127 of them gone the suite ran **114.8s → 100.0s at SF=1 with identical answers**, because index pages stop competing with data pages for the buffer pool. The same effect in reverse once made 16K/SF=1 **40% slower** when six indexes were added.
+**On timing, this list makes no promise.** An earlier attempt claimed dropping indexes made the suite faster; that rested on two noisy measurements and is withdrawn. Five runs of the *unchanged* full set at SF=1 measured 114.8, 142.0, 191.6, 200.7 and 205.2s — a spread far wider than any index effect being looked for. What this list rests on instead is read counters, which are exact: an index was read or it was not.
 
 ## Getting them back
 
@@ -40,9 +24,9 @@ Worth knowing before you decide they are gone for good: **"unused" is a property
 | inventory | `idx_inv_item_sk` | 1,030 | reference repo | read by neither SF=1 nor SF=4 |
 | inventory | `idx_inv_warehouse_sk` | 1,030 | reference repo | read by neither SF=1 nor SF=4 |
 | store_sales | `idx_ss_q61` | 640 | contributed by the team | read by neither SF=1 nor SF=4 |
-| store_sales | `idx_ss_date_store_profit` | 512 | measured here | built for q77 and does nothing for q77; helps q5 (~2.4x) and q70 (~2.9x) reproducibly but costs 512 MB and more than doubles store_sales index storage. Left out pending a decision; sql/15_q77_covering_index.sql creates it. |
 | store_sales | `idx_ss_date_store_price` | 470 | contributed by the team | read by neither SF=1 nor SF=4 |
 | store_sales | `idx_ss_qty_q28` | 470 | contributed by the team | read by neither SF=1 nor SF=4 |
+| store_sales | `idx_ss_sold_date_sk_store_sales_price` | 470 | optimizer experiments | read by neither SF=1 nor SF=4 |
 | store_sales | `idx_store_sales_quantity_2` | 470 | reference repo | read by neither SF=1 nor SF=4 |
 | store_sales | `idx_ss_cust_date` | 426 | contributed by the team | read by neither SF=1 nor SF=4 |
 | store_sales | `idx_ss_qty_cover` | 426 | contributed by the team | read by neither SF=1 nor SF=4 |
@@ -79,7 +63,6 @@ Worth knowing before you decide they are gone for good: **"unused" is a property
 | catalog_sales | `idx_cs_order_number` | 127 | reference repo | read by neither SF=1 nor SF=4 |
 | web_sales | `idx_ws_cust_date` | 115 | contributed by the team | read by neither SF=1 nor SF=4 |
 | web_sales | `idx_ws_date_item_paid` | 105 | contributed by the team | read by neither SF=1 nor SF=4 |
-| web_sales | `idx_ws_sold_date_ext_price` | 105 | optimizer experiments | read by neither SF=1 nor SF=4 |
 | web_sales | `idx_ws_bill_addr_sk` | 93 | reference repo | read by neither SF=1 nor SF=4 |
 | web_sales | `idx_ws_bill_cdemo_sk` | 93 | reference repo | read by neither SF=1 nor SF=4 |
 | web_sales | `idx_ws_bill_customer_sk` | 93 | reference repo | read by neither SF=1 nor SF=4 |
@@ -148,6 +131,8 @@ Worth knowing before you decide they are gone for good: **"unused" is a property
 | item | `idx_item_cat` | 5 | contributed by the team | read by neither SF=1 nor SF=4 |
 | item | `idx_item_category_id` | 5 | contributed by the team | read by neither SF=1 nor SF=4 |
 | date_dim | `idx_date_month_date_sk` | 3 | contributed by the team | read by neither SF=1 nor SF=4 |
+| date_dim | `idx_date_year_sk` | 3 | contributed by the team | read by neither SF=1 nor SF=4 |
+| date_dim | `idx_date_ym` | 3 | contributed by the team | read by neither SF=1 nor SF=4 |
 | item | `idx_item_price` | 1 | contributed by the team | read by neither SF=1 nor SF=4 |
 | catalog_page | `idx_cp_end_date_sk` | 0 | reference repo | read by neither SF=1 nor SF=4 |
 | catalog_page | `idx_cp_start_date_sk` | 0 | reference repo | read by neither SF=1 nor SF=4 |
@@ -159,6 +144,7 @@ Worth knowing before you decide they are gone for good: **"unused" is a property
 | promotion | `idx_p_start_date_sk` | 0 | reference repo | read by neither SF=1 nor SF=4 |
 | store | `idx_store_gmt` | 0 | contributed by the team | read by neither SF=1 nor SF=4 |
 | store | `idx_s_closed_date_sk` | 0 | reference repo | read by neither SF=1 nor SF=4 |
+| store_sales | `idx_ss_date_store_profit` | 0 | measured here | built for q77 and does nothing for q77; helps q5 (~2.4x) and q70 (~2.9x) reproducibly but costs 512 MB and more than doubles store_sales index storage. Left out pending a decision; sql/15_q77_covering_index.sql creates it. |
 | web_page | `idx_wp_access_date_sk` | 0 | reference repo | read by neither SF=1 nor SF=4 |
 | web_page | `idx_wp_creation_date_sk` | 0 | reference repo | read by neither SF=1 nor SF=4 |
 | web_page | `idx_wp_customer_sk` | 0 | reference repo | read by neither SF=1 nor SF=4 |
