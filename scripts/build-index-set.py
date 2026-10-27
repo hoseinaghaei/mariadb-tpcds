@@ -171,6 +171,31 @@ def main():
          "about 6 of 188 indexes, three of which the container reads and "
          "macOS does not.",
          "",
+         "## It satisfies the usage rule and still costs SF=4 dearly",
+         "",
+         "Measured in the container with this exact set:",
+         "",
+         "| | SF=1 | SF=4 |",
+         "|---|---:|---:|",
+         "| full set (166) | 114.8–205.2s over five runs | **491.4s** |",
+         "| this set (37) | **101.7s** | **1487.0s** |",
+         "",
+         "At SF=1 it is the best result measured. At SF=4 it is **3x worse**, "
+         "and a second pruned set built from different evidence was also "
+         "worse (738.3s), so the direction is not an accident.",
+         "",
+         "**Why a usage-derived set can still be wrong.** The counters were "
+         "taken with all 166 indexes present, and they record which indexes "
+         "the optimizer *chose* — not which ones it needed in order to choose "
+         "well. Remove 129 of them and the cost estimates move, so the plans "
+         "move. The proof is in this run's own report: **7 of the 37 kept "
+         "indexes were never read**, and 8 at SF=1. If the plans had survived "
+         "the pruning, all 37 would still be in use.",
+         "",
+         "At SF=1 the database nearly fits the 8 GB pool, so freeing 16 GB of "
+         "index pages outweighs the worse plans. At SF=4 it does not fit "
+         "either way, and the worse plans are all that is left.",
+         "",
          "**On timing, this list makes no promise.** An earlier attempt "
          "claimed dropping indexes made the suite faster; that rested on two "
          "noisy measurements and is withdrawn. Five runs of the *unchanged* "

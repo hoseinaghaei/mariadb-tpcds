@@ -1,7 +1,7 @@
 -- ========================================================================
 --  The index set a new database should build.
 --
---  Generated 2026-10-27 01:12 by scripts/build-index-set.py.
+--  Generated 2026-10-27 02:15 by scripts/build-index-set.py.
 --  37 secondary indexes kept, 130 left out.
 --
 --  An index is here if either scale factor read it while running the
