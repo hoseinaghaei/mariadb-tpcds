@@ -378,13 +378,17 @@ note "$($CLI -N -B -e "select concat(count(distinct table_name,index_name),' ind
 #   ignored as fast as the full set -> the cost was STORAGE, not planning
 #
 # Metadata only, so it costs a statement per index and no rebuild.
-if [[ "${IGNORE_UNUSED:-0}" == "1" && -f "$PROJECT/sql/ignore_unused_indexes.sql" ]]; then
-  $CLI tpcds < "$PROJECT/sql/ignore_unused_indexes.sql"
+# IGNORE_SQL names which list to hide, relative to sql/.  The default list
+# is the never-READ one; sql/ignore_unreferenced_indexes.sql is the stricter
+# and correct one -- indexes no plan at any scale factor even mentions.
+IGN="$PROJECT/sql/${IGNORE_SQL:-ignore_unused_indexes.sql}"
+if [[ "${IGNORE_UNUSED:-0}" == "1" && -f "$IGN" ]]; then
+  $CLI tpcds < "$IGN"
   # count(*) over information_schema.statistics counts one row per COLUMN,
   # so a 3-column index counted 3 times and the note read "ignored 166"
   # for a 129-index file.  Count distinct indexes.
   n=$($CLI -N -B -e "select count(distinct table_name,index_name) from information_schema.statistics where table_schema='tpcds' and ignored='YES'")
-  note "ignored $n indexes (still on disk, invisible to the optimizer)"
+  note "ignored $n indexes from $(basename "$IGN") (still on disk, invisible to the optimizer)"
 elif [[ -f "$PROJECT/sql/unignore_all_indexes.sql" ]]; then
   # Always start from a known state: a volume may carry ignores from a
   # previous experiment, and an index silently left IGNORED would be charged

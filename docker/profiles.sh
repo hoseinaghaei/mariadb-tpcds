@@ -1,6 +1,6 @@
 # Shared configuration keys and functions for the host wrapper and entrypoint.
 # Command-line overrides are applied by reproduce.sh before these defaults.
-TPCDS_CONFIG_KEYS="SCALE PAGE_SIZE BUFFER_POOL SAMPLE_PAGES QUERYSET TUNED RNGSEED MARIADB_TAG KEPT_INDEXES PRUNE_INDEXES IGNORE_UNUSED KEEP_ALIVE SKIP_BENCH TMP_TABLE_SIZE MAX_HEAP_TABLE_SIZE ARIA_PAGECACHE_BUFFER_SIZE SORT_BUFFER_SIZE JOIN_BUFFER_SIZE JOIN_BUFFER_SPACE_LIMIT STATEMENT_TIMEOUT"
+TPCDS_CONFIG_KEYS="SCALE PAGE_SIZE BUFFER_POOL SAMPLE_PAGES QUERYSET TUNED RNGSEED MARIADB_TAG KEPT_INDEXES PRUNE_INDEXES IGNORE_UNUSED IGNORE_SQL KEEP_ALIVE SKIP_BENCH TMP_TABLE_SIZE MAX_HEAP_TABLE_SIZE ARIA_PAGECACHE_BUFFER_SIZE SORT_BUFFER_SIZE JOIN_BUFFER_SIZE JOIN_BUFFER_SPACE_LIMIT STATEMENT_TIMEOUT"
 TPCDS_MEMORY_KEYS="BUFFER_POOL TMP_TABLE_SIZE MAX_HEAP_TABLE_SIZE ARIA_PAGECACHE_BUFFER_SIZE SORT_BUFFER_SIZE JOIN_BUFFER_SIZE JOIN_BUFFER_SPACE_LIMIT"
 
 tpcds_profile_defaults() {
@@ -23,6 +23,7 @@ tpcds_profile_defaults() {
   : "${PAGE_SIZE:=32}" "${SAMPLE_PAGES:=160}" "${TUNED:=tuned}" "${RNGSEED:=10}"
   : "${MARIADB_TAG:=13.0.2}" "${KEPT_INDEXES:=0}" "${PRUNE_INDEXES:=0}"
   : "${IGNORE_UNUSED:=0}" "${KEEP_ALIVE:=0}" "${SKIP_BENCH:=0}"
+  : "${IGNORE_SQL:=ignore_unused_indexes.sql}"
 }
 
 tpcds_memory_bytes() {
@@ -67,6 +68,9 @@ tpcds_validate_config() {
       return 1
     fi
   done
+  case "$IGNORE_SQL" in
+    */*|"") echo "IGNORE_SQL must be a file name inside sql/, not a path" >&2; return 1 ;;
+  esac
   for key in KEEP_ALIVE SKIP_BENCH; do
     case "${!key}" in 0|1) ;; *) echo "$key must be 0 or 1" >&2; return 1 ;; esac
   done

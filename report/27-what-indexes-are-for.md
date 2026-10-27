@@ -1,0 +1,152 @@
+# What an index is for: read counters are the wrong instrument
+
+## The question
+
+The full index set is 166 secondary indexes, 23.3 GB at SF=4 — larger than
+some of the tables they index. Most are never touched by the 40 tier-4/5
+queries. The obvious move is to drop what is never used.
+
+That move failed badly, and understanding why produced the most useful
+result in this part of the project.
+
+## Attempt 1: drop what is never read
+
+With `userstat=1`, `INDEX_STATISTICS` counts rows read per index. Zero the
+counters, run the 40 queries, read the counters back, and you have an exact
+record of which indexes the queries touched.
+
+| | never read | size |
+|---|---:|---:|
+| SF=4 | 137 of 190 | 17.1 GB |
+| SF=1 | 136 of 190 | — |
+| **neither scale** | **130 of 166 secondary** | **16.4 GB** |
+
+Only 36 secondary indexes were read by any query at any scale. Dropping the
+rest, leaving 37:
+
+| SF=4, 40 queries | total |
+|---|---:|
+| full set | 735.2s |
+| never-read indexes dropped | 1487.0s |
+
+Twice as slow, on exactly the configuration whose own read counters said
+those indexes did nothing.
+
+## Why it failed
+
+A read counter answers *"did executing the plan touch this index?"* It does
+not answer *"did choosing the plan depend on this index existing?"*
+
+The optimizer costs alternatives. To decide that a scan beats a nested loop
+on `idx_x`, it has to consider `idx_x` — read its cardinality, estimate its
+rows, compare. If `idx_x` is gone, that alternative is never costed, and the
+comparison that produced the good plan never happens. The index did its work
+at planning time and left no trace in any read counter.
+
+Direct evidence: after dropping the 129, **7 of the 37 indexes that had been
+read stopped being read**. Nothing about those 7 changed. The plans around
+them did.
+
+## Attempt 2: hide them instead of dropping them
+
+Dropping changes two things at once: the optimizer can no longer see the
+index (planning), and 16.4 GB leaves the disk (storage).
+
+`ALTER TABLE t ALTER INDEX i IGNORED` changes only the first. The index stays
+on disk, stays maintained, stays in the buffer pool, and becomes invisible to
+the optimizer. Measured back-to-back on the same volume within one hour:
+
+| SF=4, 190 indexes on disk | total | vs baseline |
+|---|---:|---:|
+| all visible | 735.2s | — |
+| 129 hidden from the optimizer | 815.9s | +11.0% |
+| 129 *dropped* (separate session) | 1487.0s | +102% |
+
+**Hiding costs 11%. Dropping the same indexes cost 102%.** So the question
+"is ignoring the same as dropping?" has a clear answer: no, and it does not
+come close to the 1000s mark.
+
+Per query, 18 of 40 got worse when the 129 were hidden and 4 got better.
+The largest regressions: q68 +106%, q71 +92%, q77 +86%, q43 +81%, q46 +76%.
+The largest improvement is the interesting one: **q22 fell from 76.6s to
+35.0s, 2.2x faster with 129 indexes hidden.** At least one index is actively
+pushing the optimizer into a worse plan.
+
+## Attempt 3: ask the optimizer which indexes it considered
+
+`EXPLAIN` already reports, for every table access, the `possible_keys` it
+weighed and the `key` it chose. An index that appears nowhere in any plan for
+the whole query set was never a candidate for anything, so removing it cannot
+change which plan is chosen.
+
+One pass over all 44 statements, no DDL, and perfectly deterministic — two
+captures come back byte-identical. `scripts/index-consulted.py`.
+
+At SF=4:
+
+| verdict | indexes | size |
+|---|---:|---:|
+| **used** — read during execution | 36 | 6.89 GB |
+| **considered** — never read, but weighed when costing | 60 | 11.05 GB |
+| **unreferenced** — never read, never mentioned | 70 | 5.35 GB |
+
+The middle row is the whole finding. **60 indexes and 11 GB are invisible to
+read counters but shape plan choice.** Those are what Attempt 1 deleted.
+
+Concretely, the three largest never-read indexes in the database —
+`idx_inv_date_sk`, `idx_inv_item_sk`, `idx_inv_warehouse_sk` on `inventory`,
+1,030 MB each — are weighed by q21, q22, q37, q39, q72 and q82. For q21 the
+optimizer lists all four `inventory` secondary indexes in `possible_keys`
+and then picks `PRIMARY`. Read counters record nothing; the costing used
+every one of them.
+
+## A dead end worth writing down
+
+The first attempt at attempt 3 was to hide one index at a time and diff the
+plans. It does not work here, for a reason that is not in the manual.
+
+`ALTER TABLE ... ALTER INDEX` is metadata-only, but **InnoDB still re-samples
+the whole table's persistent statistics** — with
+`innodb_stats_auto_recalc=OFF`, and there is no way to suppress it. Sampling
+reads `innodb_stats_persistent_sample_pages` (160) random pages, so every
+ALTER shifts cardinalities, which moves costs, which flips plans in queries
+that never mention the hidden index.
+
+Measured on `catalog_sales`: hiding one index appeared to move 37 of 44
+plans. But capturing the plans twice *in the same hidden state*, where the
+only thing between the two captures is another ALTER, moved 19 — so most of
+the apparent effect was never the index. On `store_sales` that same
+same-state noise is 31 of 44.
+
+Writing the old values back into `mysql.innodb_index_stats` does not help:
+InnoDB keeps the re-sampled numbers in memory, and neither `FLUSH TABLE`,
+`FLUSH TABLES` nor `ALTER ... STATS_PERSISTENT=1` makes it re-read them.
+Raising the sample to 4000 pages made `ANALYZE store_sales` 10x slower
+(7.5s → 75.7s), made each `ALTER` on that table cost about 100s instead of
+7s, and left the same-state noise at **31 of 44**. It is not a precision
+problem — these plans sit on a knife edge and any re-sample re-rolls them.
+
+Two consequences:
+
+1. **Any index DDL re-rolls the plan dice.** Creating or dropping an index
+   forces a re-sample of that table, and at this sample size the re-sample
+   is enough to change plans on its own. Part of the 735s → 1487s regression
+   may be exactly that, and nothing to do with the indexes' usefulness.
+2. A hide-and-diff experiment needs replication to be worth anything.
+   `scripts/plan-sensitivity.py` keeps that method, with a noise filter
+   requiring a statement to be stable across every replicate in both states.
+
+Where the noise was low the two methods agree exactly — for
+`idx_inv_warehouse_sk` both name q21 and q72. Where it was high the
+replicated method is simply blind: it called `idx_ss_q61` (640 MB) dead,
+while `EXPLAIN` shows 7 queries weighing it. That is why `EXPLAIN` is the
+instrument of record here and the hide-and-diff is kept only as
+corroboration.
+
+## What this means for the submission
+
+- Keep the full index set. It is the fastest configuration measured.
+- "Never read" is not grounds for dropping an index, and this repository has
+  the measurement to prove it.
+- The droppable set is the one no plan mentions at any scale factor, which
+  is much smaller than the never-read set.

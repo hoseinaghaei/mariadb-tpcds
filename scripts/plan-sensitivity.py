@@ -49,8 +49,16 @@ VERDICTS
     consulted   never read, but hiding it stably
                 moves a plan in a query that uses
                 its table                             -> keep
-    dead        never read, and no plan moves that
-                survives the noise filter             -> safe to drop
+    unproven    never read, no stable movement, but
+                some statement using its table was
+                too noisy to compare                  -> keep, unproven
+    dead        never read, and every statement that
+                uses its table was stable and
+                unchanged                             -> safe to drop
+
+"dead" means PROVEN harmless, never "we could not tell" -- otherwise every
+store_sales index would be reported droppable purely because the
+re-sampling noise swamps the signal on that table.
 
 VERDICTS
     used        read during execution                 -> keep
@@ -306,23 +314,40 @@ ORDER BY 3 DESC, 1, 2;""")
             # Never leave an index hidden behind us, even on an exception.
             run_sql(a.container, f"ALTER TABLE {tbl} ALTER INDEX {idx} NOT IGNORED;")
 
-        stable = [l for l in labels
+        stable = {l for l in labels
                   if all(h[l] == H[0][l] for h in H)
-                  and all(v[l] == V[0][l] for v in V)]
-        noisy = len(labels) - len(stable)
-        moved = sorted({l.split("#")[0] for l in stable
-                        if H[0][l] != V[0][l] and tbl in refs[l]})
-        verdict = ("used" if read > 0 else "consulted" if moved else "dead")
+                  and all(v[l] == V[0][l] for v in V)}
+        # Only statements that name this table can be affected by hiding an
+        # index on it; a change anywhere else is noise by construction.
+        eligible = {l for l in labels if tbl in refs[l]}
+        unstable = eligible - stable
+        moved = sorted({l.split("#")[0] for l in eligible & stable
+                        if H[0][l] != V[0][l]})
+
+        # "dead" has to mean PROVEN harmless, not "we could not tell".  If any
+        # statement that uses this table was too noisy to compare, the index
+        # is unproven and is kept.  Without this, every store_sales index
+        # would be reported droppable purely because the re-sampling noise
+        # swamped the signal on that table.
+        if read > 0:
+            verdict = "used"
+        elif moved:
+            verdict = "consulted"
+        elif unstable:
+            verdict = "unproven"
+        else:
+            verdict = "dead"
+        noisy = len(unstable)
         results.append((tbl, idx, mb, read, verdict, moved, noisy))
         print(f"  [{i:3d}/{len(cands)}] {idx:<34} {mb:8.1f} MB  "
-              f"read={read:<11} noise={noisy:<3} {verdict:<9} "
+              f"read={read:<11} noisy={noisy:<3} {verdict:<9} "
               f"{','.join(moved) or '-'}")
         write_out(a.out, results)
 
     write_out(a.out, results)
     dead = [r for r in results if r[4] == "dead"]
     print(f"\n  wrote {a.out}")
-    for v in ("used", "consulted", "dead"):
+    for v in ("used", "consulted", "unproven", "dead"):
         sel = [r for r in results if r[4] == v]
         print(f"    {v:<10} {len(sel):3d} indexes, {sum(r[2] for r in sel)/1024:6.2f} GB")
     if dead:

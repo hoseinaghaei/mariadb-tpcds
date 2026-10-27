@@ -1,0 +1,7 @@
+table	index	mb	rows_read	verdict	plans_changed	noisy_statements
+inventory	idx_inv_date_sk	1030.0	0	consulted	query21,query37,query39,query72	2
+inventory	idx_inv_item_sk	1030.0	0	consulted	query21,query22,query37,query72	1
+inventory	idx_inv_warehouse_sk	1030.0	0	consulted	query21,query72	2
+store_sales	idx_ss_q61	640.0	0	dead		32
+store_sales	idx_ss_date_store_price	469.7	0	consulted	query10	32
+store_sales	idx_ss_qty_q28	469.7	0	dead		32
