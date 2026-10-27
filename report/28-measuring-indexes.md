@@ -1,6 +1,6 @@
 # Measuring indexes is harder than it looks
 
-Eight things that went wrong while deciding which indexes to drop. Each one
+Nine things that went wrong while deciding which indexes to drop. Each one
 produced a confident, plausible, wrong answer first. They are written up
 because the wrong answers are reproducible and the traps are not specific to
 this project.
@@ -103,7 +103,25 @@ only shows up when you time it.
 
 ---
 
-## 4. A rebuilt database is a different benchmark
+## 4. Indexes cover for each other, so one-at-a-time testing lies
+
+Of the 58 indexes weighed but never read, hiding any *single* one moves a
+plan in only 8 cases. That reads as "the other 50 are disposable".
+
+Hiding all 120 drop candidates **together** moves plans in 4 queries and
+costs 17% — 513.7s against 600.7s, identical answers. Per table the pattern
+repeats: hide `store_sales`' whole candidate group and 7 queries move;
+`web_sales`', and 10 move.
+
+Two indexes can each look disposable because the optimizer still has the
+other to fall back on. The unit of decision is a group, and a drop list has
+to be validated as the list you intend to apply.
+
+The set that survives that test is the one no plan mentions **at all** —
+70 indexes, 5.35 GB, zero plans moved when hidden together — plus
+`idx_inv_date_sk`, whose single plan move makes query22 faster.
+
+## 5. A rebuilt database is a different benchmark
 
 The SF=4 database was accidentally reloaded mid-investigation. The same 40
 queries, the same data (`store_sales` is 11,516,885 rows either way), the
@@ -123,7 +141,7 @@ benchmark target, even when every table and every index matches.
 
 ---
 
-## 5. A stale list silently measured the wrong configuration
+## 6. A stale list silently measured the wrong configuration
 
 `sql/unignore_all_indexes.sql` was a static file. After a rebuild, two of the
 index names in it no longer existed. The client stops at the first error, and
@@ -145,7 +163,7 @@ with none. Both now exit rather than measure.
 
 ---
 
-## 6. A guard that required exactly 25 tables dropped the database
+## 7. A guard that required exactly 25 tables dropped the database
 
 The loader skipped reloading when `information_schema.tables` held exactly 25
 rows for the schema. Two scratch tables left behind by an experiment made it
@@ -158,7 +176,7 @@ tolerates extras.
 
 ---
 
-## 7. Prefixing `EXPLAIN` to "the query" executes half of it
+## 8. Prefixing `EXPLAIN` to "the query" executes half of it
 
 Queries 14, 23, 39 and 67 are **two statements each** — TPC-DS asks for two
 result sets. A planning-only pass that attaches `EXPLAIN` to the first
@@ -168,7 +186,7 @@ executes nothing.
 
 ---
 
-## 8. One A/B pair cannot tell an effect from drift
+## 9. One A/B pair cannot tell an effect from drift
 
 Within-condition spread on this host exceeded the effect being measured:
 

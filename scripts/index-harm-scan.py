@@ -49,14 +49,100 @@ def run(container, sql, timeout=1800):
     return time.time() - t0, p.stdout
 
 
-def add_hint(sql, table, index):
-    """Attach IGNORE INDEX to every FROM/JOIN reference to `table`.
+# Words that can follow a table name without being an alias.  Getting this
+# wrong turns `FROM store_sales WHERE ...` into `FROM store_sales WHERE
+# IGNORE INDEX (...)`.
+NOT_AN_ALIAS = {
+    "where", "on", "using", "group", "order", "having", "limit", "join",
+    "inner", "left", "right", "full", "cross", "natural", "straight_join",
+    "union", "except", "intersect", "and", "or", "not", "is", "in", "as",
+    "select", "from", "set", "when", "then", "else", "end", "case", "with",
+    "window", "partition", "by", "between", "like", "exists", "ignore",
+    "force", "use", "for", "into", "values", "lateral",
+}
 
-    Skips `table.column` so column references are left alone, and skips a
-    name already carrying a hint.
+# Keywords that end a FROM/JOIN table list.
+ENDS_TABLE_LIST = {
+    "where", "group", "order", "having", "limit", "union", "except",
+    "intersect", "window", "on", "select", "set", "into", "using",
+}
+
+_TOKEN = re.compile(r"""
+      '(?:[^'\\]|\\.)*'        # single-quoted string
+    | "(?:[^"\\]|\\.)*"        # double-quoted string
+    | --[^\n]*                   # line comment
+    | \#[^\n]*
+    | /\*.*?\*/                   # block comment
+    | \w+                        # identifier or keyword
+    | .                          # anything else, one char
+""", re.X | re.S)
+
+
+def table_refs(sql, table):
+    """Spans of `sql` where `table` appears as a FROM/JOIN table reference.
+
+    A positional scan, not a bare name match.  query31 has
+    `SUM(ss_ext_sales_price) AS store_sales` and query51 has
+    `... END AS web_sales`: column aliases named after base tables.  Hinting
+    those produces `AS store_sales IGNORE INDEX (...)`, a syntax error --
+    and in the harm scan a syntax error was being read as "this index
+    changes nothing".
+
+    Returns (start, end, alias_end) tuples, innermost text offsets.
     """
-    pat = rf"\b{table}\b(?!\s*\.)(?!\s+IGNORE)"
-    return re.subn(pat, f"{table} IGNORE INDEX ({index})", sql)
+    out, in_list, depth_at_entry, depth = [], False, 0, 0
+    toks = [(m.group(0), m.start(), m.end()) for m in _TOKEN.finditer(sql)]
+    for i, (tok, a, b) in enumerate(toks):
+        low = tok.lower()
+        if tok == "(":
+            depth += 1
+            if in_list and depth > depth_at_entry:
+                in_list = False      # a subquery; its own FROM re-enters
+            continue
+        if tok == ")":
+            depth -= 1
+            if in_list and depth < depth_at_entry:
+                in_list = False
+            continue
+        if low in ("from", "join"):
+            in_list, depth_at_entry = True, depth
+            continue
+        if low in ENDS_TABLE_LIST:
+            in_list = False
+            continue
+        if in_list and low == table:
+            # Look ahead over whitespace and comments, by token, not by a
+            # fixed offset: `date_dim as calendar` needs the token AFTER
+            # `as`, and counting positions landed on `as` itself.
+            ahead = [t for t in toks[i + 1:]
+                     if not t[0].isspace()
+                     and not t[0].startswith(("--", "#", "/*"))][:2]
+            nxt = ahead[0] if ahead else None
+            if nxt and nxt[0] == ".":
+                continue                      # `table.column`, not a reference
+            alias_end = b
+            if nxt and nxt[0].lower() == "as":
+                if len(ahead) > 1 and ahead[1][0].isidentifier():
+                    alias_end = ahead[1][2]
+            elif nxt and nxt[0].isidentifier() and nxt[0].lower() not in NOT_AN_ALIAS:
+                alias_end = nxt[2]
+            out.append((a, b, alias_end))
+    return out
+
+
+def add_hint(sql, table, index):
+    """Attach IGNORE INDEX after every FROM/JOIN reference to `table`.
+
+    The hint must come AFTER the alias -- `customer c IGNORE INDEX (...)`,
+    not `customer IGNORE INDEX (...) c`, which is a syntax error.
+    """
+    names = index if isinstance(index, str) else ", ".join(sorted(index))
+    refs = table_refs(sql, table)
+    for _, _, alias_end in reversed(refs):          # right to left
+        if re.match(r"\s*IGNORE\b", sql[alias_end:], re.I):
+            continue
+        sql = sql[:alias_end] + f" IGNORE INDEX ({names})" + sql[alias_end:]
+    return sql, len(refs)
 
 
 def chosen_keys(out):
@@ -123,7 +209,11 @@ def main():
                 continue
             try:
                 plan = chosen_keys(run(a.container, explain_of(hinted))[1])
-            except RuntimeError:
+            except RuntimeError as e:
+                # Never treat a failed test as "no effect": that is how an
+                # untested index gets reported as safe to drop.
+                print(f"    {idx} on {q}: HINT FAILED -- {str(e)[:90]}")
+                moved.append(q + "(untested)")
                 continue
             if plan and plan != base_plan[q]:
                 moved.append(q)

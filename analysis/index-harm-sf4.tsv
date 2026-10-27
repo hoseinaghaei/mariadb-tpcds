@@ -1,0 +1,9 @@
+table	index	mb	queries	as_is_s	hidden_s	verdict
+inventory	idx_inv_date_sk	1030.0	query22	40.1	10.0	HARMFUL - drop it
+store_sales	idx_ss_date_store_price	469.7	query43,query59	7.5	8.3	helpful - keep
+store_sales	idx_ss_cdemo_sk	341.4	query7	6.3	7.5	helpful - keep
+store_sales	idx_ss_customer_sk	341.4	query54	0.2	0.1	neutral
+catalog_sales	idx_cs_sold_date_sk	177.2	query4,query66,query71,query77,query78	45.6	47.1	neutral
+web_sales	idx_ws_date_item_paid	105.2	query4,query5,query11,query14,query23,query66,query71,query77,query78	143.3	141.5	neutral
+store_returns	idx_sr_returned_date_sk	39.1	query5,query77	6.7	8.5	helpful - keep
+catalog_returns	idx_cr_returned_date_sk	21.0	query5,query77	6.1	6.7	neutral

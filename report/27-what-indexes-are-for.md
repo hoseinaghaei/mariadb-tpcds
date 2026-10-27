@@ -224,6 +224,29 @@ while `EXPLAIN` shows 7 queries weighing it. That is why `EXPLAIN` is the
 instrument of record here and the hide-and-diff is kept only as
 corroboration.
 
+## Indexes cover for each other, so the unit of decision is a group
+
+Testing one index at a time answers the wrong question. Of the 58 indexes
+that are weighed but never read, hiding any *single* one moves a plan in only
+8 cases. Hiding all 120 drop candidates **together** moves plans in 4 queries
+and costs 17% — 513.7s against 600.7s, same answers.
+
+Per table, the pattern is consistent: hide `store_sales`' whole candidate
+group and 7 queries move; `web_sales`', and 10 move. Two indexes can each
+look disposable because the optimizer still has the other to fall back on.
+
+So the 13.37 GB of "never read or never decisive" is **not** recoverable.
+What is recoverable is the set that no plan mentions at all, checked as a
+group:
+
+| set | indexes | size | plans moved |
+|---|---:|---:|---|
+| the 70 unreferenced, hidden together | 70 | 5.35 GB | **none** |
+| plus `idx_inv_date_sk` | 71 | 6.35 GB | query22 only — 3.8x *faster* |
+
+That is the recommendation: **drop 71 indexes, 6.35 GB**, and one query gets
+faster.
+
 ## An index that makes a query slower
 
 One result from the hiding experiment does not fit the "indexes help or do
@@ -248,8 +271,14 @@ is worth 41.6s of a 735s suite on one query alone.
 
 ## What this means for the submission
 
-- Keep the full index set. It is the fastest configuration measured.
+- **Drop the 71 in `sql/drop_unreferenced_indexes.sql`** — 6.35 GB. No plan
+  at either scale factor mentions 70 of them; the 71st, `idx_inv_date_sk`,
+  is weighed and makes query22 3.8x slower.
+- **Keep the other 95**, including 58 that are never read. They are weighed
+  when the optimizer costs alternatives, and removing them moves plans.
 - "Never read" is not grounds for dropping an index, and this repository has
-  the measurement to prove it.
-- The droppable set is the one no plan mentions at any scale factor, which
-  is much smaller than the never-read set.
+  the measurement to prove it: dropping on that test alone doubled SF=4.
+- Test index removals **as a group**. Indexes substitute for each other, so
+  one-at-a-time testing says every member is disposable and the set is not.
+- Build the database in one pass. That was worth more than every index
+  decision here combined — 735.2s against 454.4s on identical data.
