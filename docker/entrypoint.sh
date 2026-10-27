@@ -300,31 +300,23 @@ if [[ "$PROFILE" == smoke ]]; then
   note "smoke skips secondary-index creation and pruning (dedicated volume by default)"
 else
 
-# DEFAULT: build only the indexes the workload reads -- sql/indexes_kept.sql,
-# 37 of them.  FULL_INDEXES=1 builds the historical 166 instead.
+# DEFAULT: the full historical set (sql/05, 11, 14).  SF=4 must stay under
+# 500s and the full set is the only configuration that does: 491.4s against
+# 1487.0s when the 129 unread indexes were dropped.
 #
-# Every kept index is read at SF=1 or SF=4; every one of the 129 left out is
-# read at neither.  The evidence is the container's own INDEX_STATISTICS at
-# both scales, not the macOS host's -- that distinction matters, because the
-# two disagree about 6 of 188 indexes even with identical data.
+# That regression is the finding, not a mishap.  "This index was read" and
+# "the optimizer needs this index to cost a good plan" are different things.
+# The read counters were taken with all 166 present; remove 129 and the cost
+# estimates move, so the plans move.  7 of the 37 supposedly-useful indexes
+# stopped being read afterwards -- proof the plans changed rather than just
+# the storage.
 #
-# KNOW THE COST BEFORE YOU RELY ON THIS.  Measured with this exact set:
-#
-#                     SF=1                          SF=4
-#   full (166)   114.8-205.2s over five runs      491.4s
-#   kept (37)    101.7s                          1487.0s
-#
-# SF=1 is the best figure measured.  SF=4 is three times worse, and a
-# different pruned set was also worse there (738.3s), so it is not an
-# accident.  The counters record which indexes the optimizer CHOSE with all
-# 166 present, not which it needed to choose well: drop 129 and the cost
-# estimates move, so the plans move.  7 of the 37 kept went unread at SF=4
-# afterwards, which is the proof -- had the plans survived, all 37 would
-# still be in use.
-#
-# FULL_INDEXES=1 restores the historical set and the 491.4s SF=4 figure.
+# KEPT_INDEXES=1 builds only the 37 read indexes (101.7s at SF=1, 1487.0s at
+# SF=4).  IGNORE_UNUSED=1 hides the 129 from the optimizer without dropping
+# them, which is how we separate "unused at execution" from "unused for
+# planning" -- see report/27.
 KEPT="$PROJECT/sql/indexes_kept.sql"
-if [[ "${FULL_INDEXES:-0}" == "1" || ! -f "$KEPT" ]]; then
+if [[ "${KEPT_INDEXES:-0}" != "1" || ! -f "$KEPT" ]]; then
   WANT_IDX=167; SRC="the full historical set (sql/05, 11, 14)"
 else
   WANT_IDX=$(grep -ciE '^CREATE +(UNIQUE +)?INDEX' "$KEPT" || echo 0)
@@ -357,6 +349,27 @@ else
   note "built in $((SECONDS-t0))s"
 fi
 note "$($CLI -N -B -e "select concat(count(distinct table_name,index_name),' indexes total') from information_schema.statistics where table_schema='tpcds'")"
+
+# IGNORE_UNUSED=1 hides the never-read indexes from the optimizer while
+# leaving them on disk and maintained.  This is the controlled half of the
+# experiment: dropping them made SF=4 three times slower, and ignoring them
+# tells us whether that was the optimizer losing information it needed to
+# plan, or simply 16.3 GB of storage getting out of the way.
+#
+#   ignored as slow as dropped      -> the optimizer needed them to PLAN
+#   ignored as fast as the full set -> the cost was STORAGE, not planning
+#
+# Metadata only, so it costs a statement per index and no rebuild.
+if [[ "${IGNORE_UNUSED:-0}" == "1" && -f "$PROJECT/sql/ignore_unused_indexes.sql" ]]; then
+  $CLI tpcds < "$PROJECT/sql/ignore_unused_indexes.sql"
+  n=$($CLI -N -B -e "select count(*) from information_schema.statistics where table_schema='tpcds' and ignored='YES'")
+  note "ignored $n indexes (still on disk, invisible to the optimizer)"
+elif [[ -f "$PROJECT/sql/unignore_all_indexes.sql" ]]; then
+  # Always start from a known state: a volume may carry ignores from a
+  # previous experiment, and an index silently left IGNORED would be charged
+  # to whatever is measured next.
+  $CLI tpcds < "$PROJECT/sql/unignore_all_indexes.sql" 2>/dev/null || true
+fi
 
 # Still available for a database that already has the full set: drop the
 # unused ones in place rather than rebuilding.
