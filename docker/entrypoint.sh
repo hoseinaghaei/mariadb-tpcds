@@ -267,8 +267,16 @@ CLI="mariadb --socket=$SOCK -u root"
 
 # ---------------------------------------------------------------- 4. load
 say "4/7  Creating schema and loading data"
-if (( RELOAD == 0 )) && $CLI -N -B -e "select count(*) from information_schema.tables where table_schema='tpcds'" 2>/dev/null | grep -qx 25; then
-  note "tpcds already has 25 tables, skipping"
+# Require the expected tables to be PRESENT, rather than the schema to hold
+# exactly 25 tables.  Two scratch tables left in tpcds by an experiment made
+# that count 27, which read as a broken database and silently dropped and
+# reloaded 32 GB of it.
+WANT_TBLS=$(grep -ioE '^CREATE TABLE (IF NOT EXISTS )?[a-z0-9_]+' "$PROJECT/sql/01_schema.sql" \
+            | awk '{print tolower($NF)}' | sort -u)
+HAVE_TBLS=$($CLI -N -B -e "select lower(table_name) from information_schema.tables where table_schema='tpcds'" 2>/dev/null | sort -u)
+MISSING=$(comm -23 <(printf '%s\n' "$WANT_TBLS") <(printf '%s\n' "$HAVE_TBLS") | wc -l | tr -d ' ')
+if (( RELOAD == 0 )) && (( MISSING == 0 )); then
+  note "tpcds already has the 25 expected tables, skipping"
 else
   (( RELOAD == 0 )) || note "data was regenerated, so the database is reloaded"
   $CLI -e "drop database if exists tpcds; create database tpcds"
@@ -382,6 +390,23 @@ note "$($CLI -N -B -e "select concat(count(distinct table_name,index_name),' ind
 # is the never-READ one; sql/ignore_unreferenced_indexes.sql is the stricter
 # and correct one -- indexes no plan at any scale factor even mentions.
 IGN="$PROJECT/sql/${IGNORE_SQL:-ignore_unused_indexes.sql}"
+# Clear every IGNORED flag first, generated from the database rather than
+# read from a static list.  sql/unignore_all_indexes.sql went stale the
+# moment the index set changed: two of its names no longer existed, the
+# client stopped at the first missing one, and `|| true` swallowed it -- so
+# 48 indexes stayed hidden through a run labelled "everything visible", and
+# the A/B it was measuring compared 70 hidden against 48 hidden.
+clear_ignored() {
+  local n
+  n=$($CLI -N -B -e "select count(distinct table_name,index_name) from information_schema.statistics where table_schema='tpcds' and ignored='YES'")
+  (( n == 0 )) && return 0
+  $CLI -N -B -e "select concat('ALTER TABLE ',table_name,' ALTER INDEX ',index_name,' NOT IGNORED;')
+                   from (select distinct table_name,index_name from information_schema.statistics
+                          where table_schema='tpcds' and ignored='YES') x" | $CLI tpcds
+  note "cleared $n leftover IGNORED index(es)"
+}
+clear_ignored
+
 if [[ "${IGNORE_UNUSED:-0}" == "1" && -f "$IGN" ]]; then
   $CLI tpcds < "$IGN"
   # count(*) over information_schema.statistics counts one row per COLUMN,
@@ -389,11 +414,18 @@ if [[ "${IGNORE_UNUSED:-0}" == "1" && -f "$IGN" ]]; then
   # for a 129-index file.  Count distinct indexes.
   n=$($CLI -N -B -e "select count(distinct table_name,index_name) from information_schema.statistics where table_schema='tpcds' and ignored='YES'")
   note "ignored $n indexes from $(basename "$IGN") (still on disk, invisible to the optimizer)"
-elif [[ -f "$PROJECT/sql/unignore_all_indexes.sql" ]]; then
-  # Always start from a known state: a volume may carry ignores from a
-  # previous experiment, and an index silently left IGNORED would be charged
-  # to whatever is measured next.
-  $CLI tpcds < "$PROJECT/sql/unignore_all_indexes.sql" 2>/dev/null || true
+  # Assert it, rather than trusting it.  An ignore list naming an index that
+  # no longer exists leaves the rest of the file unapplied.
+  want=$(grep -ci '^ALTER TABLE' "$IGN" || echo 0)
+  if (( n != want )); then
+    echo "ERROR: $(basename "$IGN") has $want statements but $n indexes are IGNORED." >&2
+    echo "       The list is stale -- regenerate it with scripts/decide-indexes.py." >&2
+    exit 1
+  fi
+else
+  # Nothing hidden: confirm it, so a run labelled "full set" really is one.
+  n=$($CLI -N -B -e "select count(distinct table_name,index_name) from information_schema.statistics where table_schema='tpcds' and ignored='YES'")
+  (( n == 0 )) || { echo "ERROR: $n indexes are still IGNORED in a full-set run." >&2; exit 1; }
 fi
 
 # Still available for a database that already has the full set: drop the

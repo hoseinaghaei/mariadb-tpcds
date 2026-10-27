@@ -100,6 +100,33 @@ optimizer lists all four `inventory` secondary indexes in `possible_keys`
 and then picks `PRIMARY`. Read counters record nothing; the costing used
 every one of them.
 
+Running the same classification at SF=1 gives **exactly the same split** —
+36 used, 60 considered, 70 unreferenced — and the same 70 names, with no
+index unreferenced at one scale and consulted at the other. So the droppable
+set is not a scale-factor accident.
+
+## The decision
+
+| | indexes | SF=4 size |
+|---|---:|---:|
+| keep — read or weighed at some scale | 96 | 17.94 GB |
+| **drop — neither, at both scales** | **70** | **5.35 GB** |
+
+`sql/drop_unreferenced_indexes.sql` drops them;
+`sql/ignore_unreferenced_indexes.sql` hides the same set reversibly;
+`sql/unignore_all_indexes.sql` restores every index;
+`analysis/index-decisions.md` lists each one with the reason it was kept.
+
+The dropped set is almost entirely single-column foreign-key indexes on
+columns no query in the set filters or joins on —
+`idx_cs_ship_hdemo_sk`, `idx_ws_promo_sk`, `idx_sr_reason_sk` and their
+relatives. The largest are `idx_ss_qty_q28` and
+`idx_store_sales_quantity_2` at 469.7 MB each.
+
+Note what is *not* in it. The three 1,030 MB `inventory` indexes are the
+biggest never-read indexes in the database and the most tempting thing to
+delete; they stay, because six queries weigh them.
+
 ## A dead end worth writing down
 
 The first attempt at attempt 3 was to hide one index at a time and diff the
@@ -142,6 +169,28 @@ replicated method is simply blind: it called `idx_ss_q61` (640 MB) dead,
 while `EXPLAIN` shows 7 queries weighing it. That is why `EXPLAIN` is the
 instrument of record here and the hide-and-diff is kept only as
 corroboration.
+
+## An index that makes a query slower
+
+One result from the hiding experiment does not fit the "indexes help or do
+nothing" picture. With the 129 never-read indexes hidden, **q22 ran 2.2x
+faster — 76.6s to 35.0s.**
+
+q22 weighs exactly five indexes. Two of them, `idx_inv_date_sk` and
+`idx_inv_item_sk` (1,030 MB each), plus `idx_date_month_date_sk`, are never
+read and were among the 129 hidden. Hiding them is what made q22 fast: the
+optimizer considers them, costs them attractively, and chooses a worse plan
+than it would if they did not exist.
+
+So the three categories are not enough. An index can be:
+
+1. read while executing — keep;
+2. never read but weighed into a better plan — keep;
+3. never read and never weighed — drop;
+4. **weighed into a worse plan — drop, and the query gets faster.**
+
+Category 4 is invisible to every method in this report except timing, and it
+is worth 41.6s of a 735s suite on one query alone.
 
 ## What this means for the submission
 
