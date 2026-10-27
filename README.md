@@ -25,10 +25,23 @@ Everything runs in a Linux container; the repository is mounted read-only, so
 a run cannot modify it. Results land in `./results/`.
 
 ```sh
-./reproduce.sh            # quick: SF=1, 32K pages, ~20 min
-./reproduce.sh smoke      # smallest run, ~10 min
-./reproduce.sh full       # SF=4, 32K pages, 8G pool, ~3 h, needs 12G RAM
+./reproduce.sh smoke      # low-memory setup/execution check: 1G pool, four queries
+./reproduce.sh            # quick: SF=1, 8G pool, 40 selected queries
+./reproduce.sh full       # SF=4, 8G pool, 40 selected queries
 ```
+
+`smoke` is intended for checking the installation on a smaller machine. It uses
+smaller caches and execution buffers, skips secondary-index creation, and writes
+to `results/smoke/` with its own `tpcds-smoke-data` volume. Its first run still
+generates and loads the **full SF=1 dataset**. It is not a qualification test or
+a reproduction of the published performance results. Peak memory and first-run
+time for this new profile have not yet been measured with Docker.
+
+`quick` and `full` keep the reference memory settings. The script checks a
+memory estimate before building the image; their defaults need roughly 12 GiB
+of Docker capacity. Overrides such as `BUFFER_POOL=4G` now apply to both the
+check and container, but reducing the pool alone leaves the other large buffers
+in place. See the [profile and resource guide](docker/README.md#resource-notes).
 
 A default run measures **both** of this project's contributions together: the
 tuned server settings *and* the team's optimized queries (`queries/tuned/`,
@@ -40,7 +53,12 @@ tuned server settings *and* the team's optimized queries (`queries/tuned/`,
 ./reproduce.sh quick QUERYSET=tuned  TUNED=tuned   # + the query rewrites
 ```
 
-Full detail in [`docker/README.md`](docker/README.md).
+Full detail in [`docker/README.md`](docker/README.md). Script regression tests
+use a fake Docker command and need no daemon or database:
+
+```sh
+python3 -B -m unittest discover -s scripts -p test_reproduce.py
+```
 
 ---
 

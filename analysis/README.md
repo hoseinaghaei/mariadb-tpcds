@@ -24,13 +24,18 @@ pagesize/run-scales-mac.sh 1 4       # writes pagesize/results/mac-sf<N>/
 
 ### The buffer pool is held constant on purpose
 
-`run-scales.sh` defaults to `BUFFER_POOL=4G` for **every** scale factor and
+`run-scales.sh` defaults to `BUFFER_POOL=8G` for **every** scale factor and
 does not grow it with the data. A scaling curve measured with a pool that
 grows alongside the dataset conflates two variables and mostly measures the
 pool. Holding it fixed is what makes the curve informative: at SF=1 the
 working set fits, and somewhere above it stops fitting — which is the part
 worth seeing. Override it if you want the other experiment, but say so when
 reporting the numbers.
+
+For a low-memory installation check use `./reproduce.sh smoke`. That profile
+uses separate `results/smoke/` output and is intentionally excluded from the
+scaling reports. It runs four adapted queries and skips secondary-index builds;
+its timings do not represent the reference experiment.
 
 ## 2. Analyse
 
