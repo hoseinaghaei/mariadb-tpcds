@@ -112,6 +112,30 @@ set is not a scale-factor accident.
 | keep — read or weighed at some scale | 96 | 17.94 GB |
 | **drop — neither, at both scales** | **70** | **5.35 GB** |
 
+### Checked against the clock, not just the plans
+
+EXPLAIN says removing these 70 cannot change a plan. Four alternating runs at
+SF=4 — full, hidden, full, hidden — say the clock agrees:
+
+| condition | runs | mean |
+|---|---|---:|
+| full set | 454.4s, 470.9s | 462.6s |
+| 70 hidden | 424.4s, 472.3s | 448.4s |
+
+The difference between the conditions (14.3s) is smaller than the spread
+*within* the hidden condition (47.9s), and **no query is slower in both
+hidden runs than in both full runs**. That is a null result, and a null
+result is what the prediction called for.
+
+Alternating matters. A single pair cannot tell the effect from the machine's
+drift: an earlier full-then-hidden pair had the second run slower, and a
+hidden-then-full pair had the second run faster. Here `full-2` is the slowest
+of the four, which rules out a simple warm-up story.
+
+So the 70 buy nothing and cost 5.35 GB. Dropping them is free in response
+time and saves the storage, the maintenance on every load, and the time to
+build them.
+
 `sql/drop_unreferenced_indexes.sql` drops them;
 `sql/ignore_unreferenced_indexes.sql` hides the same set reversibly;
 `sql/unignore_all_indexes.sql` restores every index;
@@ -126,6 +150,27 @@ relatives. The largest are `idx_ss_qty_q28` and
 Note what is *not* in it. The three 1,030 MB `inventory` indexes are the
 biggest never-read indexes in the database and the most tempting thing to
 delete; they stay, because six queries weigh them.
+
+## The measurement that moved more than any index
+
+The SF=4 database was accidentally reloaded mid-investigation: two scratch
+tables left in the `tpcds` schema broke a guard that required exactly 25
+tables, and the entrypoint rebuilt from the `.dat` files. The data was
+identical — `store_sales` is 11,516,885 rows either way.
+
+The rebuilt database runs the same 40 queries in **454.4–470.9s** where the
+database that had accumulated in the volume took **735.2s**. Same data, same
+queries, same settings, same index set. The difference is physical layout and
+freshly computed statistics.
+
+That is a larger effect than any index decision in this report, and it is
+consistent with the statistics sensitivity documented below: an index set
+built up over many sessions carries statistics that have been re-sampled
+dozens of times, and the plans chosen from them are measurably worse.
+
+The practical consequence for reproducing this work: build the database in
+one pass. A volume that has been through many index experiments is not the
+same benchmark target, even when every table and index matches.
 
 ## A dead end worth writing down
 
