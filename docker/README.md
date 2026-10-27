@@ -20,7 +20,7 @@ volume (`tpcds-data`), which a second run reuses to skip generation.
 2. Generates scale-factor data
 3. Initialises MariaDB at the chosen `innodb_page_size`
 4. Creates the schema and loads the data
-5. Creates all 188 indexes (`sql/05`, `11`, `14`)
+5. Creates the **37 indexes the workload reads** (`sql/indexes_kept.sql`); `FULL_INDEXES=1` builds the historical 166 instead — see `sql/dropped_indexes.md` for what is left out and what it costs at SF=4
 6. `ANALYZE TABLE`
 7. Benchmarks the query set chosen by `QUERYSET` under the settings chosen
    by `TUNED`
@@ -41,6 +41,7 @@ Any of these can be overridden as `KEY=VALUE` after the profile:
 | `QUERYSET` | tuned | which SQL to run — see below |
 | `TUNED` | tuned | which server settings — `baseline`, `tuned` or `both` |
 | `MARIADB_TAG` | 13.0.2 | base image tag — matches the macOS host exactly |
+| `FULL_INDEXES` | 0 | `1` builds all 166 historical indexes instead of the 37 measured-useful ones |
 
 `QUERYSET` and `TUNED` are separate knobs that unfortunately share a word.
 **`QUERYSET` chooses the SQL; `TUNED` chooses the server settings.**

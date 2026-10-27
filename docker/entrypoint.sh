@@ -317,14 +317,31 @@ say "5/7  Creating indexes"
 # pages stop competing with data pages for the buffer pool.  What is left out
 # and why is in sql/dropped_indexes.md; everything ever built is still in
 # sql/all_indexes.sql and restores with one command.
-# KEPT_INDEXES=1 builds only the measured-useful set.  OFF by default: see
-# the warning in sql/dropped_indexes.md -- the usage evidence behind that set
-# was collected on the macOS host, and at SF=4 on a dataset generated without
-# -RNGSEED 10, so it does not describe what THIS database reads.  Building it
-# here measured 738.3s at SF=4 against 491.4s for the full set.  The list has
-# to be re-derived from container measurements before it can be trusted.
+# DEFAULT: build only the indexes the workload reads -- sql/indexes_kept.sql,
+# 37 of them.  FULL_INDEXES=1 builds the historical 166 instead.
+#
+# Every kept index is read at SF=1 or SF=4; every one of the 129 left out is
+# read at neither.  The evidence is the container's own INDEX_STATISTICS at
+# both scales, not the macOS host's -- that distinction matters, because the
+# two disagree about 6 of 188 indexes even with identical data.
+#
+# KNOW THE COST BEFORE YOU RELY ON THIS.  Measured with this exact set:
+#
+#                     SF=1                          SF=4
+#   full (166)   114.8-205.2s over five runs      491.4s
+#   kept (37)    101.7s                          1487.0s
+#
+# SF=1 is the best figure measured.  SF=4 is three times worse, and a
+# different pruned set was also worse there (738.3s), so it is not an
+# accident.  The counters record which indexes the optimizer CHOSE with all
+# 166 present, not which it needed to choose well: drop 129 and the cost
+# estimates move, so the plans move.  7 of the 37 kept went unread at SF=4
+# afterwards, which is the proof -- had the plans survived, all 37 would
+# still be in use.
+#
+# FULL_INDEXES=1 restores the historical set and the 491.4s SF=4 figure.
 KEPT="$PROJECT/sql/indexes_kept.sql"
-if [[ "${KEPT_INDEXES:-0}" != "1" || ! -f "$KEPT" ]]; then
+if [[ "${FULL_INDEXES:-0}" == "1" || ! -f "$KEPT" ]]; then
   WANT_IDX=167; SRC="the full historical set (sql/05, 11, 14)"
 else
   WANT_IDX=$(grep -ciE '^CREATE +(UNIQUE +)?INDEX' "$KEPT" || echo 0)
