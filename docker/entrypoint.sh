@@ -300,9 +300,11 @@ if [[ "$PROFILE" == smoke ]]; then
   note "smoke skips secondary-index creation and pruning (dedicated volume by default)"
 else
 
-# DEFAULT: the full historical set (sql/05, 11, 14).  SF=4 must stay under
-# 500s and the full set is the only configuration that does: 491.4s against
-# 1487.0s when the 129 unread indexes were dropped.
+# DEFAULT: the full historical set (sql/05, 11, 14).  It is the fastest
+# configuration measured at SF=4 by a wide margin: 735.2-805.8s in the
+# container against 1487.0s when the 129 unread indexes were dropped.
+# (491.4s also appears in older notes -- that was the macOS host, not this
+# container, and the two are not comparable.)
 #
 # That regression is the finding, not a mishap.  "This index was read" and
 # "the optimizer needs this index to cost a good plan" are different things.
@@ -317,7 +319,23 @@ else
 # planning" -- see report/27.
 KEPT="$PROJECT/sql/indexes_kept.sql"
 if [[ "${KEPT_INDEXES:-0}" != "1" || ! -f "$KEPT" ]]; then
-  WANT_IDX=167; SRC="the full historical set (sql/05, 11, 14)"
+  # Count the definitions rather than hardcoding a number.  167 was wrong:
+  # the three files hold 173 CREATE INDEX statements but only 164 distinct
+  # (table, index) pairs -- nine indexes are defined twice, once in 05/11 and
+  # again in 14_contributed.  A database with the full set has 166 secondary
+  # indexes, so the hardcoded 167 was never reached and every `full` run
+  # re-ran all 173 statements to discover they already existed.
+  # This counts single-line definitions only, so it is a lower bound -- which
+  # is the right semantics here, because it is only a "do we need to build?"
+  # trigger and the build itself is CREATE INDEX IF NOT EXISTS either way.
+  WANT_IDX=$(cat "$PROJECT"/sql/05_indexes.sql \
+                 "$PROJECT"/sql/11_optimizer_indexes.sql \
+                 "$PROJECT"/sql/14_contributed_indexes.sql 2>/dev/null \
+             | grep -ioE '^CREATE +(UNIQUE +)?INDEX +[a-z0-9_]+ +ON +[a-z0-9_]+' \
+             | tr 'A-Z' 'a-z' \
+             | sed -E 's/^create +(unique +)?index +([a-z0-9_]+) +on +([a-z0-9_]+)$/\3 \2/' \
+             | sort -u | wc -l | tr -d ' ')
+  SRC="the full historical set (sql/05, 11, 14)"
 else
   WANT_IDX=$(grep -ciE '^CREATE +(UNIQUE +)?INDEX' "$KEPT" || echo 0)
   SRC="sql/indexes_kept.sql"
@@ -362,7 +380,10 @@ note "$($CLI -N -B -e "select concat(count(distinct table_name,index_name),' ind
 # Metadata only, so it costs a statement per index and no rebuild.
 if [[ "${IGNORE_UNUSED:-0}" == "1" && -f "$PROJECT/sql/ignore_unused_indexes.sql" ]]; then
   $CLI tpcds < "$PROJECT/sql/ignore_unused_indexes.sql"
-  n=$($CLI -N -B -e "select count(*) from information_schema.statistics where table_schema='tpcds' and ignored='YES'")
+  # count(*) over information_schema.statistics counts one row per COLUMN,
+  # so a 3-column index counted 3 times and the note read "ignored 166"
+  # for a 129-index file.  Count distinct indexes.
+  n=$($CLI -N -B -e "select count(distinct table_name,index_name) from information_schema.statistics where table_schema='tpcds' and ignored='YES'")
   note "ignored $n indexes (still on disk, invisible to the optimizer)"
 elif [[ -f "$PROJECT/sql/unignore_all_indexes.sql" ]]; then
   # Always start from a known state: a volume may carry ignores from a
@@ -478,6 +499,21 @@ check_measured() {   # $1 = tag
   python3 /usr/local/bin/bench.py --check "$RESULTS/$1" "$QUERYSET"
 }
 
+# SKIP_BENCH=1 brings the database up under the measured configuration and
+# stops short of running the 40 queries.  Used with KEEP_ALIVE=1 for the
+# plan-stability work (report/27): comparing EXPLAIN output with an index
+# visible against the same query with it IGNORED answers "does the optimizer
+# consult this index?" deterministically, without paying 12 minutes of
+# execution per index to find out.
+if [[ "${SKIP_BENCH:-0}" == "1" ]]; then
+  say "Benchmark skipped (SKIP_BENCH=1)"
+  stop_server
+  write_cnf "$TUNING_BLOCK
+max_statement_time = $STATEMENT_TIMEOUT"
+  chown mysql:mysql "$DATA/my.cnf"
+  start_server
+  [[ "$PROFILE" == smoke ]] || check_settings
+else
 case "$TUNED" in
   baseline) run_one baseline ""; check_measured baseline ;;   # stock: retired, kept for comparison
   tuned)    run_one tuned "$TUNING_BLOCK"; check_measured tuned ;;
@@ -485,6 +521,7 @@ case "$TUNED" in
             run_one tuned "$TUNING_BLOCK"; check_measured tuned ;;
   *) echo "TUNED must be baseline, tuned or both (got $TUNED)" >&2; exit 1 ;;
 esac
+fi
 
 # NOT here: INDEX_STATISTICS lives in memory, so shutting the server
 # down discards every read counter.  The usage stage below needs them,
@@ -525,6 +562,22 @@ else
   # test looked for 1 -- a silent failure that cost the index work its
   # evidence and sent it to the macOS numbers instead.
   note "no usage report: @@userstat = '$($CLI -N -B -e "select @@userstat" 2>&1 | head -1)'"
+fi
+
+# KEEP_ALIVE=1 leaves the server running and the container alive so the
+# database can be queried from outside with `docker exec`.  Nothing in a
+# normal run sets it; it exists for the index classification experiment,
+# which needs hundreds of EXPLAINs against one loaded database and would
+# otherwise pay a full startup for each.
+if [[ "${KEEP_ALIVE:-0}" == "1" ]]; then
+  say "KEEP_ALIVE=1 -- server left running on $SOCK"
+  note "connect with: docker exec -it <container> mariadb --socket=$SOCK -u root tpcds"
+  note "stop with:    docker stop <container>"
+  trap 'stop_server' TERM INT
+  # `wait` rather than `sleep infinity` so a docker stop reaches the trap and
+  # the database is shut down cleanly instead of being killed mid-write.
+  sleep infinity & wait $!
+  exit 0
 fi
 
 stop_server
