@@ -3,8 +3,8 @@
 
     python3 scripts/prune-indexes.py            # after running both reports
 
-Reads analysis/index-usage-sf1.tsv and index-usage-sf4.tsv (produced by
-scripts/index-usefulness.sh) and writes sql/drop_unused_indexes.sql.
+Reads the newest index-usage reports, preferring the container's own
+(results/usage-sf<N>/), and writes sql/drop_unused_indexes.sql.
 
 THE RULE IS INTERSECTION, NOT UNION.  An index idle at one scale factor can
 be busy at another: the optimizer's choices move as table sizes and
@@ -37,15 +37,20 @@ def load(sf):
     # results/sf<N>/ as a by-product of any run.  Prefer whichever is newer,
     # so a fresh container run supersedes a stale host one rather than being
     # silently ignored.
-    cands = [f"{ANA}/index-usage-sf{sf}.tsv",
+    # The container's own report first -- results/usage-sf<N>/ is where
+    # ./run-scales.sh leaves it.  The macOS files under analysis/ are a last
+    # resort: they describe a different machine, and using them is what
+    # produced a drop list that made SF=4 50% slower.
+    cands = [f"{REPO}/results/usage-sf{sf}/index-usage-sf{sf}.tsv",
              f"{REPO}/results/sf{sf}/index-usage-sf{sf}.tsv",
-             f"{REPO}/results/index-usage-sf{sf}.tsv"]
+             f"{REPO}/results/index-usage-sf{sf}.tsv",
+             f"{ANA}/index-usage-sf{sf}.tsv"]
     found = [c for c in cands if os.path.exists(c)]
     if not found:
         sys.exit(f"no index usage report for SF={sf}.  Produce one with\n"
                  f"    ./scripts/index-usefulness.sh {sf}          (host)\n"
                  f"    ./run-scales.sh {sf}                        (container)")
-    p = max(found, key=os.path.getmtime)
+    p = found[0]      # preference order above, not mtime
     print(f"  SF={sf}: {os.path.relpath(p, REPO)}")
     out = {}
     for line in open(p):

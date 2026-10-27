@@ -1,10 +1,10 @@
 -- ========================================================================
 --  Indexes that NEITHER scale factor read.
 --
---  Generated 2026-10-26 21:00 by scripts/prune-indexes.py from
+--  Generated 2026-10-27 01:13 by scripts/prune-indexes.py from
 --  analysis/index-usage-sf1.tsv and index-usage-sf4.tsv.
 --
---  127 indexes, 16,314 MB (15.9 GB).
+--  129 indexes, 16,685 MB (16.3 GB).
 --  Kept because at least one scale read them: 37.
 --  Skipped because they are IGNORED (cannot be read, so a zero
 --  count proves nothing): 0.
@@ -27,10 +27,11 @@ DROP INDEX IF EXISTS idx_inv_date_sk ON inventory;   -- 1,030 MB
 DROP INDEX IF EXISTS idx_inv_item_sk ON inventory;   -- 1,030 MB
 DROP INDEX IF EXISTS idx_inv_warehouse_sk ON inventory;   -- 1,030 MB
 
--- store_sales: 17 indexes, 6,646 MB
+-- store_sales: 18 indexes, 7,115 MB
 DROP INDEX IF EXISTS idx_ss_q61 ON store_sales;   -- 640 MB
 DROP INDEX IF EXISTS idx_ss_date_store_price ON store_sales;   -- 470 MB
 DROP INDEX IF EXISTS idx_ss_qty_q28 ON store_sales;   -- 470 MB
+DROP INDEX IF EXISTS idx_ss_sold_date_sk_store_sales_price ON store_sales;   -- 470 MB
 DROP INDEX IF EXISTS idx_store_sales_quantity_2 ON store_sales;   -- 470 MB
 DROP INDEX IF EXISTS idx_ss_cust_date ON store_sales;   -- 426 MB
 DROP INDEX IF EXISTS idx_ss_qty_cover ON store_sales;   -- 426 MB
@@ -68,10 +69,9 @@ DROP INDEX IF EXISTS idx_cs_sold_time_sk ON catalog_sales;   -- 177 MB
 DROP INDEX IF EXISTS idx_cs_warehouse_sk ON catalog_sales;   -- 177 MB
 DROP INDEX IF EXISTS idx_cs_order_number ON catalog_sales;   -- 127 MB
 
--- web_sales: 21 indexes, 1,953 MB
+-- web_sales: 20 indexes, 1,848 MB
 DROP INDEX IF EXISTS idx_ws_cust_date ON web_sales;   -- 115 MB
 DROP INDEX IF EXISTS idx_ws_date_item_paid ON web_sales;   -- 105 MB
-DROP INDEX IF EXISTS idx_ws_sold_date_ext_price ON web_sales;   -- 105 MB
 DROP INDEX IF EXISTS idx_ws_bill_addr_sk ON web_sales;   -- 93 MB
 DROP INDEX IF EXISTS idx_ws_bill_cdemo_sk ON web_sales;   -- 93 MB
 DROP INDEX IF EXISTS idx_ws_bill_customer_sk ON web_sales;   -- 93 MB
@@ -155,8 +155,10 @@ DROP INDEX IF EXISTS idx_item_cat ON item;   -- 5 MB
 DROP INDEX IF EXISTS idx_item_category_id ON item;   -- 5 MB
 DROP INDEX IF EXISTS idx_item_price ON item;   -- 1 MB
 
--- date_dim: 1 indexes, 3 MB
+-- date_dim: 3 indexes, 9 MB
 DROP INDEX IF EXISTS idx_date_month_date_sk ON date_dim;   -- 3 MB
+DROP INDEX IF EXISTS idx_date_year_sk ON date_dim;   -- 3 MB
+DROP INDEX IF EXISTS idx_date_ym ON date_dim;   -- 3 MB
 
 -- catalog_page: 2 indexes, 1 MB
 DROP INDEX IF EXISTS idx_cp_end_date_sk ON catalog_page;   -- 0 MB
@@ -186,8 +188,3 @@ DROP INDEX IF EXISTS idx_wp_customer_sk ON web_page;   -- 0 MB
 -- web_site: 2 indexes, 0 MB
 DROP INDEX IF EXISTS idx_web_close_date_sk ON web_site;   -- 0 MB
 DROP INDEX IF EXISTS idx_web_open_date_sk ON web_site;   -- 0 MB
-
--- Not touched: present in only one report.
---   catalog_sales.idx_cs_q66  (absent from SF=1)
---   store_sales.idx_ss_date_store_profit  (absent from SF=1)
---   web_sales.idx_ws_q66  (absent from SF=1)
