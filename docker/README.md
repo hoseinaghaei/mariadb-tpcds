@@ -3,14 +3,20 @@
 One command, Linux container, nothing installed on the host but Docker:
 
 ```bash
-./reproduce.sh            # quick   SF=1, 32K pages, tuned queries + config (~25 min)
-./reproduce.sh smoke      # smallest run, same shape                        (~20 min)
-./reproduce.sh full       # SF=4, 32K pages, 8G pool, as report 23          (~3 h)
+./reproduce.sh smoke      # low-memory setup/execution check, 1G pool, four queries
+./reproduce.sh            # quick: reference memory settings, SF=1, 40 queries
+./reproduce.sh full       # reference memory settings, SF=4, 40 queries
 ```
 
 Results land in `./results/`. The repository is mounted **read-only**, so a
 run cannot modify it; generated data and the database live in a named Docker
 volume (`tpcds-data`), which a second run reuses to skip generation.
+
+Smoke uses `results/smoke/` and a separate volume, `tpcds-smoke-data`, so it does
+not overwrite reference results or change their physical design. The first
+smoke run still generates and loads the full SF=1 data; only its query workload
+and memory settings are smaller. No measured runtime or peak-memory claim is
+made for the new profile.
 
 ## What a run does
 
@@ -20,27 +26,36 @@ volume (`tpcds-data`), which a second run reuses to skip generation.
 2. Generates scale-factor data
 3. Initialises MariaDB at the chosen `innodb_page_size`
 4. Creates the schema and loads the data
-5. Creates all 188 indexes (`sql/05`, `11`, `14`)
+5. Creates the reference secondary indexes (`sql/05`, `11`, `14`), unless smoke
+   was selected; smoke skips secondary-index creation and pruning
 6. `ANALYZE TABLE`
 7. Benchmarks the query set chosen by `QUERYSET` under the settings chosen
    by `TUNED`
 
-Then prints the totals, the ratio, and an answer cross-check.
+Then checks successful completion of the exact requested query set and prints
+the totals. A ratio and output-hash comparison are available when both server
+configurations were run. A smoke check does not compare against trusted TPC
+answer sets and does not establish query qualification.
 
 ## Options
 
-Any of these can be overridden as `KEY=VALUE` after the profile:
+Options are case-sensitive `KEY=VALUE` arguments after the profile. Explicit
+arguments take precedence over shell environment values, which take precedence
+over profile defaults. The wrapper and entrypoint share the defaults in
+`docker/profiles.sh`; the wrapper forwards every resolved value to the container.
 
 | variable | default (quick) | meaning |
 |---|---|---|
 | `SCALE` | 1 | dsdgen scale factor |
 | `RNGSEED` | 10 | dsdgen random seed — **leave this alone** to match the published answers |
 | `PAGE_SIZE` | 32 | 4, 8, 16, 32 or 64 |
-| `BUFFER_POOL` | 8G | `innodb_buffer_pool_size` — **the published configuration**; needs ~10G given to Docker |
+| `BUFFER_POOL` | 8G | `innodb_buffer_pool_size`; smoke defaults to 1G |
 | `SAMPLE_PAGES` | 160 | `innodb_stats_persistent_sample_pages` |
-| `QUERYSET` | tuned | which SQL to run — see below |
+| `QUERYSET` | tuned | which SQL to run; smoke requires `smoke` |
 | `TUNED` | tuned | which server settings — `baseline`, `tuned` or `both` |
 | `MARIADB_TAG` | 13.0.2 | base image tag — matches the macOS host exactly |
+| `STATEMENT_TIMEOUT` | 3600 | query deadline in seconds; smoke defaults to 300, independently of loading |
+| `KEPT_INDEXES` / `PRUNE_INDEXES` | 0 | opt-in index experiments; not available in smoke |
 
 `QUERYSET` and `TUNED` are separate knobs that unfortunately share a word.
 **`QUERYSET` chooses the SQL; `TUNED` chooses the server settings.**
@@ -50,6 +65,7 @@ Any of these can be overridden as `KEY=VALUE` after the profile:
 | `tuned` | `queries/tuned/` — the team's optimized query where one exists (33 of 40), the adapted original otherwise | 40 |
 | `tier45` | the adapted TPC-DS text, unoptimized | 40 |
 | `all` | the adapted TPC-DS text, unoptimized | 99 |
+| `smoke` | adapted Q3, Q12, Q18, Q76: joins, window aggregation, rollup and NULL filtering | 4 |
 
 So the default run measures **both** contributions together. To separate
 them, hold one fixed:
@@ -69,11 +85,16 @@ separately, which would discard every `SET` before its query ran.
 clone has it. The container mounts `/project` read-only and cannot regenerate
 it; if it is missing, the run stops and says so.
 
+Smoke reads `queries/mariadb/`, avoiding the selected query files' session
+memory overrides. Use `quick` for the full selected workload with custom memory
+settings. Even when smoke finishes in under five seconds, it passes if all four
+queries finish successfully and produce complete result artifacts.
+
 ### Does the container reproduce the host's answers?
 
-Yes, and it is checked rather than assumed. Comparing the smoke profile's
+Historical checks compared the former 40-query smoke profile's
 results against the macOS run at SF=1, query by query, on the hash of the
-sorted output:
+sorted output. The current four-query smoke profile is a different workload:
 
 | run | Docker | macOS | agreement |
 |---|---|---|---|
@@ -113,7 +134,7 @@ Expect absolute times to differ from the macOS figures in `report/`. At SF=1
 the same suite measured 114.8s in the container against 69.2s on macOS, and
 the gap is not uniform: q22 was 6.7x slower here while q37 was faster and q23
 a dead heat. (An older note recorded q51 at 167s here — that was measured
-with a 1 GB pool, before every profile moved to the published 8G.)
+with a 1 GB pool, before the reference profiles moved to the published 8G.)
 
 ## Indexes: one file to put them all back
 
@@ -155,19 +176,59 @@ you need the disk back; ignore when the question is whether it pays.
 
 ## Resource notes
 
-- **Every profile** uses an 8G buffer pool, so Docker needs ~10G of memory
-  (Docker Desktop > Settings > Resources). `reproduce.sh` checks this before
-  starting and fails with the numbers rather than letting MariaDB fail to
-  start 300 seconds later. If you cannot spare it, override explicitly —
-  `./reproduce.sh quick BUFFER_POOL=4G` — and say so when reporting, because
-  a smaller pool is a different experiment, not a smaller one.
-- The `tpcds-data` volume holds the generated data and the database: about
-  3 GB at SF=1, about 35 GB at SF=4. Remove it with `docker volume rm
-  tpcds-data`.
+| Setting | quick / full defaults | smoke defaults |
+|---|---:|---:|
+| `BUFFER_POOL` | 8G | 1G |
+| `ARIA_PAGECACHE_BUFFER_SIZE` | 1G | 64M |
+| `TMP_TABLE_SIZE` | 1536M | 32M |
+| `MAX_HEAP_TABLE_SIZE` | 1536M | 32M |
+| `SORT_BUFFER_SIZE` | 64M | 4M |
+| `JOIN_BUFFER_SIZE` | 64M | 4M |
+| `JOIN_BUFFER_SPACE_LIMIT` | 256M | 32M |
+
+All these options accept positive bytes or integer K/M/G suffixes (powers of
+1024), case-insensitively: `1024M`, `1G` and `1073741824` have equal sizes.
+Fractional, zero, overflowing and malformed sizes are rejected before Docker
+is invoked. The resolved buffer pool is used by both preflight and MariaDB.
+
+Preflight runs **before image building or output-directory creation**. It reads
+Docker's daemon/VM memory capacity and compares it with the pool, Aria cache,
+one temporary table (the smaller temp/heap limit), sort buffer, join-space
+allowance and 512 MiB overhead. With defaults, that is about 11.3 GiB for a
+reference run and 1.6 GiB for smoke. The reference estimate is conservative for
+`TUNED=baseline`, which does not apply the tuning block.
+
+This is a screening estimate, **not a measured minimum or a memory cap**.
+Multiple temporary tables can coexist; Docker's capacity is not currently free
+RAM. Leave room for other services and host applications. No Docker memory
+allocation is increased automatically. On Docker Desktop, capacity can be
+adjusted in Settings > Resources; a native Docker Engine shares host memory.
+
+Reducing only `BUFFER_POOL` leaves the other reference buffers large: a 4G
+pool still gives a screening estimate of about 7.3 GiB. For a smaller machine,
+start with `./reproduce.sh smoke`. Its limits apply during loading as well as
+query execution, and its query files do not override them. Running quick/full
+with custom settings is a different performance experiment and must be labelled
+as such.
+
+The first run needs disk for the full generated dataset, database and any
+indexes. Existing full-index SF=1 volumes have measured about 12 GB; the default
+four-scale sweep budgets about 115 GB in `run-scales.sh`. Smoke skips secondary
+indexes, but its actual footprint is not yet measured. Volumes are retained;
+remove the relevant named volume deliberately when it is no longer needed.
+
+`RESULTS_DIR` and `VOLUME` can be set in the environment or as trailing options.
+Smoke appends `/smoke` to any result root; its default volume is separate, but
+an explicitly supplied volume name is honoured. The multi-scale driver keeps
+its existing per-scale reference directories and volumes.
+
+Summaries record profile, purpose, exact query IDs, scale, seed, timeout, buffer
+pool and the effective server memory settings; per-query records include SQL
+hashes. Smoke output is excluded from `analysis/collect.py`'s scaling inputs.
 
 ## Does it reproduce the exact configuration?
 
-Yes — deliberately, and the run proves it rather than asserting it. After
+The reference profiles check the standing configuration. After
 applying the tuning block the entrypoint reads `sql/tpcds-tuned.cnf`, queries
 `SHOW VARIABLES`, and prints `standing config: N/13 settings match`, naming
 any that do not.
@@ -179,7 +240,7 @@ figure was measured on:
 |---|---|
 | MariaDB | 13.0.2 (same build family as the macOS host) |
 | page size | 32K |
-| buffer pool | **8G, on every profile** |
+| buffer pool | **8G on quick/full; smoke uses separate settings** |
 | statistics | `innodb_stats_persistent_sample_pages = 160` |
 | the 13 tuned settings | `sql/tpcds-tuned.cnf` verbatim |
 | also pinned | `innodb_log_file_size` 96M, `innodb_io_capacity` 200, `innodb_write_io_threads` 4, `innodb_doublewrite` ON, `skip_name_resolve`, `max_statement_time` 3600 |
@@ -208,7 +269,19 @@ that fails, so the pipeline checks itself:
 - `store_sales` must hold rows after loading — an earlier bug passed
   `-TERMINATE N` to `dsdgen`, which strips the trailing `|` the loader needs,
   and `LOAD DATA` then inserted nothing without erroring
-- a benchmark that finishes implausibly fast is rejected
+- every requested query file and successful per-query result artifact must exist;
+  SQL errors, client timeouts, missing hashes and incomplete workloads fail the run
 - every query's output is hashed verbatim **and** row-sorted, so a real answer
   change is distinguished from row-order instability (q65 and q71 have an
   `ORDER BY` that is not a total order)
+
+Run the script regression tests without Docker or MariaDB:
+
+```bash
+python3 -B -m unittest discover -s scripts -p test_reproduce.py -v
+```
+
+These use a fake Docker CLI and mocked SQL responses. They verify argument
+precedence, size conversion, early memory rejection, storage separation and
+completion/failure handling. They do not measure actual container memory use
+or execute SQL; a real bounded smoke run remains necessary to measure that.

@@ -3,12 +3,14 @@
 # reproduce.sh — one command to reproduce the TPC-DS benchmark in Docker.
 #
 #   ./reproduce.sh                 quick profile  (SF=1, 32K pages, ~20 min)
-#   ./reproduce.sh smoke           smallest run (~10 min)
+#   ./reproduce.sh smoke           low-memory SF=1 setup + four-query check
 #   ./reproduce.sh full            SF=4, 32K pages, 8G pool (~3 h, needs 12G RAM)
 #   ./reproduce.sh quick SCALE=2 PAGE_SIZE=32
 #
 # Everything runs inside a Linux container.  The repository is mounted
-# read-only, so a run cannot modify it; results land in ./results/.
+# read-only. Results land in ./results/ (smoke: ./results/smoke/).
+# Smoke still generates and loads the full SF=1 dataset on its first run.
+# quick/full retain the reference memory settings; smoke uses a 1G pool.
 #
 # By default a run measures BOTH of the project's contributions together:
 # the tuned server settings AND the team's optimized queries
@@ -20,8 +22,8 @@
 set -Eeuo pipefail
 
 cd "$(dirname "$0")"
-PROFILE="${1:-quick}"
-shift || true
+PROFILE=quick
+if [[ $# -gt 0 && "$1" != *=* ]]; then PROFILE="$1"; shift; fi
 
 case "$PROFILE" in
   quick|full|smoke) ;;
@@ -30,12 +32,23 @@ case "$PROFILE" in
   *) echo "unknown profile '$PROFILE' (use quick, full or smoke, or --help)" >&2; exit 1 ;;
 esac
 
-# Any remaining KEY=VALUE arguments become container environment overrides.
-ENVARGS=()
+# Resolve once: explicit arguments > shell environment > profile defaults.
+# Never eval user input or allow arbitrary shell variables to be overwritten.
+. "$PWD/docker/profiles.sh"
 for kv in "$@"; do
   [[ "$kv" == *=* ]] || { echo "expected KEY=VALUE, got '$kv'" >&2; exit 1; }
-  ENVARGS+=(-e "$kv")
+  key="${kv%%=*}"; value="${kv#*=}"
+  case " $TPCDS_CONFIG_KEYS RESULTS_DIR VOLUME " in
+    *" $key "*) ;;
+    *) echo "unknown option '$key' (options are case-sensitive, e.g. BUFFER_POOL=4G)" >&2; exit 1 ;;
+  esac
+  [[ -n "$key" && -n "$value" ]] || { echo "expected a nonempty KEY=VALUE, got '$kv'" >&2; exit 1; }
+  printf -v "$key" '%s' "$value"
 done
+tpcds_profile_defaults
+tpcds_validate_config
+ENVARGS=()
+for key in $TPCDS_CONFIG_KEYS; do ENVARGS+=(-e "$key=${!key}"); done
 
 if ! command -v docker >/dev/null 2>&1; then
   echo "Docker is required but not installed: https://docs.docker.com/get-docker/" >&2
@@ -46,11 +59,39 @@ if ! docker info >/dev/null 2>&1; then
   exit 1
 fi
 
+# Check before building images or creating output directories. Docker reports
+# daemon/VM capacity, not currently free RAM; this estimate is not a peak cap.
+AVAIL=$(docker info --format '{{.MemTotal}}' 2>/dev/null) || {
+  echo "ERROR: could not read Docker's memory capacity" >&2; exit 1; }
+if [[ ! "$AVAIL" =~ ^[0-9]+$ ]] || (( AVAIL == 0 )); then
+  echo "ERROR: Docker returned an invalid memory capacity: '$AVAIL'" >&2
+  exit 1
+fi
+NEED=$(tpcds_memory_budget)
+echo "==> profile $PROFILE: buffer pool $BUFFER_POOL; Docker capacity $((AVAIL/1048576)) MiB; estimated budget $((NEED/1048576)) MiB"
+if (( AVAIL < NEED )); then
+  cat >&2 <<EOF
+
+ERROR: Docker reports $((AVAIL/1048576)) MiB; the requested $PROFILE settings need an estimated $((NEED/1048576)) MiB.
+  BUFFER_POOL=$BUFFER_POOL, Aria=$ARIA_PAGECACHE_BUFFER_SIZE, temporary-table limit=$TMP_TABLE_SIZE.
+  This includes execution buffers and headroom, not just the InnoDB pool.
+  Allow more memory for other workloads and concurrent temporary tables.
+
+  For a low-memory functional check: ./reproduce.sh smoke
+  To change a run explicitly: ./reproduce.sh $PROFILE BUFFER_POOL=1G
+  quick/full also retain large Aria/temp buffers; smoke lowers all of these.
+  Docker Desktop users can increase VM memory in Settings > Resources.
+EOF
+  exit 1
+fi
+
 IMAGE=tpcds-mariadb
 # Where per-query JSON lands.  run-scales.sh points this at a per-scale
 # directory so one scale factor's results do not overwrite another's.
 RESULTS="${RESULTS_DIR:-$PWD/results}"
+if [[ "$PROFILE" == smoke ]]; then RESULTS="$RESULTS/smoke"; fi
 mkdir -p "$RESULTS"
+RESULTS=$(cd "$RESULTS" && pwd)
 
 # A named volume holds the generated data and the database between runs, so a
 # second run skips generation and loading.  Remove it with:
@@ -58,55 +99,25 @@ mkdir -p "$RESULTS"
 #
 # run-scales.sh overrides this per scale factor (tpcds-data-sf1, -sf2, ...)
 # so that re-running one scale does not force every other to be regenerated.
-# One volume per scale costs disk -- roughly 3 GB at SF=1 and 35 GB at SF=4 --
-# and buys back hours of reload and index time on any repeat run.
-VOLUME="${VOLUME:-tpcds-data}"
+# Each retained volume includes generated files and the loaded database;
+# allow substantial disk space (see docker/README.md).
+if [[ "$PROFILE" == smoke ]]; then
+  VOLUME="${VOLUME:-tpcds-smoke-data}"
+else
+  VOLUME="${VOLUME:-tpcds-data}"
+fi
 
 echo "==> building image (first run compiles the toolchain layer; later runs are cached)"
 docker build -q -t "$IMAGE" \
   --build-arg "MARIADB_TAG=${MARIADB_TAG:-13.0.2}" \
   docker/ >/dev/null
 
-# Memory.  EVERY profile now asks for an 8G buffer pool, because that is what
-# pagesize/my-32k-sf4-t1exact.cnf used and every published figure was measured
-# with.  A smaller pool is a different experiment, not a smaller one -- the
-# whole point of several findings in report/ is the working set outgrowing the
-# pool, and halving it moves that boundary.
-#
-# So this is checked for all profiles, not just `full`, and it fails rather
-# than warns: an 8G pool on a VM with less simply will not start, and a
-# 300-second "server did not start" says nothing useful.
-POOL_G=$(printf '%s' "${BUFFER_POOL:-8G}" | sed 's/[Gg]$//')
-AVAIL=$(docker info --format '{{.MemTotal}}' 2>/dev/null || echo 0)
-if [[ "$POOL_G" =~ ^[0-9]+$ ]] && (( AVAIL > 0 )); then
-  NEED=$(( (POOL_G + 2) * 1000000000 ))        # pool plus room for the server
-  if (( AVAIL < NEED )); then
-    cat >&2 <<EOF
-
-ERROR: Docker has $((AVAIL/1000000000))G of memory; a ${POOL_G}G buffer pool needs about $((NEED/1000000000))G.
-
-  The buffer pool is ${POOL_G}G on every profile because that is the
-  configuration every published figure was measured with
-  (sql/tpcds-tuned.cnf, pagesize/my-32k-sf4-t1exact.cnf).  Running a
-  smaller one is a different experiment, not a smaller one.
-
-  Either raise Docker Desktop > Settings > Resources > Memory,
-  or accept a different configuration explicitly and say so when
-  reporting the numbers:
-
-      ./reproduce.sh $PROFILE BUFFER_POOL=4G
-
-EOF
-    exit 1
-  fi
-fi
-
 # -t only when stdout is a terminal: with it, the script cannot be piped,
 # redirected, or run from CI ("cannot attach stdin to a TTY-enabled container").
 TTYARGS=()
 [[ -t 0 && -t 1 ]] && TTYARGS=(-it)
 
-echo "==> running profile '$PROFILE' (results -> ./results)"
+echo "==> running profile '$PROFILE' (results -> $RESULTS; volume $VOLUME)"
 exec docker run --rm "${TTYARGS[@]+"${TTYARGS[@]}"}" \
   -e "PROFILE=$PROFILE" "${ENVARGS[@]+"${ENVARGS[@]}"}" \
   -v "$PWD:/project:ro" \

@@ -29,6 +29,7 @@ RUN mkdir -p /data /results /scratch && chown -R mysql:mysql /data /results /scr
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY bench.py      /usr/local/bin/bench.py
+COPY profiles.sh   /usr/local/bin/profiles.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Only PROFILE is defaulted here.  The others are deliberately left unset so

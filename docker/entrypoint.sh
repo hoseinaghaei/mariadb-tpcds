@@ -20,36 +20,21 @@ say() { printf '\n\033[1m[%s] %s\033[0m\n' "$(date +%H:%M:%S)" "$*"; }
 note() { printf '          %s\n' "$*"; }
 
 # ---------------------------------------------------------------- profiles
-# A profile only sets defaults; any explicit -e overrides it.
-case "${PROFILE:-quick}" in
-  quick)
-    # 32K and sample 160 are the standing configuration (sql/tpcds-tuned.cnf);
-    # stock settings were retired on 2026-10-25 after measuring 2.94x at SF=1.
-    : "${SCALE:=1}" "${PAGE_SIZE:=32}" "${BUFFER_POOL:=8G}" "${SAMPLE_PAGES:=160}"
-    : "${QUERYSET:=tuned}" "${TUNED:=tuned}" "${RNGSEED:=10}" ;;
-  full)
-    # reproduces the shape of report 23: SF=4, 32K pages, 8G pool, sample 160
-    : "${SCALE:=4}" "${PAGE_SIZE:=32}" "${BUFFER_POOL:=8G}" "${SAMPLE_PAGES:=160}"
-    : "${QUERYSET:=tuned}" "${TUNED:=tuned}" "${RNGSEED:=10}" ;;
-  smoke)
-    : "${SCALE:=1}" "${PAGE_SIZE:=32}" "${BUFFER_POOL:=8G}" "${SAMPLE_PAGES:=160}"
-    : "${QUERYSET:=tuned}" "${TUNED:=tuned}" "${RNGSEED:=10}" ;;
-  *) echo "unknown PROFILE: $PROFILE (use quick, full or smoke)" >&2; exit 1 ;;
-esac
-
-case "$PAGE_SIZE" in 4|8|16|32|64) ;; *)
-  echo "PAGE_SIZE must be 4, 8, 16, 32 or 64 (got $PAGE_SIZE)" >&2; exit 1 ;; esac
+# Use the same defaults and validation as reproduce.sh, including direct
+# docker run invocations. The wrapper forwards its fully resolved settings.
+PROFILE="${PROFILE:-quick}"
+. "$(dirname "$0")/profiles.sh"
+tpcds_profile_defaults
+tpcds_validate_config
+MEMORY_BLOCK=$(tpcds_memory_cnf)
 
 # QUERYSET picks the SQL, TUNED picks the server settings.  They are separate
 # knobs that happen to share the word "tuned", so the banner spells both out.
 case "$QUERYSET" in
-  all|tier45|tuned) ;;
-  *) echo "QUERYSET must be all, tier45 or tuned (got $QUERYSET)" >&2; exit 1 ;;
-esac
-case "$QUERYSET" in
   tuned)  QS_DESC="queries/tuned/ — 40 tier-4/5, optimized where one exists" ;;
   tier45) QS_DESC="40 tier-4/5, adapted TPC-DS text, unoptimized" ;;
   all)    QS_DESC="all 99, adapted TPC-DS text, unoptimized" ;;
+  smoke)  QS_DESC="four adapted queries (3, 12, 18, 76) — functional check only" ;;
 esac
 
 say "TPC-DS on MariaDB — reproduction run"
@@ -60,6 +45,10 @@ note "buffer pool   $BUFFER_POOL"
 note "sample pages  $SAMPLE_PAGES"
 note "query set     $QUERYSET  ($QS_DESC)"
 note "server config $TUNED"
+if [[ "$PROFILE" == smoke ]]; then
+  note "smoke limits  Aria=$ARIA_PAGECACHE_BUFFER_SIZE, temp=$TMP_TABLE_SIZE, sort=$SORT_BUFFER_SIZE, joins=$JOIN_BUFFER_SPACE_LIMIT"
+  note "purpose       functional check; timings are not reference benchmark results"
+fi
 note "mariadb       $(mariadbd --version | head -1)"
 note "cpus          $(nproc)   memory  $(free -g | awk '/^Mem:/{print $2}')G"
 
@@ -158,6 +147,9 @@ chown -R mysql:mysql "$DSDATA"
 
 # ---------------------------------------------------------------- 3. server
 write_cnf() {   # $1 = extra settings block
+  local memory=""
+  # Apply the small limits during setup as well as during query execution.
+  [[ "$PROFILE" != smoke ]] || memory="$MEMORY_BLOCK"
   cat > "$DATA/my.cnf" <<EOF
 [mysqld]
 datadir                        = $DATADIR
@@ -191,7 +183,9 @@ innodb_io_capacity             = 200
 innodb_write_io_threads        = 4
 innodb_doublewrite             = ON
 skip_name_resolve
+# Keep setup/load allowance independent of the smoke query deadline.
 max_statement_time             = 3600
+$memory
 $1
 EOF
 }
@@ -302,21 +296,12 @@ note "$($CLI -N -B -e "select concat(format(sum(table_rows),0),' rows, ',round(s
 # ---------------------------------------------------------------- 5. indexes
 say "5/7  Creating indexes"
 
-# DEFAULT: build only the indexes the workload actually reads
-# (sql/indexes_kept.sql, 39 of them).  FULL_INDEXES=1 builds the historical
-# set from sql/05, 11 and 14 instead -- 167 secondary indexes, of which 128
-# are read by neither scale factor.
-#
-# Building the kept set directly rather than creating everything and dropping
-# matters: index creation is the longest stage of a build, most of an hour at
-# SF=4, and three quarters of it was being spent on indexes thrown away
-# moments later.
-#
-# Leaving them out is not a loss of fidelity.  With 127 of them gone the
-# suite ran 114.8s -> 100.0s at SF=1 with IDENTICAL answers, because index
-# pages stop competing with data pages for the buffer pool.  What is left out
-# and why is in sql/dropped_indexes.md; everything ever built is still in
-# sql/all_indexes.sql and restores with one command.
+if [[ "$PROFILE" == smoke ]]; then
+  note "smoke skips secondary-index creation and pruning (dedicated volume by default)"
+else
+
+# Reference profiles build the historical set from sql/05, 11 and 14 by
+# default. The smaller kept set remains an opt-in experiment.
 # KEPT_INDEXES=1 builds only the measured-useful set.  OFF by default: see
 # the warning in sql/dropped_indexes.md -- the usage evidence behind that set
 # was collected on the macOS host, and at SF=4 on a dataset generated without
@@ -334,7 +319,7 @@ HAVE_IDX=$($CLI -N -B -e "select count(*) from (select distinct table_name,index
 
 if (( HAVE_IDX > WANT_IDX )) && [[ "$SRC" == "sql/indexes_kept.sql" ]]; then
   # The database carries more indexes than the kept set -- an older volume
-  # built before this became the default.  Converge on the target rather
+  # built with the full set. Converge on the target rather
   # than leaving a mixture, so the index set depends on the configuration
   # and not on the order someone happened to run things in.
   note "has $HAVE_IDX secondary indexes, target is $WANT_IDX -- dropping the rest"
@@ -366,6 +351,7 @@ if [[ "${PRUNE_INDEXES:-0}" == "1" && -f "$PROJECT/sql/drop_unused_indexes.sql" 
   after=$($CLI -N -B -e "select count(distinct table_name,index_name) from information_schema.statistics where table_schema='tpcds'")
   note "pruned unused indexes: $before -> $after"
 fi
+fi  # reference-profile index setup
 
 say "6/7  Refreshing optimizer statistics"
 TBLS=$($CLI -N -B -e "select group_concat(table_name) from information_schema.tables where table_schema='tpcds'")
@@ -433,43 +419,35 @@ PY
 
 run_one() {   # $1 = tag, $2 = extra cnf block
   stop_server
-  write_cnf "$2"
+  write_cnf "$2
+max_statement_time = $STATEMENT_TIMEOUT"
   chown mysql:mysql "$DATA/my.cnf"
   start_server
-  [[ -n "$2" ]] && check_settings
-  RNGSEED="$RNGSEED" SCALE="$SCALE" \
+  if [[ "$PROFILE" == smoke ]]; then
+    note "smoke uses separate memory limits; the standing reference configuration does not apply"
+  elif [[ -n "$2" ]]; then
+    check_settings
+  fi
+  RNGSEED="$RNGSEED" SCALE="$SCALE" PROFILE="$PROFILE" STATEMENT_TIMEOUT="$STATEMENT_TIMEOUT" \
   python3 /usr/local/bin/bench.py "$SOCK" "$RESULTS/$1" "$1" "$QUERYSET" \
     | tee "$RESULTS/$1.log"
 }
 
-TUNING_BLOCK='
+TUNING_BLOCK="$MEMORY_BLOCK
 # The tuning that measured 2.90x at SF=4 (report 23).  Item 1 -- temp tables
 # off a 16M default -- is about two thirds of it on its own.
-tmp_table_size                 = 1536M
-max_heap_table_size            = 1536M
-aria_pagecache_buffer_size     = 1G
 innodb_read_io_threads         = 8
 innodb_read_ahead_threshold    = 24
 innodb_old_blocks_pct          = 25
-sort_buffer_size               = 64M
 join_cache_level               = 8
-join_buffer_size               = 64M
-join_buffer_space_limit        = 256M
-optimizer_switch               = "mrr=on,mrr_cost_based=off"
+optimizer_switch               = 'mrr=on,mrr_cost_based=off'
 key_buffer_size                = 16M
-'
+"
 
 check_measured() {   # $1 = tag
-  local tot
-  tot=$(python3 -c "import json;print(json.load(open('$RESULTS/$1/_summary.json'))['total_seconds'])")
-  # An `awk ... && { ... }` here would return awk's non-zero status on the
-  # PASSING path and trip `set -e`.  Use an explicit if.
-  if python3 -c "import sys;sys.exit(0 if float('$tot') < 5 else 1)"; then
-    echo "ERROR: $1 finished in ${tot}s -- too fast to be real work." >&2
-    echo "       The database is probably empty; check stage 4." >&2
-    exit 1
-  fi
-  note "$1 measured ${tot}s"
+  # Fast smoke queries are legitimate. Require complete successful artifacts,
+  # rather than an arbitrary minimum runtime, for every profile.
+  python3 /usr/local/bin/bench.py --check "$RESULTS/$1" "$QUERYSET"
 }
 
 case "$TUNED" in
@@ -529,7 +507,9 @@ import json, sys, os, glob
 res, profile = sys.argv[1], sys.argv[2]
 runs = {}
 for s in sorted(glob.glob(f"{res}/*/_summary.json")):
-    d = json.load(open(s)); runs[d['tag']] = d
+    d = json.load(open(s))
+    if d.get('profile') == profile:
+        runs[d['tag']] = d
 
 if not runs:
     sys.exit("no results produced")
@@ -549,8 +529,9 @@ def load(tag):
             for f in glob.glob(f"{res}/{tag}/query*.json")}
 if 'baseline' in runs and 'tuned' in runs:
     a, c = load('baseline'), load('tuned')
-    exact = [q for q in a if q in c and a[q].get('md5') == c[q].get('md5')]
-    same  = [q for q in a if q in c and a[q].get('md5_sorted') == c[q].get('md5_sorted')]
+    valid = [q for q in a if q in c and a[q].get('status') == c[q].get('status') == 'OK']
+    exact = [q for q in valid if a[q].get('md5') and a[q]['md5'] == c[q].get('md5')]
+    same  = [q for q in valid if a[q].get('md5_sorted') and a[q]['md5_sorted'] == c[q].get('md5_sorted')]
     diff  = sorted(set(a) & set(c) - set(same))
     print(f"\nanswers: {len(exact)}/{len(a)} byte-identical, "
           f"{len(same)}/{len(a)} identical ignoring row order")
@@ -560,12 +541,13 @@ if 'baseline' in runs and 'tuned' in runs:
         order_only = sorted(set(same) - set(exact))
         print(f"  row-order only (ORDER BY is not a total order): {order_only}")
 
-print(f"\nreference figures from our runs, for comparison:")
-print("  report 23, SF=4 / 32K / 8G pool / sample 160 / tier4+5:")
-print("     baseline 2403.4s   tuned 829.8s   2.90x")
-print("  Hardware differs, so absolute times will not match; the ratio is")
-print("  the comparable part.  See report/23-server-tuning-sf4.md.")
-print(f"\nPer-query JSON and logs are in ./results/")
+if profile == 'smoke':
+    print("\nSmoke setup/execution check passed. This does not establish TPC-DS")
+    print("qualification or reproduce the reference performance measurements.")
+else:
+    print("\nSee report/23-server-tuning-sf4.md, including its corrections, for")
+    print("historical reference measurements. Hardware and settings affect ratios too.")
+print(f"\nPer-query JSON and logs are in {res}")
 PY
 
 say "Done"
