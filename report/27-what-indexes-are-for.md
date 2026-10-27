@@ -32,6 +32,15 @@ rest, leaving 37:
 Twice as slow, on exactly the configuration whose own read counters said
 those indexes did nothing.
 
+> **Which database these numbers come from.** Everything in Attempts 1 and 2
+> was measured on an SF=4 volume that had been through many index
+> experiments. That database was later rebuilt, and the same full index set
+> then ran the same queries in 454.4–470.9s rather than 735.2s — see *The
+> measurement that moved more than any index* below. The comparisons in
+> these two sections are internally consistent, because each pair was run
+> back to back on the same database within the hour, but their absolute
+> numbers are not comparable to anything measured after the rebuild.
+
 ## Why it failed
 
 A read counter answers *"did executing the plan touch this index?"* It does
