@@ -325,6 +325,13 @@ else
 # SF=4).  IGNORE_UNUSED=1 hides the 129 from the optimizer without dropping
 # them, which is how we separate "unused at execution" from "unused for
 # planning" -- see report/27.
+# The validated drop list: 71 indexes, 6.35 GB at SF=4, no plan at either
+# scale factor mentions 70 of them and the 71st makes query22 3.8x slower.
+# sql/drop_unused_indexes.sql is the older never-READ list, kept for the
+# record -- dropping on that test alone doubled SF=4.  See report/27.
+DROPFILE="$PROJECT/sql/drop_unreferenced_indexes.sql"
+[[ -f "$DROPFILE" ]] || DROPFILE="$PROJECT/sql/drop_unused_indexes.sql"
+
 KEPT="$PROJECT/sql/indexes_kept.sql"
 if [[ "${KEPT_INDEXES:-0}" != "1" || ! -f "$KEPT" ]]; then
   # Count the definitions rather than hardcoding a number.  167 was wrong:
@@ -344,6 +351,14 @@ if [[ "${KEPT_INDEXES:-0}" != "1" || ! -f "$KEPT" ]]; then
              | sed -E 's/^create +(unique +)?index +([a-z0-9_]+) +on +([a-z0-9_]+)$/\3 \2/' \
              | sort -u | wc -l | tr -d ' ')
   SRC="the full historical set (sql/05, 11, 14)"
+  # With PRUNE_INDEXES=1 the target is the full set MINUS the drop list.
+  # Without this the next run sees fewer indexes than the full-set target,
+  # rebuilds all of them, and silently undoes the prune -- at SF=4 that is
+  # also twenty minutes of rebuilding indexes to drop them again.
+  if [[ "${PRUNE_INDEXES:-0}" == "1" && -f "$DROPFILE" ]]; then
+    WANT_IDX=$(( WANT_IDX - $(grep -ciE '^DROP INDEX' "$DROPFILE" || echo 0) ))
+    SRC="$SRC minus $(basename "$DROPFILE")"
+  fi
 else
   WANT_IDX=$(grep -ciE '^CREATE +(UNIQUE +)?INDEX' "$KEPT" || echo 0)
   SRC="sql/indexes_kept.sql"
@@ -430,11 +445,15 @@ fi
 
 # Still available for a database that already has the full set: drop the
 # unused ones in place rather than rebuilding.
-if [[ "${PRUNE_INDEXES:-0}" == "1" && -f "$PROJECT/sql/drop_unused_indexes.sql" ]]; then
+if [[ "${PRUNE_INDEXES:-0}" == "1" && -f "$DROPFILE" ]]; then
   before=$($CLI -N -B -e "select count(distinct table_name,index_name) from information_schema.statistics where table_schema='tpcds'")
-  $CLI tpcds < "$PROJECT/sql/drop_unused_indexes.sql"
+  $CLI tpcds < "$DROPFILE"
   after=$($CLI -N -B -e "select count(distinct table_name,index_name) from information_schema.statistics where table_schema='tpcds'")
-  note "pruned unused indexes: $before -> $after"
+  note "pruned with $(basename "$DROPFILE"): $before -> $after indexes"
+  gone=$(grep -ciE '^DROP INDEX' "$DROPFILE" || echo 0)
+  if (( before - after != gone )) && (( before > after )); then
+    note "expected to remove $gone, removed $((before-after)) (the rest were already gone)"
+  fi
 fi
 fi  # reference-profile index setup
 
