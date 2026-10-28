@@ -91,6 +91,14 @@ Identical answers. **3.6x.** The index is never used; its only effect is to
 mis-cost a choice between two *other* access paths. Timing all six queries
 that weigh it: 44.5s → 15.0s, with nothing made slower.
 
+And the fix is not simply to drop it. After `OPTIMIZE TABLE` re-sampled the
+statistics, query22 chose `PRIMARY` again with `idx_inv_date_sk` already
+gone. The two access paths cost almost the same at
+`innodb_stats_persistent_sample_pages=160`, so the winner is decided by
+which pages the last `ANALYZE` read — a 28s swing on a ~430s suite, settled
+by chance. query22 now pins the path with `FORCE INDEX`: 39.0s → 10.4s,
+same answer, and 10.4–11.3s instead of 39.0–46.3s.
+
 So "unused" splits four ways, not three:
 
 1. read while executing — keep

@@ -266,8 +266,38 @@ So the three categories are not enough. An index can be:
 3. never read and never weighed — drop;
 4. **weighed into a worse plan — drop, and the query gets faster.**
 
-Category 4 is invisible to every method in this report except timing, and it
-is worth 41.6s of a 735s suite on one query alone.
+Category 4 is invisible to every method in this report except timing.
+
+### But dropping it is not what fixes query22
+
+Dropping `idx_inv_date_sk` made query22 fast, and that looked like the end of
+the story. It was not. After `OPTIMIZE TABLE` re-sampled the statistics,
+query22 chose `inventory:PRIMARY` again and returned to 38–46s **with
+`idx_inv_date_sk` already dropped**.
+
+The index was never the cause so much as the trigger. At
+`innodb_stats_persistent_sample_pages=160` the costs of `PRIMARY` and
+`idx_inv_item_date_sk` are close enough that the choice between them turns on
+which pages the last `ANALYZE` happened to read. `idx_inv_date_sk` tipped it
+one way; a fresh sample can tip it back.
+
+So query22 carries `FORCE INDEX (idx_inv_item_date_sk)` in
+`queries/tuned/query22.sql`:
+
+| | runs | best | answer |
+|---|---|---:|---|
+| as-is | 46.3 / 40.8 / 39.0s | 39.0s | `dd6e2fc5` |
+| forced | 11.3 / 10.5 / 10.4s | **10.4s** | `dd6e2fc5` |
+
+3.75x, identical answer, and far steadier. That is consistent with the rest
+of the tuned set, which already pins what this optimizer gets wrong —
+`STRAIGHT_JOIN` in query43, `JOIN_PREFIX` in query72, `optimizer_switch` in
+query14.
+
+`idx_inv_date_sk` still goes, but on the honest grounds: it is 1,030 MB, no
+query reads it at either scale, and its only measurable effect was to push
+one query towards a worse plan. The 28 seconds are earned by the hint, not
+by the drop.
 
 ## What this means for the submission
 
