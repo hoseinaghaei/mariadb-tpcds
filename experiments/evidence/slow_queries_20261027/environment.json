@@ -1,0 +1,76 @@
+{
+  "client_platform": "Linux-6.8.0-147-generic-x86_64-with-glibc2.39",
+  "client_host": "Riccardo-M1030",
+  "cpu": "AMD Ryzen 5 3500U with Radeon Vega Mobile Gfx",
+  "initial_memory_snapshot": "6.7 GiB total, about 3.1 GiB available; 3.2 GiB swap used of 4.0 GiB",
+  "global_configuration_changed": false,
+  "schema_or_indexes_changed": false,
+  "dataset_metadata": [
+    {
+      "columns": [
+        "dv_version",
+        "dv_create_date",
+        "dv_create_time",
+        "dv_cmdline_args"
+      ],
+      "rows": [
+        [
+          "4.0.0",
+          "2026-10-14",
+          "19:18:27",
+          "-SCALE 1 -RNGSEED 10 -DIR ../data/sf1_seed10 "
+        ]
+      ]
+    },
+    {
+      "columns": [
+        "customers",
+        "distinct_ids",
+        "null_ids"
+      ],
+      "rows": [
+        [
+          "100000",
+          "100000",
+          "0"
+        ]
+      ]
+    },
+    {
+      "columns": [
+        "d_year",
+        "lo",
+        "hi",
+        "dates"
+      ],
+      "rows": [
+        [
+          "2001",
+          "2451911",
+          "2452275",
+          "365"
+        ],
+        [
+          "2002",
+          "2452276",
+          "2452640",
+          "365"
+        ]
+      ]
+    },
+    {
+      "columns": [
+        "total_indexes"
+      ],
+      "rows": [
+        [
+          "141"
+        ]
+      ]
+    }
+  ],
+  "reference_environment_validated": false,
+  "trial_count": 53,
+  "query_context_caveat": "Runner context precedes query-local SET statements; all Q67 inputs set sort=64MiB, tmp/heap=256MiB.",
+  "summary_method": "Three ordinary repetitions per variant and series; probes, fixtures and diagnostics excluded; speedup = adopted median / candidate median."
+}
