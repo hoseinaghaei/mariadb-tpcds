@@ -1,6 +1,6 @@
 # Measuring indexes is harder than it looks
 
-Nine things that went wrong while deciding which indexes to drop. Each one
+Ten things that went wrong while deciding which indexes to drop. Each one
 produced a confident, plausible, wrong answer first. They are written up
 because the wrong answers are reproducible and the traps are not specific to
 this project.
@@ -186,7 +186,32 @@ executes nothing.
 
 ---
 
-## 9. One A/B pair cannot tell an effect from drift
+## 9. A single-run benchmark number is mostly cold cache
+
+After dropping the 71 indexes, 8 of 40 queries looked slower than their
+previous best, and query68 looked 2.5x slower -- 2.9s before, 7.4s after.
+That is exactly the "don't hurt any query" failure the drop list was meant
+to avoid.
+
+Re-timing each of them warm:
+
+| query | benchmark (1 run) | run 1 | run 2 | previous range |
+|---|---:|---:|---:|---|
+| query68 | 7.4s | 12.7s | **3.2s** | 2.8–3.8s |
+| query66 | 11.6s | 20.3s | **6.1s** | 7.3–8.4s |
+| query57 | 14.6s | 10.2s | **7.4s** | 9.7–14.5s |
+| query2 | 7.8s | 7.1s | **5.7s** | 6.5s |
+
+Every one of them is at or below its previous range once the cache is warm.
+The benchmark runs each query exactly once, so each number carries whatever
+the buffer pool happened to hold at that moment, and a cold read can be 3x
+the warm time.
+
+That is tolerable for a 40-query total, where the effect averages out. It is
+not tolerable for per-query claims, and "8 of 40 queries regressed" would
+have been reported as a real finding on this evidence alone.
+
+## 10. One A/B pair cannot tell an effect from drift
 
 Within-condition spread on this host exceeded the effect being measured:
 
