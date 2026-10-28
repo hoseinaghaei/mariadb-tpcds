@@ -14,7 +14,10 @@ never the generated markdown.
 Also diffs each query's md5 against the previous run, if pagesize/results/
 still holds one, and refuses to claim anything is verified if an answer moved.
 
-Usage:  python3 report/gen-25.py [sf4-tag] [sf1-tag]
+Usage:  python3 report/gen-25.py [tag ...]
+
+Tags are given largest scale factor first; the table is ranked by the first
+one.  Defaults to the three-scale run: final-sf4 final-sf2 final-sf1.
 """
 import json, os, sys, glob
 
@@ -23,8 +26,13 @@ REPO = os.path.dirname(HERE)
 RES = f"{REPO}/pagesize/results"
 OUT = f"{HERE}/25-query-by-query.md"
 
-SF4 = sys.argv[1] if len(sys.argv) > 1 else "sf4"
-SF1 = sys.argv[2] if len(sys.argv) > 2 else "sf1"
+TAGS = sys.argv[1:] or ["final-sf4", "final-sf2", "final-sf1"]
+
+
+def scale_of(tag):
+    """The scale factor a tag names, for column headings."""
+    m = [c for c in tag.replace("-", " ").split() if c.lower().startswith("sf")]
+    return m[-1][2:] if m else tag
 
 
 def load(tag):
@@ -114,31 +122,22 @@ CAVEATS = """## Caveats
 
 def main():
     notes = {int(k): v for k, v in json.load(open(f"{HERE}/25-notes.json")).items()}
-    a, b = load(SF4), load(SF1)
+    runs = [(scale_of(t), load(t)) for t in TAGS]
+    missing = [t for (sc, d), t in zip(runs, TAGS) if not d]
+    if missing:
+        sys.exit(f"no results for: {', '.join(missing)}")
+    big, a = runs[0]                      # the scale the table is ranked by
     prev4 = load("baseline-c84451a-sf4")
-    if not a:
-        sys.exit(f"no results in {RES}/{SF4}")
 
     qs = sorted(a, key=lambda q: -a[q]['seconds'])
-    t4 = sum(a[q]['seconds'] for q in qs)
-    t1 = sum(b[q]['seconds'] for q in qs if q in b)
+    totals = {sc: sum(d[q]['seconds'] for q in qs if q in d) for sc, d in runs}
     errs = [q for q in qs if a[q].get('status') != 'OK']
 
     # An answer that moved is a defect, not a result.  Report it loudly
     # rather than quietly publishing a faster number for a different query.
-    #
-    # The comparison baseline is the suite run at commit c84451a (SF=4
-    # 620.9s).  It predates three separate batches of work -- Nafiz's ten
-    # queries, q68/q46, and the last eleven -- so the difference between it
-    # and the current total is NOT the contribution of any one of them.  It
-    # is used here only to detect answers that changed, which is a yes/no
-    # question and does not care how old the baseline is.
-    # ...but a scale factor does not identify a database, (scale, seed) does.
-    # The macOS SF=4 data was generated with no -RNGSEED while the container
-    # uses seed 10, so comparing them reports every query as "changed".  If
+    # A scale factor does not identify a database, (scale, seed) does: if
     # several queries disagree on ROW COUNT the databases differ and no
-    # answer comparison is meaningful; one differing count could be a bug,
-    # several cannot be.
+    # answer comparison is meaningful.
     rowdiff = [q for q in qs if q in prev4
                and a[q].get('status') == 'OK' and prev4[q].get('status') == 'OK'
                and a[q].get('rows') != prev4[q].get('rows')]
@@ -150,10 +149,38 @@ def main():
                  and prev4[q].get('md5_sorted') and a[q].get('md5_sorted')
                  and prev4[q]['md5_sorted'] != a[q]['md5_sorted']]
 
+    # No cross-scale answer comparison: a bigger database legitimately
+    # returns different rows, so comparing md5 across scale factors flags all
+    # 40 queries and means nothing.  What IS checked is each scale against a
+    # previous run of the SAME scale, below.
+    # Row counts usually grow with scale, so a drop is worth surfacing -- but
+    # it is not by itself a defect.  q58 selects items whose revenue sits
+    # within +/-10% across three channels and returns 0 rows at SF=1 and
+    # SF=4 but 1 at SF=2: whether anything falls in that band is data
+    # dependent and has no reason to be monotonic.
+    shrank = []
+    for q in qs:
+        rows = [(sc, d[q].get('rows')) for sc, d in runs if q in d]
+        rows = [(sc, r) for sc, r in rows if isinstance(r, int)]
+        for (bs, br), (ss, sr) in zip(rows, rows[1:]):
+            if br < sr:                    # runs are largest-first
+                shrank.append(f"q{q} (SF={bs} {br} rows < SF={ss} {sr})")
+                break
+
     L = [PREAMBLE]
-    L.append(f"**Totals: SF=4 {t4:.1f}s, SF=1 {t1:.1f}s.** "
-             f"{len(qs)}/{len(qs)} at both"
+    L.append("**Totals: "
+             + ", ".join(f"SF={sc} {totals[sc]:.1f}s" for sc, _ in runs)
+             + f".** {len(qs)}/{len(qs)} at every scale"
              + (", no errors.\n" if not errs else f", **{len(errs)} errors**: {errs}\n"))
+    if shrank:
+        L.append(f"> Note: {len(shrank)} query returns fewer rows at a larger "
+                 f"scale factor — {'; '.join(shrank[:6])}. Usually worth a look, "
+                 f"though not necessarily wrong: a query with a narrow filter "
+                 f"band (q58 matches items whose revenue agrees within ±10% "
+                 f"across three channels) has no reason to be monotonic in "
+                 f"scale.\n" if len(shrank) == 1 else
+                 f"> **{len(shrank)} queries return fewer rows at a larger scale "
+                 f"factor: {'; '.join(shrank[:6])}.** Worth investigating.\n")
     if moved:
         L.append(f"> **Answers changed since the previous run: {moved}.** "
                  f"Investigate before trusting any figure below.\n")
@@ -164,34 +191,38 @@ def main():
                  f"and is therefore a different database. Timings are "
                  f"comparable; answers are not.\n")
 
-    L.append("| # | query | SF=4 | SF=1 | SF4/SF1 | optimized by |")
-    L.append("|---|---|---:|---:|---:|---|")
+    small = runs[-1][0]
+    hdr = "| # | query | " + " | ".join(f"SF={sc}" for sc, _ in runs) \
+          + f" | SF{big}/SF{small} | optimized by |"
+    L.append(hdr)
+    L.append("|---|---|" + "---:|" * (len(runs) + 1) + "---|")
     # `is None` and not a truth test: q82 runs in 0.0s at SF=1, and treating
-    # that as missing printed an em-dash for a query that did run.  A zero
-    # still has no usable ratio, so that column alone falls back to "—".
+    # that as missing printed an em-dash for a query that did run.
     for i, q in enumerate(qs, 1):
-        s4 = a[q]['seconds']
-        s1 = b.get(q, {}).get('seconds')
-        cell = "—" if s1 is None else f"{s1:.1f}s"
-        r = f"{s4/s1:.1f}x" if s1 else "—"
-        L.append(f"| {i} | q{q} | {s4:.1f}s | {cell} | {r} | "
+        cells = []
+        for sc, d in runs:
+            v = d.get(q, {}).get('seconds')
+            cells.append("—" if v is None else f"{v:.1f}s")
+        lo = runs[-1][1].get(q, {}).get('seconds')
+        r = f"{a[q]['seconds']/lo:.1f}x" if lo else "—"
+        L.append(f"| {i} | q{q} | " + " | ".join(cells) + f" | {r} | "
                  f"{notes.get(q, {}).get('author') or '—'} |")
 
     L.append("\n---\n\n## Each query\n")
     for i, q in enumerate(qs, 1):
-        s1 = b.get(q, {}).get('seconds')
-        head = (f"### {i}. q{q} — {a[q]['seconds']:.1f}s at SF=4, "
-                + ("not run at SF=1" if s1 is None else f"{s1:.1f}s at SF=1"))
-        L.append(head + "\n")
+        per = ", ".join(f"{d[q]['seconds']:.1f}s at SF={sc}"
+                        for sc, d in runs if q in d)
+        L.append(f"### {i}. q{q} — {per}\n")
         L.append(notes.get(q, {}).get('body', "_No note recorded._") + "\n")
 
+    t4 = totals[big]
     opt = [q for q in qs if notes.get(q, {}).get('author')]
     non = [q for q in qs if not notes.get(q, {}).get('author')]
     so = sum(a[q]['seconds'] for q in opt)
     sn = sum(a[q]['seconds'] for q in non)
     L.append("## Summary\n")
-    L.append("### Where the SF=4 time goes\n")
-    L.append("| | queries | SF=4 total | share |")
+    L.append(f"### Where the SF={big} time goes\n")
+    L.append(f"| | queries | SF={big} total | share |")
     L.append("|---|---:|---:|---:|")
     L.append(f"| optimized | {len(opt)} | {so:.1f}s | {so/t4*100:.0f}% |")
     L.append(f"| not optimized | {len(non)} | {sn:.1f}s | {sn/t4*100:.0f}% |")
@@ -201,9 +232,28 @@ def main():
              "faster, so the original is what runs.\n")
 
     L.append(NEXT)
-    L.append("### The SF=4 / SF=1 ratio\n")
-    rat = sorted(((a[q]['seconds'] / b[q]['seconds'], q) for q in qs
-                  if b.get(q, {}).get('seconds')), reverse=True)
+
+    # How the suite scales.  With three points the shape is visible: a query
+    # whose cost grows faster than the data is losing its working set from
+    # the buffer pool, and that shows up as a steepening between the steps,
+    # not just a large end-to-end ratio.
+    L.append(f"### How response time grows with the data\n")
+    L.append("Totals, and the growth between each step:\n")
+    L.append("| | " + " | ".join(f"SF={sc}" for sc, _ in reversed(runs)) + " |")
+    L.append("|---|" + "---:|" * len(runs))
+    L.append("| total | " + " | ".join(f"{totals[sc]:.1f}s"
+                                       for sc, _ in reversed(runs)) + " |")
+    growth = ["—"]
+    rev = list(reversed(runs))
+    for (p, _), (c, _) in zip(rev, rev[1:]):
+        growth.append(f"{totals[c]/totals[p]:.2f}x" if totals[p] else "—")
+    L.append("| vs previous | " + " | ".join(growth) + " |")
+    L.append("\nThe data grows 2x at each step, so a total growing faster "
+             "than 2x means the suite is degrading superlinearly.\n")
+
+    L.append(f"### The SF={big} / SF={small} ratio\n")
+    rat = sorted(((a[q]['seconds'] / runs[-1][1][q]['seconds'], q) for q in qs
+                  if runs[-1][1].get(q, {}).get('seconds')), reverse=True)
     L.append("| query | ratio | |")
     L.append("|---|---:|---|")
     for r, q in rat[:5]:
@@ -217,8 +267,11 @@ def main():
 
     open(OUT, 'w').write("\n".join(L) + "\n")
     print(f"wrote {OUT}")
-    print(f"  {len(qs)} queries   SF=4 {t4:.1f}s   SF=1 {t1:.1f}s")
+    print("  " + str(len(qs)) + " queries   "
+          + "   ".join(f"SF={sc} {totals[sc]:.1f}s" for sc, _ in runs))
     print(f"  optimized {len(opt)} ({so:.1f}s)   on the original {len(non)} ({sn:.1f}s)")
+    if shrank:
+        print(f"  !! fewer rows at a larger scale: {shrank}")
     if moved:
         print(f"  !! answers changed vs previous run: {moved}")
     if errs:

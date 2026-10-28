@@ -332,6 +332,15 @@ else
 DROPFILE="$PROJECT/sql/drop_unreferenced_indexes.sql"
 [[ -f "$DROPFILE" ]] || DROPFILE="$PROJECT/sql/drop_unused_indexes.sql"
 
+# Which indexes this configuration wants, as arguments to emit-index-ddl.py.
+# This used to be assigned inside the build branch, so on a database that
+# already had its indexes the branch was skipped, EXCL stayed empty, and the
+# verification below compared a pruned database against the FULL set and
+# reported all 71 dropped indexes as "MISSING vs sql/" on every run.
+EXCL=()
+[[ "${PRUNE_INDEXES:-0}" == "1" && -f "$PROJECT/sql/drop_unreferenced_indexes.sql" ]] \
+  && EXCL=(--exclude "$PROJECT/sql/drop_unreferenced_indexes.sql")
+
 KEPT="$PROJECT/sql/indexes_kept.sql"
 if [[ "${KEPT_INDEXES:-0}" != "1" || ! -f "$KEPT" ]]; then
   # Count the definitions rather than hardcoding a number.  167 was wrong:
@@ -376,8 +385,6 @@ else
     # Emit only the indexes this configuration wants.  Running every CREATE
     # and pruning afterwards rebuilt 71 indexes on a pruned SF=4 database
     # purely in order to drop them again.
-    EXCL=()
-    [[ "${PRUNE_INDEXES:-0}" == "1" && -f "$DROPFILE" ]] && EXCL=(--exclude "$DROPFILE")
     python3 "$PROJECT/scripts/emit-index-ddl.py" --root "$PROJECT" \
       "${EXCL[@]+"${EXCL[@]}"}" | $CLI tpcds
   fi
@@ -392,20 +399,29 @@ note "$($CLI -N -B -e "select concat(count(distinct table_name,index_name),' ind
 # silently lacked them and ran query66 7-10x slower with nothing to say why.
 # Extra indexes are reported too -- an index nobody can rebuild from sql/ is
 # a result nobody can reproduce.
-python3 "$PROJECT/scripts/emit-index-ddl.py" --root "$PROJECT" \
-  "${EXCL[@]+"${EXCL[@]}"}" --list > /tmp/want_idx.txt
-$CLI -N -B -e "select concat(lower(table_name),'.',lower(index_name))
-                 from information_schema.statistics
-                where table_schema='tpcds' and index_name<>'PRIMARY'
-                group by 1 order by 1" > /tmp/have_idx.txt
-MISSING=$(comm -23 /tmp/want_idx.txt /tmp/have_idx.txt)
-EXTRA=$(comm -13 /tmp/want_idx.txt /tmp/have_idx.txt)
-if [[ -n "$MISSING" || -n "$EXTRA" ]]; then
-  [[ -n "$MISSING" ]] && note "MISSING vs sql/: $(echo $MISSING | tr '\n' ' ')"
-  [[ -n "$EXTRA" ]] && note "NOT IN sql/ (cannot be reproduced): $(echo $EXTRA | tr '\n' ' ')"
-else
-  note "index set matches sql/ exactly ($(wc -l < /tmp/want_idx.txt | tr -d ' ') indexes)"
-fi
+# Both sides sorted the same way: comm needs one collation, and MariaDB's
+# ORDER BY is not the shell's.  Mismatched order made comm exit non-zero,
+# which under `set -e` killed three benchmark runs after the index stage --
+# a verification step must never be able to fail the thing it verifies, so
+# the whole check is also guarded.
+check_index_set() {
+  local want=/tmp/want_idx.txt have=/tmp/have_idx.txt missing extra
+  python3 "$PROJECT/scripts/emit-index-ddl.py" --root "$PROJECT" \
+    "${EXCL[@]+"${EXCL[@]}"}" --list | LC_ALL=C sort -u > "$want" || return 0
+  $CLI -N -B -e "select concat(lower(table_name),'.',lower(index_name))
+                   from information_schema.statistics
+                  where table_schema='tpcds' and index_name<>'PRIMARY'" \
+    | LC_ALL=C sort -u > "$have" || return 0
+  missing=$(LC_ALL=C comm -23 "$want" "$have" | tr '\n' ' ')
+  extra=$(LC_ALL=C comm -13 "$want" "$have" | tr '\n' ' ')
+  if [[ -n "${missing// }" || -n "${extra// }" ]]; then
+    [[ -n "${missing// }" ]] && note "MISSING vs sql/: $missing"
+    [[ -n "${extra// }" ]] && note "NOT IN sql/ (cannot be reproduced): $extra"
+  else
+    note "index set matches sql/ exactly ($(wc -l < "$want" | tr -d ' ') indexes)"
+  fi
+}
+check_index_set || note "index-set check skipped (it must never fail a run)"
 
 # IGNORE_UNUSED=1 hides the never-read indexes from the optimizer while
 # leaving them on disk and maintained.  This is the controlled half of the
