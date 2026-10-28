@@ -385,6 +385,28 @@ else
 fi
 note "$($CLI -N -B -e "select concat(count(distinct table_name,index_name),' indexes total') from information_schema.statistics where table_schema='tpcds'")"
 
+# Compare the database against the schema BY NAME, not by count.  Counts
+# matching is not the same as the sets matching: idx_cs_q66 and idx_ws_q66
+# existed on the running databases for weeks, created by an experiment
+# script and never written into sql/, so a database rebuilt from the schema
+# silently lacked them and ran query66 7-10x slower with nothing to say why.
+# Extra indexes are reported too -- an index nobody can rebuild from sql/ is
+# a result nobody can reproduce.
+python3 "$PROJECT/scripts/emit-index-ddl.py" --root "$PROJECT" \
+  "${EXCL[@]+"${EXCL[@]}"}" --list > /tmp/want_idx.txt
+$CLI -N -B -e "select concat(lower(table_name),'.',lower(index_name))
+                 from information_schema.statistics
+                where table_schema='tpcds' and index_name<>'PRIMARY'
+                group by 1 order by 1" > /tmp/have_idx.txt
+MISSING=$(comm -23 /tmp/want_idx.txt /tmp/have_idx.txt)
+EXTRA=$(comm -13 /tmp/want_idx.txt /tmp/have_idx.txt)
+if [[ -n "$MISSING" || -n "$EXTRA" ]]; then
+  [[ -n "$MISSING" ]] && note "MISSING vs sql/: $(echo $MISSING | tr '\n' ' ')"
+  [[ -n "$EXTRA" ]] && note "NOT IN sql/ (cannot be reproduced): $(echo $EXTRA | tr '\n' ' ')"
+else
+  note "index set matches sql/ exactly ($(wc -l < /tmp/want_idx.txt | tr -d ' ') indexes)"
+fi
+
 # IGNORE_UNUSED=1 hides the never-read indexes from the optimizer while
 # leaving them on disk and maintained.  This is the controlled half of the
 # experiment: dropping them made SF=4 three times slower, and ignoring them

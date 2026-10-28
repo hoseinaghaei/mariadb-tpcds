@@ -52,6 +52,9 @@ def main():
     ap.add_argument("--exclude", help="a file of DROP INDEX statements to skip")
     ap.add_argument("--root", default=REPO)
     ap.add_argument("--count", action="store_true", help="print the count only")
+    ap.add_argument("--list", action="store_true",
+                    help="print `table.index` per line instead of DDL, for "
+                         "comparing the database against the schema by name")
     a = ap.parse_args()
 
     skip = set()
@@ -61,7 +64,7 @@ def main():
             if m:
                 skip.add((m.group(2).lower(), m.group(1).lower()))
 
-    seen, out = set(), []
+    seen, out, listed = set(), [], []
     for f in FILES:
         p = os.path.join(a.root, f)
         if not os.path.exists(p):
@@ -74,10 +77,13 @@ def main():
             if key in skip or key in seen:
                 continue           # nine indexes are defined twice
             seen.add(key)
+            listed.append(f"{key[0]}.{key[1]}")
             out.append(re.sub(r'^CREATE\s+INDEX\s', 'CREATE INDEX IF NOT EXISTS ',
                               st, count=1, flags=re.I) + ";")
     if a.count:
         print(len(out))
+    elif a.list:
+        print("\n".join(sorted(listed)))
     else:
         print("\n".join(out))
 
