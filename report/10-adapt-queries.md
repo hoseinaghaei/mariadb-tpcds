@@ -40,9 +40,10 @@ repo defines `_END` as SQL that records each query's elapsed time.
 
 ## Dialect adaptation — what was changed and why
 
-Adaptation is **dialect only**. No predicate, join, projection, grouping,
-ordering or limit was altered, and nothing was rewritten for performance.
-Every rule exists because MariaDB rejects the ANSI spelling outright.
+The initial adaptation aimed to change only dialect spelling. The later
+NULL-safe grouping-level corrections below replace the original R3 method
+structurally to preserve its intended semantics; they are correctness fixes,
+not performance rewrites.
 
 **76 of 99 queries needed no change at all.**
 
@@ -61,17 +62,27 @@ Every rule exists because MariaDB rejects the ANSI spelling outright.
 aliases such as `as "31-60 days"` and `as ">120 days"`. The rule is anchored on
 `as date)` so it can only match genuine date arithmetic.
 
-**R3 is the one rule that is not provably exact.** MariaDB has no `GROUPING()`
-function at all — it is MySQL-only. With `WITH ROLLUP`, a super-aggregate row
-carries NULL in the rolled-up column, so `GROUPING(x)` is usually written as
-`x IS NULL`. That is only equivalent if the column has no genuine NULLs, and
-**`item.i_category` has 43 genuine NULLs out of 18,000**, so for queries 36 and
-86 the substitution could in principle misclassify real rows as subtotals.
-Query 70 groups by `store.s_state`/`s_county`, which have no NULLs, so it is
-exact there. An exactly-equivalent rewrite is possible by grouping on
-`COALESCE(col,'<sentinel>')` and unwrapping with `NULLIF` in the projection;
-it was not applied because it restructures the query more than a dialect fix
-should, and the answer-set comparison is the better arbiter.
+**R3 correctness update, 2026-10-28.** `GROUPING(x)` identifies a rolled-up
+column; `x IS NULL` also identifies genuine NULL values, so they are not
+generally interchangeable. Q36, Q70 and Q86 now use explicit leaf, subtotal
+and grand-total aggregates combined with `UNION ALL`, with hierarchy levels
+0/1/2 assigned before ranking. Genuine NULL groups remain separate from
+subtotals, even when their displayed keys are identical. A count guard removes
+the grand-total branch for empty input, matching MariaDB's grouped ROLLUP.
+All-NULL measures still retain their groups.
+
+The adopted Q70 source and generated file have the same correction. They also
+preserve the NULL-state exclusion of the original IN predicate and use its
+logical date-dimension filter, rather than relying on hardcoded surrogate-key
+bounds. Q27's state filter already excludes genuine NULL states, so its R3
+substitution does not need this rewrite.
+
+The three adapted fixes are preserved in `queries/manual-fixes/`. Read-only
+CTE fixtures check the corrected queries, including adopted Q70, against an
+independent grouping/ranking oracle. Twelve live cases passed on MariaDB
+10.11.14: normal NULL-containing input, empty input and all-NULL measures.
+This is targeted correctness evidence, not proof that all 99 answers have
+been qualified. Historical hashes/timings predate these corrections.
 
 **R4 is a hard MariaDB limitation.** `WITH ROLLUP` cannot coexist with
 `ORDER BY` in the same SELECT:

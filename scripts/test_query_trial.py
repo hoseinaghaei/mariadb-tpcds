@@ -1,7 +1,7 @@
 """Regression checks for diagnostic safety and exact result comparison."""
 import unittest
 
-from query_trial import results, statement_count
+from query_trial import results, statement_count, split_statements
 
 
 class DiagnosticSafety(unittest.TestCase):
@@ -13,6 +13,11 @@ class DiagnosticSafety(unittest.TestCase):
 
     def test_second_statement_is_detected(self):
         self.assertEqual(statement_count("SELECT 'a;'; /* ; */ DELETE FROM t;"), 2)
+
+    def test_split_preserves_complete_statements_and_session_setup(self):
+        sql = "-- comment;\nSET SESSION x=1; SELECT 'a;b'; /* ; */ SELECT 2;"
+        self.assertEqual(split_statements(sql),
+                         ["-- comment;\nSET SESSION x=1;", " SELECT 'a;b';", " /* ; */ SELECT 2;"])
 
     def test_escaped_quotes_and_trailing_delimiters(self):
         self.assertEqual(statement_count(r"SELECT 'a\';b', `a``;b`;;;"), 1)

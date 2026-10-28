@@ -30,6 +30,13 @@ a run cannot modify it. Results land in `./results/`.
 ./reproduce.sh full       # SF=4, 8G pool, 40 selected queries
 ```
 
+The same commands can be rerun against existing results and data volumes.
+Before a new query run, its previous results and log are moved to
+`results/.history/<tag>/<timestamp>/` (under `results/smoke/` for smoke).
+The latest results keep their usual paths, such as `results/tuned/`;
+no new output-directory option is required. Archives consume disk space and
+are excluded from the scaling report's inputs.
+
 `smoke` is intended for checking the installation on a smaller machine. It uses
 smaller caches and execution buffers, skips secondary-index creation, and writes
 to `results/smoke/` with its own `tpcds-smoke-data` volume. Its first run still
@@ -59,6 +66,18 @@ use a fake Docker command and need no daemon or database:
 ```sh
 python3 -B -m unittest discover -s scripts -p test_reproduce.py
 ```
+
+For all **99** queries using the adopted versions where available, select
+`QUERYSET=all-tuned`. A separate result directory is optional; the default remains the
+historical 40-query workload:
+
+```sh
+./reproduce.sh full BUFFER_POOL=2G QUERYSET=all-tuned RESULTS_DIR=results/sf4-all-tuned-v1
+```
+
+Each run records coverage and complete per-statement answers. Successful
+execution is distinct from answer validation; see the
+[99-query comparison instructions](docker/README.md#complete-99-query-coverage-and-answer-comparison).
 
 ---
 

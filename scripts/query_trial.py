@@ -10,15 +10,16 @@ import re
 import subprocess
 import sys
 import time
-import xml.etree.ElementTree as ET
 from pathlib import Path
 
-NIL = "{http://www.w3.org/2001/XMLSchema-instance}nil"
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "docker"))
+from result_sets import parse_results as results
 
 
-def statement_count(sql):
-    """Count statements without treating quoted/commented semicolons as SQL."""
-    count = 0
+def split_statements(sql):
+    """Split diagnostics without treating quoted/commented semicolons as SQL."""
+    statements = []
+    start = 0
     has_code = False
     i = 0
     while i < len(sql):
@@ -54,27 +55,21 @@ def statement_count(sql):
             else:
                 raise ValueError("Unterminated SQL quote")
         elif char == ";":
-            count += int(has_code)
+            if has_code:
+                statements.append(sql[start:i + 1])
+            start = i + 1
             has_code = False
             i += 1
         else:
             has_code = True
             i += 1
-    return count + int(has_code)
+    if has_code:
+        statements.append(sql[start:])
+    return statements
 
 
-def results(raw):
-    """Retain result-set boundaries, duplicate columns, NULLs and unrounded text."""
-    raw = re.sub(rb"<\?xml[^>]*\?>", b"", raw)
-    root = ET.fromstring(b"<results>" + raw + b"</results>")
-    output = []
-    for resultset in root.findall("resultset"):
-        rows = resultset.findall("row")
-        columns = [f.get("name") for f in rows[0]] if rows else []
-        values = [[None if f.get(NIL) == "true" else (f.text or "") for f in row]
-                  for row in rows]
-        output.append({"columns": columns, "rows": values})
-    return output
+def statement_count(sql):
+    return len(split_statements(sql))
 
 
 def main():

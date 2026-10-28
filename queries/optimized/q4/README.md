@@ -3,6 +3,14 @@
 Selected version: [query4_v2_customerpivot.sql](query4_v2_customerpivot.sql).
 [query4_BEST.sql](query4_BEST.sql) contains exactly the same SQL.
 
+**2026-10-27 follow-up:** [v4](query4_v4_datebounds.sql) is a new, separately
+tested candidate, 1.85–1.88x faster than the adopted query in two local SF=1
+series with identical results. [v3](query4_v3_having.sql) and
+[v5](query4_v5_datebounds_only.sql) isolate its two changes. The `BEST` alias
+and `queries/tuned/` remain unchanged pending reference-machine validation.
+See [the follow-up report](../../../report/27-query-followup.md) for the
+measurements, semantic fixtures, actual plans and limitations.
+
 ## What the query must return
 
 For customers present in store, catalog and web sales in both 2001 and 2002,
