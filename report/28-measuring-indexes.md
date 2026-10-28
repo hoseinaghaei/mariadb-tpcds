@@ -1,6 +1,6 @@
 # Measuring indexes is harder than it looks
 
-Eleven things that went wrong while deciding which indexes to drop. Each one
+Twelve things that went wrong while deciding which indexes to drop. Each one
 produced a confident, plausible, wrong answer first. They are written up
 because the wrong answers are reproducible and the traps are not specific to
 this project.
@@ -192,7 +192,50 @@ The general lesson: an experiment that creates an index on a live database
 has changed the benchmark, and the schema is the only place that record
 survives.
 
-## 6. A rebuilt database is a different benchmark
+## 6. The suite scales linearly until the buffer pool loses, then it does not
+
+Four scale factors, one recipe — seed 10, 32K pages, 8 GB buffer pool,
+`sample_pages=160`, 95 indexes, `queries/tuned`, no `OPTIMIZE`:
+
+| | SF=1 | SF=2 | SF=4 | SF=8 |
+|---|---:|---:|---:|---:|
+| total | 81.8s | 180.6s | 409.1s | **1583.2s** |
+| vs previous | — | 2.21x | 2.27x | **3.87x** |
+
+The data doubles at every step. Through SF=4 the suite tracks it closely,
+2.21x and 2.27x — mildly superlinear and unremarkable. From SF=4 to SF=8 it
+costs **3.87x**, and that is a different regime, not more of the same.
+
+It is not spread evenly. **11 of 40 queries degrade worse than 4x**, and
+they account for 694s of the 1583s total — 44% of the suite in 28% of the
+queries:
+
+| query | SF=4 | SF=8 | |
+|---|---:|---:|---:|
+| q71 | 7.0s | 75.1s | 10.7x |
+| q27 | 6.5s | 69.6s | 10.7x |
+| q68 | 4.0s | 37.8s | 9.4x |
+| q14 | 20.6s | 152.0s | 7.4x |
+| q70 | 5.7s | 40.0s | 7.0x |
+| q46 | 9.1s | 63.6s | 7.0x |
+| q74 | 26.1s | 179.0s | 6.9x |
+
+while the flattest barely move — q43 1.3x, q35 1.4x, q88 1.7x, q2 1.9x.
+
+The ones that break are mid-sized queries with large intermediate results.
+At SF=4 their working set still fits the 8 GB pool; at SF=8 it does not, and
+they fall to disk all at once. The queries that were already large enough to
+spill at SF=4 — q4, q23, q67 — degrade at 2.6-3.5x, far more gracefully,
+because they were paying that cost already.
+
+So a benchmark total taken at one scale factor says little about the next.
+The interesting number here is not 1583.2s, it is the 2.27x → 3.87x break:
+it locates the point where this configuration stops being bound by work and
+starts being bound by memory. Raising `innodb_buffer_pool_size` is the
+obvious next experiment, and nothing about the queries or the indexes would
+have predicted which 11 queries pay for not doing it.
+
+## 7. A rebuilt database is a different benchmark
 
 The SF=4 database was accidentally reloaded mid-investigation. The same 40
 queries, the same data (`store_sales` is 11,516,885 rows either way), the
@@ -212,7 +255,7 @@ benchmark target, even when every table and every index matches.
 
 ---
 
-## 7. A stale list silently measured the wrong configuration
+## 8. A stale list silently measured the wrong configuration
 
 `sql/unignore_all_indexes.sql` was a static file. After a rebuild, two of the
 index names in it no longer existed. The client stops at the first error, and
@@ -234,7 +277,7 @@ with none. Both now exit rather than measure.
 
 ---
 
-## 8. A guard that required exactly 25 tables dropped the database
+## 9. A guard that required exactly 25 tables dropped the database
 
 The loader skipped reloading when `information_schema.tables` held exactly 25
 rows for the schema. Two scratch tables left behind by an experiment made it
@@ -247,7 +290,7 @@ tolerates extras.
 
 ---
 
-## 9. Prefixing `EXPLAIN` to "the query" executes half of it
+## 10. Prefixing `EXPLAIN` to "the query" executes half of it
 
 Queries 14, 23, 39 and 67 are **two statements each** — TPC-DS asks for two
 result sets. A planning-only pass that attaches `EXPLAIN` to the first
@@ -257,7 +300,7 @@ executes nothing.
 
 ---
 
-## 10. A single-run benchmark number is mostly cold cache
+## 11. A single-run benchmark number is mostly cold cache
 
 After dropping the 71 indexes, 8 of 40 queries looked slower than their
 previous best, and query68 looked 2.5x slower -- 2.9s before, 7.4s after.
@@ -282,7 +325,7 @@ That is tolerable for a 40-query total, where the effect averages out. It is
 not tolerable for per-query claims, and "8 of 40 queries regressed" would
 have been reported as a real finding on this evidence alone.
 
-## 11. One A/B pair cannot tell an effect from drift
+## 12. One A/B pair cannot tell an effect from drift
 
 Within-condition spread on this host exceeded the effect being measured:
 
