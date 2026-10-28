@@ -335,28 +335,19 @@ DROPFILE="$PROJECT/sql/drop_unreferenced_indexes.sql"
 KEPT="$PROJECT/sql/indexes_kept.sql"
 if [[ "${KEPT_INDEXES:-0}" != "1" || ! -f "$KEPT" ]]; then
   # Count the definitions rather than hardcoding a number.  167 was wrong:
-  # the three files hold 173 CREATE INDEX statements but only 164 distinct
-  # (table, index) pairs -- nine indexes are defined twice, once in 05/11 and
-  # again in 14_contributed.  A database with the full set has 166 secondary
-  # indexes, so the hardcoded 167 was never reached and every `full` run
-  # re-ran all 173 statements to discover they already existed.
-  # This counts single-line definitions only, so it is a lower bound -- which
-  # is the right semantics here, because it is only a "do we need to build?"
-  # trigger and the build itself is CREATE INDEX IF NOT EXISTS either way.
-  WANT_IDX=$(cat "$PROJECT"/sql/05_indexes.sql \
-                 "$PROJECT"/sql/11_optimizer_indexes.sql \
-                 "$PROJECT"/sql/14_contributed_indexes.sql 2>/dev/null \
-             | grep -ioE '^CREATE +(UNIQUE +)?INDEX +[a-z0-9_]+ +ON +[a-z0-9_]+' \
-             | tr 'A-Z' 'a-z' \
-             | sed -E 's/^create +(unique +)?index +([a-z0-9_]+) +on +([a-z0-9_]+)$/\3 \2/' \
-             | sort -u | wc -l | tr -d ' ')
+  # the three files hold more CREATE statements than distinct (table, index)
+  # pairs -- nine indexes are defined twice -- so the hardcoded value was
+  # never reached and every `full` run replayed every statement to discover
+  # they already existed.  scripts/emit-index-ddl.py counts them properly,
+  # including definitions that span several lines.
+  WANT_IDX=$(python3 "$PROJECT/scripts/emit-index-ddl.py" --root "$PROJECT" --count)
   SRC="the full historical set (sql/05, 11, 14)"
   # With PRUNE_INDEXES=1 the target is the full set MINUS the drop list.
-  # Without this the next run sees fewer indexes than the full-set target,
-  # rebuilds all of them, and silently undoes the prune -- at SF=4 that is
-  # also twenty minutes of rebuilding indexes to drop them again.
+  # Without this the next run sees fewer indexes than the full-set target and
+  # rebuilds all of them, silently undoing the prune.
   if [[ "${PRUNE_INDEXES:-0}" == "1" && -f "$DROPFILE" ]]; then
-    WANT_IDX=$(( WANT_IDX - $(grep -ciE '^DROP INDEX' "$DROPFILE" || echo 0) ))
+    WANT_IDX=$(python3 "$PROJECT/scripts/emit-index-ddl.py" --root "$PROJECT" \
+                 --exclude "$DROPFILE" --count)
     SRC="$SRC minus $(basename "$DROPFILE")"
   fi
 else
@@ -382,10 +373,13 @@ else
   if [[ "$SRC" == "sql/indexes_kept.sql" ]]; then
     $CLI tpcds < "$KEPT"
   else
-    for f in 05_indexes 11_optimizer_indexes 14_contributed_indexes; do
-      [[ -f "$PROJECT/sql/$f.sql" ]] || continue
-      sed 's/^CREATE INDEX /CREATE INDEX IF NOT EXISTS /i' "$PROJECT/sql/$f.sql" | $CLI tpcds
-    done
+    # Emit only the indexes this configuration wants.  Running every CREATE
+    # and pruning afterwards rebuilt 71 indexes on a pruned SF=4 database
+    # purely in order to drop them again.
+    EXCL=()
+    [[ "${PRUNE_INDEXES:-0}" == "1" && -f "$DROPFILE" ]] && EXCL=(--exclude "$DROPFILE")
+    python3 "$PROJECT/scripts/emit-index-ddl.py" --root "$PROJECT" \
+      "${EXCL[@]+"${EXCL[@]}"}" | $CLI tpcds
   fi
   note "built in $((SECONDS-t0))s"
 fi

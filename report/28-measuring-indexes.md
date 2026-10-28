@@ -1,6 +1,6 @@
 # Measuring indexes is harder than it looks
 
-Ten things that went wrong while deciding which indexes to drop. Each one
+Eleven things that went wrong while deciding which indexes to drop. Each one
 produced a confident, plausible, wrong answer first. They are written up
 because the wrong answers are reproducible and the traps are not specific to
 this project.
@@ -121,7 +121,70 @@ The set that survives that test is the one no plan mentions **at all** —
 70 indexes, 5.35 GB, zero plans moved when hidden together — plus
 `idx_inv_date_sk`, whose single plan move makes query22 faster.
 
-## 5. A rebuilt database is a different benchmark
+## 5. Compacting the data made it slower, and an index lived outside the schema
+
+Two findings from trying to fix the *data* size rather than the index size.
+
+### The data is twice the generated size, and OPTIMIZE is the wrong fix
+
+SF=4 generates 4.2 GB of `.dat` and loads to 8.87 GB. With exact row counts
+the cause is unambiguous:
+
+| table | rows | text B/row | InnoDB B/row | user data + 18B header | page fill |
+|---|---:|---:|---:|---:|---:|
+| store_sales | 11,516,885 | 137 | 244 | ~116 | 48% |
+| catalog_sales | 5,763,962 | 208 | 334 | ~154 | 46% |
+| inventory | 36,019,566 | 20.5 | 73.6 | ~36 | 49% |
+
+InnoDB adds ~18 bytes per row of hidden columns, and leaf pages are only
+~48% full. `store_sales.dat` arrives ordered by `ss_sold_date_sk` while the
+primary key is `(ss_item_sk, ss_ticket_number)`, so every insert splits a
+page.
+
+`OPTIMIZE TABLE` rebuilds in key order and reclaims it: data 8.87 GB →
+**6.36 GB**, indexes unchanged, 12 minutes. The saving is real and is
+entirely the half-empty pages.
+
+It is still the wrong fix. Query 22 went from 20.3s to 59.3 / 48.8 / 49.0s
+across three runs, and warm it is 38.1s where it was ~11s. The plan flipped
+to `inventory:PRIMARY`; forcing the index it used before gives 11.5s against
+38.2s for the same query on the same data. Nothing about the indexes
+changed — `OPTIMIZE` re-sampled the statistics, and the new sample made
+`PRIMARY` look good.
+
+On the 40-query total the effect is inconclusive: 432.4s before, 479.3 /
+480.8 / 394.1s after. Two of those runs landed 1.5s apart, which looked like
+low variance until the third arrived 87s away.
+
+So: 2.5 GB bought with a plan regression on a database that has already
+shown it flips plans whenever statistics are re-sampled. Not worth it. The
+fix that would give compactness *and* locality is a date-leading primary
+key, which is a schema change and has not been tried.
+
+### An index that existed only on the running databases
+
+SF=1 and SF=4 disagreed by exactly two indexes: `idx_cs_q66` and
+`idx_ws_q66`. Neither appears in `sql/05`, `sql/11` or `sql/14`. Both were
+created directly on live databases by `pagesize/test-q66-indexes.sh` and
+never written back into the schema.
+
+They survived on the SF=1 volume and vanished when SF=4 was rebuilt from
+`sql/`:
+
+| query66 at SF=4 | |
+|---|---:|
+| with them | 1.0–1.1s |
+| without them | 7.4–11.6s |
+
+Anyone reproducing this work from the schema scripts would have been 7–10x
+slower on query66 with nothing to explain why. They are now in
+`sql/14_contributed_indexes.sql`; with them restored, query66 runs 0.4s.
+
+The general lesson: an experiment that creates an index on a live database
+has changed the benchmark, and the schema is the only place that record
+survives.
+
+## 6. A rebuilt database is a different benchmark
 
 The SF=4 database was accidentally reloaded mid-investigation. The same 40
 queries, the same data (`store_sales` is 11,516,885 rows either way), the
@@ -141,7 +204,7 @@ benchmark target, even when every table and every index matches.
 
 ---
 
-## 6. A stale list silently measured the wrong configuration
+## 7. A stale list silently measured the wrong configuration
 
 `sql/unignore_all_indexes.sql` was a static file. After a rebuild, two of the
 index names in it no longer existed. The client stops at the first error, and
@@ -163,7 +226,7 @@ with none. Both now exit rather than measure.
 
 ---
 
-## 7. A guard that required exactly 25 tables dropped the database
+## 8. A guard that required exactly 25 tables dropped the database
 
 The loader skipped reloading when `information_schema.tables` held exactly 25
 rows for the schema. Two scratch tables left behind by an experiment made it
@@ -176,7 +239,7 @@ tolerates extras.
 
 ---
 
-## 8. Prefixing `EXPLAIN` to "the query" executes half of it
+## 9. Prefixing `EXPLAIN` to "the query" executes half of it
 
 Queries 14, 23, 39 and 67 are **two statements each** — TPC-DS asks for two
 result sets. A planning-only pass that attaches `EXPLAIN` to the first
@@ -186,7 +249,7 @@ executes nothing.
 
 ---
 
-## 9. A single-run benchmark number is mostly cold cache
+## 10. A single-run benchmark number is mostly cold cache
 
 After dropping the 71 indexes, 8 of 40 queries looked slower than their
 previous best, and query68 looked 2.5x slower -- 2.9s before, 7.4s after.
@@ -211,7 +274,7 @@ That is tolerable for a 40-query total, where the effect averages out. It is
 not tolerable for per-query claims, and "8 of 40 queries regressed" would
 have been reported as a real finding on this evidence alone.
 
-## 10. One A/B pair cannot tell an effect from drift
+## 11. One A/B pair cannot tell an effect from drift
 
 Within-condition spread on this host exceeded the effect being measured:
 

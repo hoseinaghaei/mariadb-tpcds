@@ -56,3 +56,20 @@ CREATE INDEX idx_ws_date_item_cust ON web_sales (ws_sold_date_sk,ws_item_sk,ws_b
 CREATE INDEX idx_ws_date_item_price ON web_sales (ws_sold_date_sk,ws_item_sk,ws_ext_sales_price);
 CREATE INDEX idx_ws_date_item_paid ON web_sales (ws_sold_date_sk,ws_item_sk,ws_net_paid);
 CREATE INDEX idx_ss_date_item_store_cover ON store_sales (ss_sold_date_sk,ss_item_sk,ss_store_sk,ss_sales_price);
+
+-- Aysha's two covering indexes for query 66, from
+-- queries/optimized/Aysha/q66/q66-Indexes.sql.  Both lead with ship_mode_sk,
+-- which is the right call: q66 filters sm_carrier to two carriers out of
+-- twenty.
+--
+-- These lived only on the running databases, created by
+-- pagesize/test-q66-indexes.sh, and were never written into the schema.  A
+-- database rebuilt from sql/ therefore did not have them, and query66 went
+-- from 1.0-1.1s to 7.4-11.6s at SF=4 -- a 7-10x regression that showed up as
+-- an unexplained difference between the two scale factors.
+CREATE INDEX idx_ws_q66 ON web_sales
+  (ws_ship_mode_sk, ws_sold_date_sk, ws_sold_time_sk, ws_warehouse_sk,
+   ws_sales_price, ws_quantity, ws_net_paid_inc_ship);
+CREATE INDEX idx_cs_q66 ON catalog_sales
+  (cs_ship_mode_sk, cs_sold_date_sk, cs_sold_time_sk, cs_warehouse_sk,
+   cs_ext_sales_price, cs_quantity, cs_net_paid_inc_tax);
