@@ -20,11 +20,10 @@ This walks all of them and produces one list of records:
 
 Import `collect()` from here, or run it directly to dump analysis/results.csv.
 
-A note on comparing hashes.  Two runs at the SAME scale factor must agree on
-md5_sorted -- different answers mean a real defect.  Two runs at DIFFERENT
-scale factors must NOT be expected to agree: dsdgen produces a different
-database at every scale, so the answers legitimately differ.  Only the
-same-scale comparison is a correctness check.
+A note on comparing hashes. Comparisons require the same scale, recorded data
+seed and result hash format. Legacy records without this metadata remain
+readable, but cannot establish answer equality against a new run. A matching
+row-sorted hash alone does not establish ORDER BY/LIMIT correctness.
 """
 import json, os, re, glob, csv, sys
 
@@ -111,8 +110,14 @@ def collect(verbose=False, only=DEFAULT_ONLY):
             if not files:
                 continue
             tag = os.path.relpath(d, REPO)
+            summary_file = os.path.join(d, '_summary.json')
+            summary = {}
+            if os.path.isfile(summary_file):
+                with open(summary_file, encoding='utf-8') as source:
+                    summary = json.load(source)
             for p in files:
-                j = json.load(open(p))
+                with open(p, encoding='utf-8') as source:
+                    j = json.load(source)
                 rows.append({
                     "environment": env,
                     "scale": scale,
@@ -122,6 +127,11 @@ def collect(verbose=False, only=DEFAULT_ONLY):
                     "md5_sorted": j.get("md5_sorted"),
                     "status": j.get("status", "?"),
                     "tag": tag,
+                    "rngseed": j.get("rngseed", summary.get("rngseed")),
+                    "result_format": j.get("result_format", summary.get("result_format", "legacy/unknown")),
+                    "timing_protocol": j.get("timing_protocol", summary.get("timing_protocol", "legacy/unknown")),
+                    "queryset": j.get("queryset", summary.get("queryset")),
+                    "sql_sha256": j.get("sql_sha256"),
                 })
             seen.append((env, scale, tag, len(files)))
     if verbose:

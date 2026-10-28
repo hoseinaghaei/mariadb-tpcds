@@ -54,7 +54,7 @@ tpcds_validate_config() {
   [[ "$RNGSEED" =~ ^[0-9]+$ ]] || { echo "RNGSEED must be a nonnegative integer" >&2; return 1; }
   case "$PAGE_SIZE" in 4|8|16|32|64) ;; *) echo "PAGE_SIZE must be 4, 8, 16, 32 or 64" >&2; return 1 ;; esac
   case "$TUNED" in baseline|tuned|both) ;; *) echo "TUNED must be baseline, tuned or both" >&2; return 1 ;; esac
-  case "$QUERYSET" in all|tier45|tuned|smoke) ;; *) echo "QUERYSET must be all, tier45, tuned or smoke" >&2; return 1 ;; esac
+  case "$QUERYSET" in all|all-tuned|tier45|tuned|smoke) ;; *) echo "QUERYSET must be all, all-tuned, tier45, tuned or smoke" >&2; return 1 ;; esac
   if [[ "$PROFILE" == smoke && "$QUERYSET" != smoke ]]; then
     echo "smoke requires QUERYSET=smoke; use quick for other query sets" >&2
     return 1

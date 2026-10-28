@@ -1,0 +1,53 @@
+--- mariadb/query70.sql
++++ mariadb/query70.sql
+@@ -1,13 +1,8 @@
+-select * from (
+-select  
+-    sum(ss_net_profit) as total_sum
+-   ,s_state
+-   ,s_county
+-   ,(s_state is null)+(s_county is null) as lochierarchy
+-   ,rank() over (
+- 	partition by (s_state is null)+(s_county is null),
+- 	case when (s_county is null) = 0 then s_state end 
+- 	order by sum(ss_net_profit) desc) as rank_within_parent
++-- Explicit grouping levels distinguish genuine NULL values from subtotals.
++-- UNION ALL preserves duplicate-looking leaf/subtotal rows. The grand-total
++-- branch is suppressed on empty input, matching MariaDB WITH ROLLUP.
++WITH source_rows AS (
++    SELECT ss_net_profit, s_state, s_county
+  from
+     store_sales
+    ,date_dim       d1
+@@ -28,10 +23,24 @@
+                      ) tmp1 
+                where ranking <= 5
+              )
+- group by s_state,s_county with rollup
+-) tpcds_rollup
+-order by
+-   lochierarchy desc
+-  ,case when lochierarchy = 0 then s_state end
+-  ,rank_within_parent
+- limit 100;
++), hierarchy AS (
++    SELECT SUM(ss_net_profit) AS total_sum, s_state, s_county, 0 AS lochierarchy
++    FROM source_rows GROUP BY s_state, s_county
++    UNION ALL
++    SELECT SUM(ss_net_profit) AS total_sum, s_state, NULL, 1
++    FROM source_rows GROUP BY s_state
++    UNION ALL
++    SELECT SUM(ss_net_profit) AS total_sum, NULL, NULL, 2
++    FROM source_rows HAVING COUNT(*) > 0
++)
++SELECT total_sum, s_state, s_county, lochierarchy,
++       RANK() OVER (
++           PARTITION BY lochierarchy,
++                        CASE WHEN lochierarchy = 0 THEN s_state END
++           ORDER BY total_sum DESC
++       ) AS rank_within_parent
++FROM hierarchy
++ORDER BY lochierarchy DESC,
++         CASE WHEN lochierarchy = 0 THEN s_state END,
++         rank_within_parent
++LIMIT 100;

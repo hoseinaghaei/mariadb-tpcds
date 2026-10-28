@@ -29,6 +29,7 @@ RUN mkdir -p /data /results /scratch && chown -R mysql:mysql /data /results /scr
 
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY bench.py      /usr/local/bin/bench.py
+COPY result_sets.py /usr/local/bin/result_sets.py
 COPY profiles.sh   /usr/local/bin/profiles.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 

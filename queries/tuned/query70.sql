@@ -3,31 +3,35 @@
 
 SET SESSION sql_mode = CONCAT(@@sql_mode, ',IGNORE_SPACE,PIPES_AS_CONCAT');
 
-with ss_by_store as (
-  select ss_store_sk, sum(ss_net_profit) as np
-  from store_sales
-  where ss_sold_date_sk between 2450815 and 2451179
-  group by ss_store_sk
+WITH ss_by_store AS (
+    SELECT ss_store_sk, SUM(ss_net_profit) AS np
+    FROM store_sales
+    JOIN date_dim ON d_date_sk = ss_sold_date_sk
+    WHERE d_month_seq BETWEEN 1176 AND 1176+11
+    GROUP BY ss_store_sk
+), source_rows AS (
+    SELECT np, s_state, s_county
+    FROM ss_by_store
+    JOIN store ON s_store_sk = ss_store_sk
+    WHERE s_state IS NOT NULL
+), hierarchy AS (
+    SELECT SUM(np) AS total_sum, s_state, s_county, 0 AS lochierarchy
+    FROM source_rows GROUP BY s_state, s_county
+    UNION ALL
+    SELECT SUM(np) AS total_sum, s_state, NULL, 1
+    FROM source_rows GROUP BY s_state
+    UNION ALL
+    SELECT SUM(np) AS total_sum, NULL, NULL, 2
+    FROM source_rows HAVING COUNT(*) > 0
 )
-select * from (
-select
-    sum(np) as total_sum
-   ,s_state
-   ,s_county
-   ,(s_state is null)+(s_county is null) as lochierarchy
-   ,rank() over (
- 	partition by (s_state is null)+(s_county is null),
- 	case when (s_county is null) = 0 then s_state end
- 	order by sum(np) desc) as rank_within_parent
- from
-    ss_by_store
-   ,store
- where
-    s_store_sk = ss_store_sk
- group by s_state,s_county with rollup
-) tpcds_rollup
-order by
-   lochierarchy desc
-  ,case when lochierarchy = 0 then s_state end
-  ,rank_within_parent
- limit 100;
+SELECT total_sum, s_state, s_county, lochierarchy,
+       RANK() OVER (
+           PARTITION BY lochierarchy,
+                        CASE WHEN lochierarchy = 0 THEN s_state END
+           ORDER BY total_sum DESC
+       ) AS rank_within_parent
+FROM hierarchy
+ORDER BY lochierarchy DESC,
+         CASE WHEN lochierarchy = 0 THEN s_state END,
+         rank_within_parent
+LIMIT 100;

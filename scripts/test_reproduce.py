@@ -14,6 +14,7 @@ from contextlib import redirect_stdout
 
 
 REPO = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO / 'docker'))
 CONFIG_KEYS = (REPO / 'docker/profiles.sh').read_text().split('TPCDS_CONFIG_KEYS="', 1)[1].split('"', 1)[0].split()
 spec = importlib.util.spec_from_file_location('docker_bench', REPO / 'docker/bench.py')
 bench = importlib.util.module_from_spec(spec)
@@ -27,7 +28,7 @@ class ReproductionCLI(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.checkout = self.root / 'checkout with spaces'
         (self.checkout / 'docker').mkdir(parents=True)
-        for filename in ['reproduce.sh', 'docker/profiles.sh']:
+        for filename in ['reproduce.sh', 'run-scales.sh', 'docker/profiles.sh']:
             shutil.copy2(REPO / filename, self.checkout / filename)
         binary = self.root / 'bin'
         binary.mkdir()
@@ -88,6 +89,47 @@ elif sys.argv[1] not in ('info', 'run'):
         self.assertEqual(settings['TMP_TABLE_SIZE'], '1536M')
         self.assertEqual(settings['ARIA_PAGECACHE_BUFFER_SIZE'], '1G')
         self.assertEqual(settings['QUERYSET'], 'tuned')
+
+    def test_all_tuned_workload_is_forwarded(self):
+        result = self.invoke('quick', 'QUERYSET=all-tuned')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.forwarded()['QUERYSET'], 'all-tuned')
+
+    def test_previous_commands_can_be_repeated_without_changing_storage_or_defaults(self):
+        commands = [(), ('full', 'BUFFER_POOL=2G'),
+                    ('quick', 'QUERYSET=tier45', 'TUNED=both'), ('smoke',)]
+        for command in commands:
+            with self.subTest(command=command):
+                for _ in range(2):
+                    result = self.invoke(*command)
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    settings = self.forwarded()
+                    smoke = command == ('smoke',)
+                    self.assertEqual(settings['RNGSEED'], '10')
+                    self.assertEqual(settings['MARIADB_TAG'], '13.0.2')
+                    self.assertEqual(settings['QUERYSET'], 'smoke' if smoke else
+                                     'tier45' if 'QUERYSET=tier45' in command else 'tuned')
+                    run = self.calls()[-1]
+                    self.assertIn(str(self.checkout) + ':/project:ro', run)
+                    self.assertIn(('tpcds-smoke-data' if smoke else 'tpcds-data') + ':/data', run)
+                    output = self.checkout / ('results/smoke' if smoke else 'results')
+                    self.assertIn(str(output) + ':/results', run)
+
+    def test_scale_sweep_retains_commands_and_per_scale_paths_on_repeat(self):
+        for _ in range(2):
+            result = subprocess.run(
+                ['bash', str(self.checkout / 'run-scales.sh'), '2', '3', 'BUFFER_POOL=2G'],
+                cwd=self.root, env=self.env, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+        runs = [c for c in self.calls() if c[0] == 'run' and c[-1] == 'tpcds-mariadb']
+        self.assertEqual(len(runs), 4)
+        for run, scale in zip(runs, (2, 3, 2, 3)):
+            settings = dict(run[i + 1].split('=', 1) for i, value in enumerate(run) if value == '-e')
+            self.assertEqual((settings['SCALE'], settings['BUFFER_POOL'], settings['RNGSEED']),
+                             (str(scale), '2G', '10'))
+            self.assertEqual(settings['QUERYSET'], 'tuned')
+            self.assertIn(f'tpcds-data-sf{scale}:/data', run)
+            self.assertIn(str(self.checkout / f'results/sf{scale}') + ':/results', run)
 
     def test_smoke_has_small_limits_and_separate_storage(self):
         result = self.invoke('smoke', memory_gib=2)
@@ -180,6 +222,62 @@ elif sys.argv[1] not in ('info', 'run'):
         self.assertIn('join_buffer_size               = 4M', config)
         self.assertIn('max_statement_time             = 3600', config)
 
+    def test_entrypoint_repeat_archives_log_before_tee_and_keeps_workloads_separate(self):
+        # Run the actual benchmark function and Python harness, substituting
+        # only service/configuration operations and the MariaDB client. No
+        # Docker daemon, database, dataset generation or SQL execution occurs.
+        client = self.root / 'bin/mariadb'
+        client.write_text(f'''#!{sys.executable}
+import sys
+if '-e' in sys.argv:
+    sql = sys.argv[-1]
+    print(32768 if sql == 'select @@innodb_page_size' else
+          2147483648 if sql == 'select @@innodb_buffer_pool_size' else 160)
+else:
+    sys.stdin.buffer.read()
+    print('<resultset><row><field name="value">1</field></row></resultset>')
+''')
+        client.chmod(0o755)
+        output = self.root / 'outputs with spaces'
+        prior = output / 'tuned'
+        prior.mkdir(parents=True)
+        (prior / '_summary.json').write_text('legacy summary')
+        (prior / 'query999.json').write_text('legacy record')
+        (output / 'tuned.log').write_text('legacy log\n')
+        (output / '_answer_comparison.json').write_text('legacy comparison')
+        source = (REPO / 'docker/entrypoint.sh').read_text()
+        function = source[source.index('run_one() {'):source.index('\nTUNING_BLOCK=')]
+        function = function.replace('/usr/local/bin/bench.py', '"$BENCH_SCRIPT"')
+        code = ('stop_server() { :; }; write_cnf() { :; }; chown() { :; }; '
+                'start_server() { :; }; check_settings() { :; }\n')
+        code += function + '\nrun_one tuned ""\nQUERYSET=all-tuned\nrun_one tuned ""\n'
+        code += 'QUERYSET=tuned\nrun_one tuned ""\nrun_one baseline ""\n'
+        reporting = source[source.index('python3 - "$RESULTS" "$PROFILE" "$QUERYSET" "$TUNED"'):
+                           source.index('\nsay "Done"')]
+        code += reporting
+        env = {**self.env, 'RESULTS': str(output), 'DATA': str(self.root),
+               'BENCH_SCRIPT': str(REPO / 'docker/bench.py'), 'PROFILE': 'full',
+               'SOCK': '/unused/socket', 'QUERYSET': 'tuned', 'SCALE': '4',
+               'RNGSEED': '10', 'STATEMENT_TIMEOUT': '10', 'PYTHONDONTWRITEBYTECODE': '1',
+               'TUNED': 'both', 'PYTHONPATH': str(REPO / 'docker')}
+        result = subprocess.run(['bash', '-Eeuo', 'pipefail', '-c', code],
+                                env=env, cwd=self.root, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(bench.verify_run(prior, 'tuned'), 40)
+        archives = sorted((output / '.history/tuned').iterdir())
+        self.assertEqual(len(archives), 3)
+        self.assertEqual((archives[0] / 'run/query999.json').read_text(), 'legacy record')
+        self.assertEqual((archives[0] / 'tuned.log').read_text(), 'legacy log\n')
+        self.assertEqual((archives[0] / '_answer_comparison.json').read_text(), 'legacy comparison')
+        self.assertEqual(bench.verify_run(archives[1] / 'run', 'tuned'), 40)
+        self.assertEqual(bench.verify_run(archives[2] / 'run', 'all-tuned'), 99)
+        for archived, count in ((archives[1], 40), (archives[2], 99)):
+            self.assertIn(f'over {count} queries, 0 errors', (archived / 'tuned.log').read_text())
+        self.assertIn('over 40 queries, 0 errors', (output / 'tuned.log').read_text())
+        comparison = json.loads((output / '_answer_comparison.json').read_text())
+        self.assertEqual(comparison['queries'], 40)
+        self.assertTrue(comparison['all_ordered_results_match'])
+
 
 class SmokeExecution(unittest.TestCase):
     def setUp(self):
@@ -203,8 +301,9 @@ class SmokeExecution(unittest.TestCase):
             if failure == 'timeout':
                 raise subprocess.TimeoutExpired(command, kwargs.get('timeout'))
             if failure == 'sql':
-                return subprocess.CompletedProcess(command, 1, '', 'ERROR 1234: test failure')
-            return subprocess.CompletedProcess(command, 0, 'value\n1\n', '')
+                return subprocess.CompletedProcess(command, 1, b'', b'ERROR 1234: test failure')
+            return subprocess.CompletedProcess(command, 0,
+                b'<resultset><row><field name="value">1</field></row></resultset>', b'')
 
         argv = ['bench.py', '/unused/socket', str(self.output), 'tuned', 'smoke']
         with patch.object(sys, 'argv', argv), patch.object(bench.subprocess, 'run', side_effect=client), \
@@ -225,6 +324,7 @@ class SmokeExecution(unittest.TestCase):
 
     def test_sql_errors_and_timeouts_cannot_pass(self):
         for failure in ['sql', 'timeout']:
+            self.output = Path(self.temp.name) / failure
             with self.subTest(failure=failure), self.assertRaisesRegex(ValueError, 'errors'):
                 self.run_bench(failure)
 

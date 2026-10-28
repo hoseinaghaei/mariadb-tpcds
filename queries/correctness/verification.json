@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-28",
+  "server": "10.11.14-MariaDB-0ubuntu0.24.04.1",
+  "schema_used_for_explain": "tpcds_riccio_sf1",
+  "adapted_queries_explained": 99,
+  "adopted_queries_explained": 39,
+  "adopted_query_blocked": {
+    "query": 47,
+    "reason": "idx_ss_date_item_store_cover absent in local schema; reference index dependency retained"
+  },
+  "live_null_rollup_cases": 12,
+  "fixture_cases": [
+    "normal NULL-containing data",
+    "empty input",
+    "all-NULL measures"
+  ],
+  "fixture_sql_files": [
+    "queries/mariadb/query36.sql",
+    "queries/mariadb/query70.sql",
+    "queries/mariadb/query86.sql",
+    "queries/tuned/query70.sql"
+  ],
+  "full_99_query_execution_performed": false,
+  "official_answer_qualification_performed": false,
+  "regression_tests": "scripts/test_benchmark_correctness.py",
+  "live_tests": "scripts/test_rollup_correctness.py",
+  "note": "EXPLAIN checks plans, not returned answers. Fixture PASS is targeted semantic evidence. Runtime coverage is written separately by docker/bench.py."
+}

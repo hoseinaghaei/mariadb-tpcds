@@ -14,13 +14,14 @@ and writes:
 
 WHAT IT LOOKS FOR, and why each one is worth flagging:
 
-  ANSWER MISMATCH   Two environments at the SAME scale factor returned
-                    different answers.  This is a defect, not a performance
-                    observation, and it is listed first because nothing else
-                    on the page means anything if it fires.  (Across
-                    DIFFERENT scale factors answers differ legitimately --
-                    dsdgen builds a different database at each scale -- so
-                    that comparison is never made.)
+  ANSWER MISMATCH   Same scale, recorded data seed and hash format, different
+                    saved answer hashes. Requires SQL/ordering review.
+  ANSWER CHECK SKIPPED
+                    Missing or incompatible seed/hash metadata. Legacy runs
+                    remain readable; their hashes cannot verify new answers.
+  TIMING PROTOCOL CHANGE
+                    Runs use different timing protocols. Raw observations
+                    remain visible, but cross-protocol ratios are suppressed.
   ERROR             The query did not complete.
   SUPER-LINEAR      Time grew faster than the data did.  Four times the data
                     taking more than ~6x the time usually means a working set
@@ -48,6 +49,7 @@ host has shown 16-34% run-to-run variation on identical configurations and a
 tighter rule would report noise as findings.
 """
 import json, os, sys, csv, statistics, datetime, webbrowser
+from itertools import combinations
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
@@ -85,55 +87,62 @@ def totals(runs):
     return out
 
 
+def answer_comparison_problem(a, b):
+    seeds = [str(r.get('rngseed')) for r in (a, b)]
+    if not all(s.isdecimal() for s in seeds):
+        return 'data seed not recorded'
+    if int(seeds[0]) != int(seeds[1]):
+        return 'different data seeds'
+    formats = [r.get('result_format') for r in (a, b)]
+    if any(f in (None, '', 'legacy/unknown') for f in formats):
+        return 'result hash format not recorded'
+    if formats[0] != formats[1]:
+        return 'different result hash formats'
+    return None
+
+
+def timing_compatible(a, b):
+    # Historical observations stay usable with each other. A new protocol
+    # must not be silently presented as comparable with an unlabelled run.
+    return (a.get('timing_protocol') or 'legacy/unknown') == (b.get('timing_protocol') or 'legacy/unknown')
+
+
 def find_anomalies(runs, tot):
     a = []
 
     # --- correctness first -------------------------------------------------
     #
-    # A scale factor does NOT identify a database -- (scale, seed) does.
-    # dsdgen with a different -RNGSEED builds different data at the same
-    # scale, and then every answer differs legitimately.  That is not a
-    # hypothetical: the macOS SF=4 dataset here was generated with
-    # `dsdgen -SCALE 4` and no seed (report/21), while the container uses
-    # seed 10, and comparing them reported 37 "mismatches" that were nothing
-    # of the kind.
-    #
-    # The runs do not all record their seed, so it is inferred from the data
-    # instead: if several queries return DIFFERENT ROW COUNTS, the databases
-    # differ, and no per-query answer comparison between them means anything.
-    # One differing row count could be a genuine bug; several cannot be.
+    # Require declared metadata. Several different row counts can indicate
+    # several SQL bugs; they cannot justify inferring a different data seed
+    # and suppressing every correctness check.
     scales = sorted({s for _, s in runs})
     for s in scales:
         envs = sorted(e for e, sc in runs if sc == s)
         if len(envs) < 2:
             continue
-        qs = sorted(set().union(*[set(runs[(e, s)]) for e in envs]))
-
-        differing_rows = [q for q in qs
-                          if len({runs[(e, s)][q]["rows"] for e in envs
-                                  if q in runs[(e, s)]
-                                  and runs[(e, s)][q]["status"] == "OK"}) > 1]
-        if len(differing_rows) > 1:
-            a.append(("DIFFERENT DATASET", "—",
-                      f"SF={s}: {' and '.join(envs)} disagree on the row count for "
-                      f"{len(differing_rows)} queries "
-                      f"({', '.join('q%d' % q for q in differing_rows[:6])}"
-                      f"{', ...' if len(differing_rows) > 6 else ''}). "
-                      f"These are different databases -- almost certainly a "
-                      f"different dsdgen -RNGSEED -- so their answers are not "
-                      f"comparable and no per-query check was made. Timings "
-                      f"remain broadly indicative.", "critical"))
-            continue      # answers are meaningless; do not flag them one by one
-
-        for q in qs:
-            hashes = {}
-            for e in envs:
-                rec = runs[(e, s)].get(q)
-                if rec and rec["status"] == "OK" and rec["md5_sorted"]:
-                    hashes[e] = rec["md5_sorted"]
-            if len(set(hashes.values())) > 1:
-                detail = ", ".join(f"{e} rows={runs[(e,s)][q]['rows']}" for e in hashes)
-                a.append(("ANSWER MISMATCH", q, f"SF={s}: {detail}", "critical"))
+        protocols = {r.get('timing_protocol') or 'legacy/unknown'
+                     for e in envs for r in runs[(e, s)].values()}
+        if len(protocols) > 1:
+            a.append(("TIMING PROTOCOL CHANGE", "—",
+                      f"SF={s}: {', '.join(sorted(protocols))}; cross-protocol environment ratios are suppressed.",
+                      "warn"))
+        for left, right in combinations(envs, 2):
+            x, y = runs[(left, s)], runs[(right, s)]
+            skipped = {}
+            for q in sorted(set(x) & set(y)):
+                r, t = x[q], y[q]
+                if not all(v['status'] == 'OK' and v['md5_sorted'] for v in (r, t)):
+                    continue
+                problem = answer_comparison_problem(r, t)
+                if problem:
+                    skipped[problem] = skipped.get(problem, 0) + 1
+                elif r['md5_sorted'] != t['md5_sorted']:
+                    detail = f"{left} rows={r['rows']}, {right} rows={t['rows']}"
+                    a.append(("ANSWER MISMATCH", q,
+                              f"SF={s}: {detail}; saved hashes differ, SQL/ordering review required", "critical"))
+            for reason, count in sorted(skipped.items()):
+                a.append(("ANSWER CHECK SKIPPED", "—",
+                          f"SF={s}: {left} versus {right}: {reason} ({count} shared queries).", "warn"))
 
     for (e, s), qs in sorted(runs.items()):
         for q, rec in sorted(qs.items()):
@@ -145,9 +154,17 @@ def find_anomalies(runs, tot):
         ss = sorted(s for e, s in runs if e == env)
         if len(ss) < 2:
             continue
+        protocols = {r.get('timing_protocol') or 'legacy/unknown'
+                     for s in ss for r in runs[(env, s)].values()}
+        if len(protocols) > 1:
+            a.append(("TIMING PROTOCOL CHANGE", "—",
+                      f"{env}: {', '.join(sorted(protocols))}; cross-protocol scaling ratios are suppressed. "
+                      "Rerun the scales with the same harness for a comparable campaign.", "warn"))
         lo, hi = ss[0], ss[-1]
         data_ratio = hi / lo
         for q in sorted(set(runs[(env, lo)]) & set(runs[(env, hi)])):
+            if not timing_compatible(runs[(env, lo)][q], runs[(env, hi)][q]):
+                continue
             a_s = runs[(env, lo)][q]["seconds"]
             b_s = runs[(env, hi)][q]["seconds"]
             if not a_s or not b_s or a_s < FLOOR:
@@ -163,7 +180,11 @@ def find_anomalies(runs, tot):
                           f"{env}: {fmt(a_s)} at SF={lo} -> {fmt(b_s)} at SF={hi} "
                           f"= {ratio:.1f}x for {data_ratio:g}x the data", "info"))
             for i in range(len(ss) - 1):
-                x, y = runs[(env, ss[i])][q]["seconds"], runs[(env, ss[i + 1])][q]["seconds"]
+                first = runs[(env, ss[i])].get(q)
+                second = runs[(env, ss[i + 1])].get(q)
+                if not first or not second or not timing_compatible(first, second):
+                    continue
+                x, y = first['seconds'], second['seconds']
                 if x and y and x > FLOOR and y < x * NONMONOTONIC:
                     a.append(("NON-MONOTONIC", q,
                               f"{env}: {fmt(x)} at SF={ss[i]} but {fmt(y)} at SF={ss[i+1]}",
@@ -175,6 +196,9 @@ def find_anomalies(runs, tot):
         if len(envs) < 2:
             continue
         for q in sorted(set().union(*[set(runs[(e, s)]) for e in envs])):
+            records = [runs[(e, s)][q] for e in envs if q in runs[(e, s)]]
+            if any(not timing_compatible(x, y) for x, y in combinations(records, 2)):
+                continue
             vals = {e: runs[(e, s)][q]["seconds"] for e in envs
                     if q in runs[(e, s)] and runs[(e, s)][q]["seconds"]}
             vals = {e: v for e, v in vals.items() if v and v >= FLOOR}
@@ -210,11 +234,13 @@ def report(runs, tot, anoms):
           f"{len(runs)} runs, {len(allq)} queries.", ""]
 
     md += ["## Totals", "",
-           "| environment | scale | queries | errors | total |",
-           "|---|---:|---:|---:|---:|"]
+           "| environment | scale | queries | errors | total | timing protocol |",
+           "|---|---:|---:|---:|---:|---|"]
     for (e, s) in sorted(tot):
         t = tot[(e, s)]
-        md.append(f"| {e} | {s} | {t['queries']} | {t['errors']} | {fmt(t['seconds'])} |")
+        protocols = ', '.join(sorted({r.get('timing_protocol') or 'legacy/unknown'
+                                      for r in runs[(e, s)].values()}))
+        md.append(f"| {e} | {s} | {t['queries']} | {t['errors']} | {fmt(t['seconds'])} | {protocols} |")
     md.append("")
 
     # scaling table
@@ -236,7 +262,8 @@ def report(runs, tot, anoms):
                     cells.append(fmt(rec["seconds"]) if rec else "—")
                 a_s = (runs[(e, ss[0])].get(q) or {}).get("seconds")
                 b_s = (runs[(e, ss[-1])].get(q) or {}).get("seconds")
-                r = f"{b_s/a_s:.1f}x" if a_s and b_s and a_s >= FLOOR else "—"
+                comparable = timing_compatible(runs[(e, ss[0])].get(q, {}), runs[(e, ss[-1])].get(q, {}))
+                r = f"{b_s/a_s:.1f}x" if a_s and b_s and a_s >= FLOOR and comparable else "—"
                 md.append(f"| q{q} | " + " | ".join(cells) + f" | {r} |")
             md.append("")
 
@@ -255,8 +282,10 @@ def report(runs, tot, anoms):
             # drop it.  The ratio is still undefined when the faster side is
             # zero, which is what the dash means here.
             got = [v for v in vals if v is not None]
+            records = [(runs[(e, s)].get(q) or {}) for e in es]
+            comparable = all(timing_compatible(x, y) for x, y in combinations(records, 2))
             r = (f"{max(got)/min(got):.1f}x"
-                 if len(got) == len(es) and min(got) > 0 else "—")
+                 if len(got) == len(es) and min(got) > 0 and comparable else "—")
             md.append(f"| q{q} | " + " | ".join(fmt(v) for v in vals) + f" | {r} |")
         md.append("")
 
