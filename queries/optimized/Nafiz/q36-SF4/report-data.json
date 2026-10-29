@@ -1,0 +1,595 @@
+{
+  "versions": [
+    {
+      "version": "v0_original",
+      "trial_label": "final_original",
+      "method": "Original",
+      "index_profile": "team95",
+      "runs": 7,
+      "median_seconds": 12.163015336998797,
+      "min_seconds": 11.89457142000174,
+      "max_seconds": 12.433329547005997,
+      "speedup_vs_reference_original": 1.0,
+      "reduction_percent": 0.0,
+      "exact_result_match": true,
+      "rows": 100,
+      "days": 0,
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 12,
+      "milliseconds": 163,
+      "ticks_100ns": 121630153,
+      "total_days": 0.0001407756404745231,
+      "total_hours": 0.0033786153713885546,
+      "total_minutes": 0.20271692228331328,
+      "total_seconds": 12.163015336998797,
+      "total_milliseconds": 12163.015336998797,
+      "output_sha256": "b4bfb13f65c6cb20f5439ed1149384247677c105bbce69c5973c470bf4350723"
+    },
+    {
+      "version": "v1_raw_levels",
+      "trial_label": "final_raw_levels",
+      "method": "Raw level expansion",
+      "index_profile": "team95",
+      "runs": 7,
+      "median_seconds": 9.349200082993775,
+      "min_seconds": 9.217468723996717,
+      "max_seconds": 9.538914923999982,
+      "speedup_vs_reference_original": 1.300968556563824,
+      "reduction_percent": 23.134191448773798,
+      "exact_result_match": true,
+      "rows": 100,
+      "days": 0,
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 9,
+      "milliseconds": 349,
+      "ticks_100ns": 93492001,
+      "total_days": 0.00010820833429390944,
+      "total_hours": 0.0025970000230538266,
+      "total_minutes": 0.15582000138322957,
+      "total_seconds": 9.349200082993775,
+      "total_milliseconds": 9349.200082993775,
+      "output_sha256": "b4bfb13f65c6cb20f5439ed1149384247677c105bbce69c5973c470bf4350723"
+    },
+    {
+      "version": "v2_index_only",
+      "trial_label": "final_index_only",
+      "method": "Profit/price covering",
+      "index_profile": "team95 + idx_nf_q36_date_cover",
+      "runs": 7,
+      "median_seconds": 9.130291300003591,
+      "min_seconds": 8.985260121000465,
+      "max_seconds": 10.221789151000849,
+      "speedup_vs_reference_original": 1.3321607095924761,
+      "reduction_percent": 24.93398185374257,
+      "exact_result_match": true,
+      "rows": 100,
+      "days": 0,
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 9,
+      "milliseconds": 130,
+      "ticks_100ns": 91302913,
+      "total_days": 0.00010567466782411565,
+      "total_hours": 0.0025361920277787754,
+      "total_minutes": 0.1521715216667265,
+      "total_seconds": 9.130291300003591,
+      "total_milliseconds": 9130.291300003591,
+      "output_sha256": "b4bfb13f65c6cb20f5439ed1149384247677c105bbce69c5973c470bf4350723"
+    },
+    {
+      "version": "v3_bounded_leaf",
+      "trial_label": "final_bounded_leaf",
+      "method": "Bounded leaf aggregation",
+      "index_profile": "team95",
+      "runs": 7,
+      "median_seconds": 5.2318893000046955,
+      "min_seconds": 5.174191336998774,
+      "max_seconds": 5.358842349000042,
+      "speedup_vs_reference_original": 2.3247845356720145,
+      "reduction_percent": 56.98526101426709,
+      "exact_result_match": true,
+      "rows": 100,
+      "days": 0,
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 5,
+      "milliseconds": 231,
+      "ticks_100ns": 52318893,
+      "total_days": 6.05542743056099e-05,
+      "total_hours": 0.0014533025833346376,
+      "total_minutes": 0.08719815500007826,
+      "total_seconds": 5.2318893000046955,
+      "total_milliseconds": 5231.8893000046955,
+      "output_sha256": "b4bfb13f65c6cb20f5439ed1149384247677c105bbce69c5973c470bf4350723"
+    },
+    {
+      "version": "v4_leaf_levels",
+      "trial_label": "final_leaf_levels",
+      "method": "Single leaf aggregation",
+      "index_profile": "team95",
+      "runs": 7,
+      "median_seconds": 5.0956127150057,
+      "min_seconds": 4.916996036001365,
+      "max_seconds": 5.211636825006281,
+      "speedup_vs_reference_original": 2.3869583536403414,
+      "reduction_percent": 58.10567878258522,
+      "exact_result_match": true,
+      "rows": 100,
+      "days": 0,
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 5,
+      "milliseconds": 95,
+      "ticks_100ns": 50956127,
+      "total_days": 5.897699901626968e-05,
+      "total_hours": 0.0014154479763904722,
+      "total_minutes": 0.08492687858342833,
+      "total_seconds": 5.0956127150057,
+      "total_milliseconds": 5095.6127150057,
+      "output_sha256": "b4bfb13f65c6cb20f5439ed1149384247677c105bbce69c5973c470bf4350723"
+    },
+    {
+      "version": "v5_bounded_cover",
+      "trial_label": "final_bounded_cover",
+      "method": "Bounded leaf + cover",
+      "index_profile": "team95 + idx_nf_q36_date_cover",
+      "runs": 7,
+      "median_seconds": 4.275406360000488,
+      "min_seconds": 4.2006862749985885,
+      "max_seconds": 4.801187844997912,
+      "speedup_vs_reference_original": 2.844879366507142,
+      "reduction_percent": 64.84912464925463,
+      "exact_result_match": true,
+      "rows": 100,
+      "days": 0,
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 4,
+      "milliseconds": 275,
+      "ticks_100ns": 42754064,
+      "total_days": 4.948386990741306e-05,
+      "total_hours": 0.0011876128777779135,
+      "total_minutes": 0.07125677266667481,
+      "total_seconds": 4.275406360000488,
+      "total_milliseconds": 4275.406360000488,
+      "output_sha256": "b4bfb13f65c6cb20f5439ed1149384247677c105bbce69c5973c470bf4350723"
+    },
+    {
+      "version": "v6_leaf_cover",
+      "trial_label": "final_leaf_cover",
+      "method": "Leaf levels + cover",
+      "index_profile": "team95 + idx_nf_q36_date_cover",
+      "runs": 7,
+      "median_seconds": 4.165205334000348,
+      "min_seconds": 4.028511139993498,
+      "max_seconds": 4.658738391000952,
+      "speedup_vs_reference_original": 2.920147834660816,
+      "reduction_percent": 65.75515841593845,
+      "exact_result_match": true,
+      "rows": 100,
+      "days": 0,
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 4,
+      "milliseconds": 165,
+      "ticks_100ns": 41652053,
+      "total_days": 4.8208395069448466e-05,
+      "total_hours": 0.0011570014816667633,
+      "total_minutes": 0.0694200889000058,
+      "total_seconds": 4.165205334000348,
+      "total_milliseconds": 4165.205334000348,
+      "output_sha256": "b4bfb13f65c6cb20f5439ed1149384247677c105bbce69c5973c470bf4350723"
+    },
+    {
+      "version": "v7_late_item",
+      "trial_label": "final_late_item",
+      "method": "Aggregate before item",
+      "index_profile": "team95",
+      "runs": 7,
+      "median_seconds": 3.0781474499963224,
+      "min_seconds": 3.0164984770017327,
+      "max_seconds": 3.2539530669964734,
+      "speedup_vs_reference_original": 3.9514076354637684,
+      "reduction_percent": 74.69256294832685,
+      "exact_result_match": true,
+      "rows": 100,
+      "days": 0,
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 3,
+      "milliseconds": 78,
+      "ticks_100ns": 30781474,
+      "total_days": 3.562670659717966e-05,
+      "total_hours": 0.0008550409583323118,
+      "total_minutes": 0.051302457499938704,
+      "total_seconds": 3.0781474499963224,
+      "total_milliseconds": 3078.1474499963224,
+      "output_sha256": "b4bfb13f65c6cb20f5439ed1149384247677c105bbce69c5973c470bf4350723"
+    },
+    {
+      "version": "v8_late_item_cover",
+      "trial_label": "final_late_item_cover",
+      "method": "Late item + cover",
+      "index_profile": "team95 + idx_nf_q36_date_cover",
+      "runs": 7,
+      "median_seconds": 1.2149414320010692,
+      "min_seconds": 1.197846290000598,
+      "max_seconds": 1.27361174300313,
+      "speedup_vs_reference_original": 10.011194792300154,
+      "reduction_percent": 90.0111822739767,
+      "exact_result_match": true,
+      "rows": 100,
+      "days": 0,
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 1,
+      "milliseconds": 214,
+      "ticks_100ns": 12149414,
+      "total_days": 1.4061822129642004e-05,
+      "total_hours": 0.0003374837311114081,
+      "total_minutes": 0.020249023866684486,
+      "total_seconds": 1.2149414320010692,
+      "total_milliseconds": 1214.9414320010692,
+      "output_sha256": "b4bfb13f65c6cb20f5439ed1149384247677c105bbce69c5973c470bf4350723"
+    }
+  ],
+  "best_extra_index_bytes": 536674304,
+  "validation": {
+    "all_timed_outputs_exact": true,
+    "persistent_statistics_unchanged": true,
+    "q24_both_parts_verified": false,
+    "final_repetitions": 7,
+    "exploratory_repetitions": 3,
+    "metadata_unchanged_during_measurements": true
+  },
+  "fixtures": [
+    {
+      "case": "empty",
+      "label": "original",
+      "match": true,
+      "rows_by_part": [
+        0
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "empty",
+      "label": "bounds",
+      "match": true,
+      "rows_by_part": [
+        0
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "empty",
+      "label": "leaf_levels",
+      "match": true,
+      "rows_by_part": [
+        0
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "empty",
+      "label": "bounded_leaf",
+      "match": true,
+      "rows_by_part": [
+        0
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "empty",
+      "label": "index_only",
+      "match": true,
+      "rows_by_part": [
+        0
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "empty",
+      "label": "leaf_cover",
+      "match": true,
+      "rows_by_part": [
+        0
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "empty",
+      "label": "bounded_cover",
+      "match": true,
+      "rows_by_part": [
+        0
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "empty",
+      "label": "late_item",
+      "match": true,
+      "rows_by_part": [
+        0
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "empty",
+      "label": "late_item_cover",
+      "match": true,
+      "rows_by_part": [
+        0
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "empty",
+      "label": "raw_levels",
+      "match": true,
+      "rows_by_part": [
+        0
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "edge_cases",
+      "label": "original",
+      "match": true,
+      "rows_by_part": [
+        12
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "edge_cases",
+      "label": "bounds",
+      "match": true,
+      "rows_by_part": [
+        12
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "edge_cases",
+      "label": "leaf_levels",
+      "match": true,
+      "rows_by_part": [
+        12
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "edge_cases",
+      "label": "bounded_leaf",
+      "match": true,
+      "rows_by_part": [
+        12
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "edge_cases",
+      "label": "index_only",
+      "match": true,
+      "rows_by_part": [
+        12
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "edge_cases",
+      "label": "leaf_cover",
+      "match": true,
+      "rows_by_part": [
+        12
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "edge_cases",
+      "label": "bounded_cover",
+      "match": true,
+      "rows_by_part": [
+        12
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "edge_cases",
+      "label": "late_item",
+      "match": true,
+      "rows_by_part": [
+        12
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "edge_cases",
+      "label": "late_item_cover",
+      "match": true,
+      "rows_by_part": [
+        12
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "edge_cases",
+      "label": "raw_levels",
+      "match": true,
+      "rows_by_part": [
+        12
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "all_null_metrics",
+      "label": "original",
+      "match": true,
+      "rows_by_part": [
+        12
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "all_null_metrics",
+      "label": "bounds",
+      "match": true,
+      "rows_by_part": [
+        12
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "all_null_metrics",
+      "label": "leaf_levels",
+      "match": true,
+      "rows_by_part": [
+        12
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "all_null_metrics",
+      "label": "bounded_leaf",
+      "match": true,
+      "rows_by_part": [
+        12
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "all_null_metrics",
+      "label": "index_only",
+      "match": true,
+      "rows_by_part": [
+        12
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "all_null_metrics",
+      "label": "leaf_cover",
+      "match": true,
+      "rows_by_part": [
+        12
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "all_null_metrics",
+      "label": "bounded_cover",
+      "match": true,
+      "rows_by_part": [
+        12
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "all_null_metrics",
+      "label": "late_item",
+      "match": true,
+      "rows_by_part": [
+        12
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "all_null_metrics",
+      "label": "late_item_cover",
+      "match": true,
+      "rows_by_part": [
+        12
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    },
+    {
+      "case": "all_null_metrics",
+      "label": "raw_levels",
+      "match": true,
+      "rows_by_part": [
+        12
+      ],
+      "comparison": "full row multiset for tied Q36 order"
+    }
+  ],
+  "unlimited_checks": [
+    {
+      "label": "original",
+      "rows": 137,
+      "match": true,
+      "comparison": "complete row multiset, including hierarchy level and rank"
+    },
+    {
+      "label": "bounds",
+      "rows": 137,
+      "match": true,
+      "comparison": "complete row multiset, including hierarchy level and rank"
+    },
+    {
+      "label": "leaf_levels",
+      "rows": 137,
+      "match": true,
+      "comparison": "complete row multiset, including hierarchy level and rank"
+    },
+    {
+      "label": "bounded_leaf",
+      "rows": 137,
+      "match": true,
+      "comparison": "complete row multiset, including hierarchy level and rank"
+    },
+    {
+      "label": "index_only",
+      "rows": 137,
+      "match": true,
+      "comparison": "complete row multiset, including hierarchy level and rank"
+    },
+    {
+      "label": "leaf_cover",
+      "rows": 137,
+      "match": true,
+      "comparison": "complete row multiset, including hierarchy level and rank"
+    },
+    {
+      "label": "bounded_cover",
+      "rows": 137,
+      "match": true,
+      "comparison": "complete row multiset, including hierarchy level and rank"
+    },
+    {
+      "label": "late_item",
+      "rows": 137,
+      "match": true,
+      "comparison": "complete row multiset, including hierarchy level and rank"
+    },
+    {
+      "label": "late_item_cover",
+      "rows": 137,
+      "match": true,
+      "comparison": "complete row multiset, including hierarchy level and rank"
+    },
+    {
+      "label": "raw_levels",
+      "rows": 137,
+      "match": true,
+      "comparison": "complete row multiset, including hierarchy level and rank"
+    },
+    {
+      "label": "control_original_best_indexes",
+      "rows": 137,
+      "match": true,
+      "comparison": "complete row multiset, including hierarchy level and rank"
+    }
+  ],
+  "original_same_index_control": {
+    "median_seconds": 9.24906411900156,
+    "min_seconds": 9.073552426998504,
+    "max_seconds": 9.788600036998105,
+    "indexes": [
+      "idx_nf_q36_date_cover"
+    ]
+  }
+}

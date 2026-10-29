@@ -1,0 +1,575 @@
+{
+  "revision": "cc4369c58bb1399b586ff4ddd2c7c6c2bf622419",
+  "indexes": [
+    {
+      "table": "catalog_returns",
+      "name": "idx_cr_item_sk",
+      "columns": "cr_item_sk",
+      "ddl": "CREATE INDEX `idx_cr_item_sk` ON `catalog_returns` (cr_item_sk)"
+    },
+    {
+      "table": "catalog_returns",
+      "name": "idx_cr_order_number",
+      "columns": "cr_order_number",
+      "ddl": "CREATE INDEX `idx_cr_order_number` ON `catalog_returns` (cr_order_number)"
+    },
+    {
+      "table": "catalog_returns",
+      "name": "idx_cr_returned_date_sk",
+      "columns": "cr_returned_date_sk",
+      "ddl": "CREATE INDEX `idx_cr_returned_date_sk` ON `catalog_returns` (cr_returned_date_sk)"
+    },
+    {
+      "table": "catalog_sales",
+      "name": "idx_cs_bill_addr_sk",
+      "columns": "cs_bill_addr_sk",
+      "ddl": "CREATE INDEX `idx_cs_bill_addr_sk` ON `catalog_sales` (cs_bill_addr_sk)"
+    },
+    {
+      "table": "catalog_sales",
+      "name": "idx_cs_bill_cdemo_sk",
+      "columns": "cs_bill_cdemo_sk",
+      "ddl": "CREATE INDEX `idx_cs_bill_cdemo_sk` ON `catalog_sales` (cs_bill_cdemo_sk)"
+    },
+    {
+      "table": "catalog_sales",
+      "name": "idx_cs_bill_customer_sk",
+      "columns": "cs_bill_customer_sk",
+      "ddl": "CREATE INDEX `idx_cs_bill_customer_sk` ON `catalog_sales` (cs_bill_customer_sk)"
+    },
+    {
+      "table": "catalog_sales",
+      "name": "idx_cs_bill_hdemo_sk",
+      "columns": "cs_bill_hdemo_sk",
+      "ddl": "CREATE INDEX `idx_cs_bill_hdemo_sk` ON `catalog_sales` (cs_bill_hdemo_sk)"
+    },
+    {
+      "table": "catalog_sales",
+      "name": "idx_cs_call_center_sk",
+      "columns": "cs_call_center_sk",
+      "ddl": "CREATE INDEX `idx_cs_call_center_sk` ON `catalog_sales` (cs_call_center_sk)"
+    },
+    {
+      "table": "catalog_sales",
+      "name": "idx_cs_cust_date",
+      "columns": "cs_ship_customer_sk,cs_sold_date_sk",
+      "ddl": "CREATE INDEX `idx_cs_cust_date` ON `catalog_sales` (cs_ship_customer_sk,cs_sold_date_sk)"
+    },
+    {
+      "table": "catalog_sales",
+      "name": "idx_cs_cust_date_price",
+      "columns": "cs_bill_customer_sk,cs_sold_date_sk,cs_sales_price",
+      "ddl": "CREATE INDEX `idx_cs_cust_date_price` ON `catalog_sales` (cs_bill_customer_sk,cs_sold_date_sk,cs_sales_price)"
+    },
+    {
+      "table": "catalog_sales",
+      "name": "idx_cs_date_addr_item_price",
+      "columns": "cs_sold_date_sk,cs_bill_addr_sk,cs_item_sk,cs_ext_sales_price",
+      "ddl": "CREATE INDEX `idx_cs_date_addr_item_price` ON `catalog_sales` (cs_sold_date_sk,cs_bill_addr_sk,cs_item_sk,cs_ext_sales_price)"
+    },
+    {
+      "table": "catalog_sales",
+      "name": "idx_cs_date_cover",
+      "columns": "cs_sold_date_sk,cs_bill_cdemo_sk,cs_item_sk,cs_promo_sk,cs_quantity,cs_list_price,cs_coupon_amt,cs_sales_price",
+      "ddl": "CREATE INDEX `idx_cs_date_cover` ON `catalog_sales` (cs_sold_date_sk,cs_bill_cdemo_sk,cs_item_sk,cs_promo_sk,cs_quantity,cs_list_price,cs_coupon_amt,cs_sales_price)"
+    },
+    {
+      "table": "catalog_sales",
+      "name": "idx_cs_date_cust",
+      "columns": "cs_sold_date_sk,cs_ship_customer_sk",
+      "ddl": "CREATE INDEX `idx_cs_date_cust` ON `catalog_sales` (cs_sold_date_sk,cs_ship_customer_sk)"
+    },
+    {
+      "table": "catalog_sales",
+      "name": "idx_cs_date_customer",
+      "columns": "cs_sold_date_sk,cs_bill_customer_sk",
+      "ddl": "CREATE INDEX `idx_cs_date_customer` ON `catalog_sales` (cs_sold_date_sk,cs_bill_customer_sk)"
+    },
+    {
+      "table": "catalog_sales",
+      "name": "idx_cs_item_sk",
+      "columns": "cs_item_sk",
+      "ddl": "CREATE INDEX `idx_cs_item_sk` ON `catalog_sales` (cs_item_sk)"
+    },
+    {
+      "table": "catalog_sales",
+      "name": "idx_cs_q66",
+      "columns": "cs_ship_mode_sk, cs_sold_date_sk, cs_sold_time_sk, cs_warehouse_sk,\n   cs_ext_sales_price, cs_quantity, cs_net_paid_inc_tax",
+      "ddl": "CREATE INDEX `idx_cs_q66` ON `catalog_sales` (cs_ship_mode_sk, cs_sold_date_sk, cs_sold_time_sk, cs_warehouse_sk,\n   cs_ext_sales_price, cs_quantity, cs_net_paid_inc_tax)"
+    },
+    {
+      "table": "catalog_sales",
+      "name": "idx_cs_ship_customer_sk",
+      "columns": "cs_ship_customer_sk",
+      "ddl": "CREATE INDEX `idx_cs_ship_customer_sk` ON `catalog_sales` (cs_ship_customer_sk)"
+    },
+    {
+      "table": "catalog_sales",
+      "name": "idx_cs_ship_date_sk",
+      "columns": "cs_ship_date_sk",
+      "ddl": "CREATE INDEX `idx_cs_ship_date_sk` ON `catalog_sales` (cs_ship_date_sk)"
+    },
+    {
+      "table": "catalog_sales",
+      "name": "idx_cs_ship_mode_sk",
+      "columns": "cs_ship_mode_sk",
+      "ddl": "CREATE INDEX `idx_cs_ship_mode_sk` ON `catalog_sales` (cs_ship_mode_sk)"
+    },
+    {
+      "table": "catalog_sales",
+      "name": "idx_cs_sold_date_ext_price",
+      "columns": "cs_sold_date_sk,cs_ext_sales_price",
+      "ddl": "CREATE INDEX `idx_cs_sold_date_ext_price` ON `catalog_sales` (cs_sold_date_sk,cs_ext_sales_price)"
+    },
+    {
+      "table": "catalog_sales",
+      "name": "idx_cs_sold_date_sk",
+      "columns": "cs_sold_date_sk",
+      "ddl": "CREATE INDEX `idx_cs_sold_date_sk` ON `catalog_sales` (cs_sold_date_sk)"
+    },
+    {
+      "table": "catalog_sales",
+      "name": "idx_cs_sold_time_sk",
+      "columns": "cs_sold_time_sk",
+      "ddl": "CREATE INDEX `idx_cs_sold_time_sk` ON `catalog_sales` (cs_sold_time_sk)"
+    },
+    {
+      "table": "catalog_sales",
+      "name": "idx_cs_warehouse_sk",
+      "columns": "cs_warehouse_sk",
+      "ddl": "CREATE INDEX `idx_cs_warehouse_sk` ON `catalog_sales` (cs_warehouse_sk)"
+    },
+    {
+      "table": "customer",
+      "name": "idx_c_addr",
+      "columns": "c_current_addr_sk",
+      "ddl": "CREATE INDEX `idx_c_addr` ON `customer` (c_current_addr_sk)"
+    },
+    {
+      "table": "customer",
+      "name": "idx_c_current_addr_sk",
+      "columns": "c_current_addr_sk",
+      "ddl": "CREATE INDEX `idx_c_current_addr_sk` ON `customer` (c_current_addr_sk)"
+    },
+    {
+      "table": "customer",
+      "name": "idx_c_current_cdemo_sk",
+      "columns": "c_current_cdemo_sk",
+      "ddl": "CREATE INDEX `idx_c_current_cdemo_sk` ON `customer` (c_current_cdemo_sk)"
+    },
+    {
+      "table": "customer_address",
+      "name": "idx_ca_gmt",
+      "columns": "ca_gmt_offset",
+      "ddl": "CREATE INDEX `idx_ca_gmt` ON `customer_address` (ca_gmt_offset)"
+    },
+    {
+      "table": "customer_address",
+      "name": "idx_customer_address_1",
+      "columns": "ca_state, ca_country",
+      "ddl": "CREATE INDEX `idx_customer_address_1` ON `customer_address` (ca_state, ca_country)"
+    },
+    {
+      "table": "customer_demographics",
+      "name": "idx_cd_demo_sk_marital_status",
+      "columns": "cd_demo_sk, cd_marital_status",
+      "ddl": "CREATE INDEX `idx_cd_demo_sk_marital_status` ON `customer_demographics` (cd_demo_sk, cd_marital_status)"
+    },
+    {
+      "table": "customer_demographics",
+      "name": "idx_cd_filter_sk",
+      "columns": "cd_gender,cd_marital_status,cd_education_status,cd_demo_sk",
+      "ddl": "CREATE INDEX `idx_cd_filter_sk` ON `customer_demographics` (cd_gender,cd_marital_status,cd_education_status,cd_demo_sk)"
+    },
+    {
+      "table": "customer_demographics",
+      "name": "idx_customer_demographics_1",
+      "columns": "cd_marital_status, cd_education_status",
+      "ddl": "CREATE INDEX `idx_customer_demographics_1` ON `customer_demographics` (cd_marital_status, cd_education_status)"
+    },
+    {
+      "table": "date_dim",
+      "name": "idx_date_dim_d_date",
+      "columns": "d_date",
+      "ddl": "CREATE INDEX `idx_date_dim_d_date` ON `date_dim` (d_date)"
+    },
+    {
+      "table": "date_dim",
+      "name": "idx_date_dim_d_date_year",
+      "columns": "d_date_sk, d_year, d_date",
+      "ddl": "CREATE INDEX `idx_date_dim_d_date_year` ON `date_dim` (d_date_sk, d_year, d_date)"
+    },
+    {
+      "table": "date_dim",
+      "name": "idx_date_dim_d_month_seq",
+      "columns": "d_date_sk,d_month_seq",
+      "ddl": "CREATE INDEX `idx_date_dim_d_month_seq` ON `date_dim` (d_date_sk,d_month_seq)"
+    },
+    {
+      "table": "date_dim",
+      "name": "idx_date_month_date_sk",
+      "columns": "d_month_seq,d_date_sk",
+      "ddl": "CREATE INDEX `idx_date_month_date_sk` ON `date_dim` (d_month_seq,d_date_sk)"
+    },
+    {
+      "table": "date_dim",
+      "name": "idx_date_year_moy",
+      "columns": "d_year, d_moy",
+      "ddl": "CREATE INDEX `idx_date_year_moy` ON `date_dim` (d_year, d_moy)"
+    },
+    {
+      "table": "date_dim",
+      "name": "idx_date_year_sk",
+      "columns": "d_year,d_date_sk",
+      "ddl": "CREATE INDEX `idx_date_year_sk` ON `date_dim` (d_year,d_date_sk)"
+    },
+    {
+      "table": "date_dim",
+      "name": "idx_date_year_sk_day",
+      "columns": "d_year,d_date_sk,d_day_name",
+      "ddl": "CREATE INDEX `idx_date_year_sk_day` ON `date_dim` (d_year,d_date_sk,d_day_name)"
+    },
+    {
+      "table": "date_dim",
+      "name": "idx_date_ym",
+      "columns": "d_year,d_moy,d_date_sk",
+      "ddl": "CREATE INDEX `idx_date_ym` ON `date_dim` (d_year,d_moy,d_date_sk)"
+    },
+    {
+      "table": "date_dim",
+      "name": "idx_dd_month_seq",
+      "columns": "d_month_seq",
+      "ddl": "CREATE INDEX `idx_dd_month_seq` ON `date_dim` (d_month_seq)"
+    },
+    {
+      "table": "date_dim",
+      "name": "idx_dd_week_seq",
+      "columns": "d_week_seq",
+      "ddl": "CREATE INDEX `idx_dd_week_seq` ON `date_dim` (d_week_seq)"
+    },
+    {
+      "table": "date_dim",
+      "name": "inx_date_dim_year",
+      "columns": "d_year",
+      "ddl": "CREATE INDEX `inx_date_dim_year` ON `date_dim` (d_year)"
+    },
+    {
+      "table": "household_demographics",
+      "name": "idx_hd_demo_sk_buy_potential",
+      "columns": "hd_demo_sk, hd_buy_potential",
+      "ddl": "CREATE INDEX `idx_hd_demo_sk_buy_potential` ON `household_demographics` (hd_demo_sk, hd_buy_potential)"
+    },
+    {
+      "table": "inventory",
+      "name": "idx_inv_item_date_sk",
+      "columns": "inv_item_sk,inv_date_sk,inv_quantity_on_hand",
+      "ddl": "CREATE INDEX `idx_inv_item_date_sk` ON `inventory` (inv_item_sk,inv_date_sk,inv_quantity_on_hand)"
+    },
+    {
+      "table": "inventory",
+      "name": "idx_inv_item_sk",
+      "columns": "inv_item_sk",
+      "ddl": "CREATE INDEX `idx_inv_item_sk` ON `inventory` (inv_item_sk )"
+    },
+    {
+      "table": "inventory",
+      "name": "idx_inv_warehouse_sk",
+      "columns": "inv_warehouse_sk",
+      "ddl": "CREATE INDEX `idx_inv_warehouse_sk` ON `inventory` (inv_warehouse_sk)"
+    },
+    {
+      "table": "item",
+      "name": "idx_item_1",
+      "columns": "i_category",
+      "ddl": "CREATE INDEX `idx_item_1` ON `item` (i_category)"
+    },
+    {
+      "table": "item",
+      "name": "idx_item_2",
+      "columns": "i_category, i_current_price",
+      "ddl": "CREATE INDEX `idx_item_2` ON `item` (i_category, i_current_price)"
+    },
+    {
+      "table": "item",
+      "name": "idx_item_cat",
+      "columns": "i_category",
+      "ddl": "CREATE INDEX `idx_item_cat` ON `item` (i_category)"
+    },
+    {
+      "table": "item",
+      "name": "idx_item_category_id",
+      "columns": "i_category,i_item_id",
+      "ddl": "CREATE INDEX `idx_item_category_id` ON `item` (i_category,i_item_id)"
+    },
+    {
+      "table": "item",
+      "name": "idx_item_price",
+      "columns": "i_current_price",
+      "ddl": "CREATE INDEX `idx_item_price` ON `item` (i_current_price)"
+    },
+    {
+      "table": "store",
+      "name": "idx_store_gmt",
+      "columns": "s_gmt_offset",
+      "ddl": "CREATE INDEX `idx_store_gmt` ON `store` (s_gmt_offset)"
+    },
+    {
+      "table": "store_returns",
+      "name": "idx_sr_item_sk",
+      "columns": "sr_item_sk",
+      "ddl": "CREATE INDEX `idx_sr_item_sk` ON `store_returns` (sr_item_sk)"
+    },
+    {
+      "table": "store_returns",
+      "name": "idx_sr_returned_date_sk",
+      "columns": "sr_returned_date_sk",
+      "ddl": "CREATE INDEX `idx_sr_returned_date_sk` ON `store_returns` (sr_returned_date_sk)"
+    },
+    {
+      "table": "store_returns",
+      "name": "idx_sr_store_sk",
+      "columns": "sr_store_sk",
+      "ddl": "CREATE INDEX `idx_sr_store_sk` ON `store_returns` (sr_store_sk)"
+    },
+    {
+      "table": "store_returns",
+      "name": "idx_sr_ticket_number",
+      "columns": "sr_ticket_number",
+      "ddl": "CREATE INDEX `idx_sr_ticket_number` ON `store_returns` (sr_ticket_number)"
+    },
+    {
+      "table": "store_sales",
+      "name": "idx_ss_addr_sk",
+      "columns": "ss_addr_sk",
+      "ddl": "CREATE INDEX `idx_ss_addr_sk` ON `store_sales` (ss_addr_sk)"
+    },
+    {
+      "table": "store_sales",
+      "name": "idx_ss_cdemo_sk",
+      "columns": "ss_cdemo_sk",
+      "ddl": "CREATE INDEX `idx_ss_cdemo_sk` ON `store_sales` (ss_cdemo_sk)"
+    },
+    {
+      "table": "store_sales",
+      "name": "idx_ss_cust_date",
+      "columns": "ss_customer_sk,ss_sold_date_sk",
+      "ddl": "CREATE INDEX `idx_ss_cust_date` ON `store_sales` (ss_customer_sk,ss_sold_date_sk)"
+    },
+    {
+      "table": "store_sales",
+      "name": "idx_ss_customer_sk",
+      "columns": "ss_customer_sk",
+      "ddl": "CREATE INDEX `idx_ss_customer_sk` ON `store_sales` (ss_customer_sk)"
+    },
+    {
+      "table": "store_sales",
+      "name": "idx_ss_date_addr_item_price",
+      "columns": "ss_sold_date_sk,ss_addr_sk,ss_item_sk,ss_ext_sales_price",
+      "ddl": "CREATE INDEX `idx_ss_date_addr_item_price` ON `store_sales` (ss_sold_date_sk,ss_addr_sk,ss_item_sk,ss_ext_sales_price)"
+    },
+    {
+      "table": "store_sales",
+      "name": "idx_ss_date_cust",
+      "columns": "ss_sold_date_sk,ss_customer_sk",
+      "ddl": "CREATE INDEX `idx_ss_date_cust` ON `store_sales` (ss_sold_date_sk,ss_customer_sk)"
+    },
+    {
+      "table": "store_sales",
+      "name": "idx_ss_date_item_store_cover",
+      "columns": "ss_sold_date_sk,ss_item_sk,ss_store_sk,ss_sales_price",
+      "ddl": "CREATE INDEX `idx_ss_date_item_store_cover` ON `store_sales` (ss_sold_date_sk,ss_item_sk,ss_store_sk,ss_sales_price)"
+    },
+    {
+      "table": "store_sales",
+      "name": "idx_ss_date_store_price",
+      "columns": "ss_sold_date_sk,ss_store_sk,ss_sales_price",
+      "ddl": "CREATE INDEX `idx_ss_date_store_price` ON `store_sales` (ss_sold_date_sk,ss_store_sk,ss_sales_price)"
+    },
+    {
+      "table": "store_sales",
+      "name": "idx_ss_hdemo_sk",
+      "columns": "ss_hdemo_sk",
+      "ddl": "CREATE INDEX `idx_ss_hdemo_sk` ON `store_sales` (ss_hdemo_sk)"
+    },
+    {
+      "table": "store_sales",
+      "name": "idx_ss_item_sk",
+      "columns": "ss_item_sk",
+      "ddl": "CREATE INDEX `idx_ss_item_sk` ON `store_sales` (ss_item_sk)"
+    },
+    {
+      "table": "store_sales",
+      "name": "idx_ss_promo_sk",
+      "columns": "ss_promo_sk",
+      "ddl": "CREATE INDEX `idx_ss_promo_sk` ON `store_sales` (ss_promo_sk)"
+    },
+    {
+      "table": "store_sales",
+      "name": "idx_ss_q61",
+      "columns": "ss_store_sk,ss_sold_date_sk,ss_item_sk,ss_customer_sk,ss_promo_sk,ss_ext_sales_price",
+      "ddl": "CREATE INDEX `idx_ss_q61` ON `store_sales` (ss_store_sk,ss_sold_date_sk,ss_item_sk,ss_customer_sk,ss_promo_sk,ss_ext_sales_price)"
+    },
+    {
+      "table": "store_sales",
+      "name": "idx_ss_q78",
+      "columns": "ss_sold_date_sk,ss_item_sk,ss_customer_sk,ss_ticket_number,ss_quantity,ss_wholesale_cost,ss_sales_price",
+      "ddl": "CREATE INDEX `idx_ss_q78` ON `store_sales` (ss_sold_date_sk,ss_item_sk,ss_customer_sk,ss_ticket_number,ss_quantity,ss_wholesale_cost,ss_sales_price)"
+    },
+    {
+      "table": "store_sales",
+      "name": "idx_ss_sold_date_sk",
+      "columns": "ss_sold_date_sk",
+      "ddl": "CREATE INDEX `idx_ss_sold_date_sk` ON `store_sales` (ss_sold_date_sk)"
+    },
+    {
+      "table": "store_sales",
+      "name": "idx_ss_sold_date_sk_store_sales_price",
+      "columns": "ss_sold_date_sk, ss_store_sk, ss_sales_price",
+      "ddl": "CREATE INDEX `idx_ss_sold_date_sk_store_sales_price` ON `store_sales` (ss_sold_date_sk, ss_store_sk, ss_sales_price)"
+    },
+    {
+      "table": "store_sales",
+      "name": "idx_ss_sold_time_sk",
+      "columns": "ss_sold_time_sk",
+      "ddl": "CREATE INDEX `idx_ss_sold_time_sk` ON `store_sales` (ss_sold_time_sk)"
+    },
+    {
+      "table": "store_sales",
+      "name": "idx_ss_store_hdemo_time",
+      "columns": "ss_store_sk,ss_hdemo_sk,ss_sold_time_sk",
+      "ddl": "CREATE INDEX `idx_ss_store_hdemo_time` ON `store_sales` (ss_store_sk,ss_hdemo_sk,ss_sold_time_sk)"
+    },
+    {
+      "table": "store_sales",
+      "name": "idx_ss_store_sk",
+      "columns": "ss_store_sk",
+      "ddl": "CREATE INDEX `idx_ss_store_sk` ON `store_sales` (ss_store_sk)"
+    },
+    {
+      "table": "web_returns",
+      "name": "idx_wr_item_sk",
+      "columns": "wr_item_sk",
+      "ddl": "CREATE INDEX `idx_wr_item_sk` ON `web_returns` (wr_item_sk)"
+    },
+    {
+      "table": "web_returns",
+      "name": "idx_wr_order_number",
+      "columns": "wr_order_number",
+      "ddl": "CREATE INDEX `idx_wr_order_number` ON `web_returns` (wr_order_number)"
+    },
+    {
+      "table": "web_returns",
+      "name": "idx_wr_returned_date_sk",
+      "columns": "wr_returned_date_sk",
+      "ddl": "CREATE INDEX `idx_wr_returned_date_sk` ON `web_returns` (wr_returned_date_sk)"
+    },
+    {
+      "table": "web_returns",
+      "name": "idx_wr_web_page_sk",
+      "columns": "wr_web_page_sk",
+      "ddl": "CREATE INDEX `idx_wr_web_page_sk` ON `web_returns` (wr_web_page_sk)"
+    },
+    {
+      "table": "web_sales",
+      "name": "idx_ws_bill_addr_sk",
+      "columns": "ws_bill_addr_sk",
+      "ddl": "CREATE INDEX `idx_ws_bill_addr_sk` ON `web_sales` (ws_bill_addr_sk)"
+    },
+    {
+      "table": "web_sales",
+      "name": "idx_ws_bill_customer_sk",
+      "columns": "ws_bill_customer_sk",
+      "ddl": "CREATE INDEX `idx_ws_bill_customer_sk` ON `web_sales` (ws_bill_customer_sk)"
+    },
+    {
+      "table": "web_sales",
+      "name": "idx_ws_cust_date",
+      "columns": "ws_bill_customer_sk,ws_sold_date_sk",
+      "ddl": "CREATE INDEX `idx_ws_cust_date` ON `web_sales` (ws_bill_customer_sk,ws_sold_date_sk)"
+    },
+    {
+      "table": "web_sales",
+      "name": "idx_ws_date_addr_item_price",
+      "columns": "ws_sold_date_sk,ws_bill_addr_sk,ws_item_sk,ws_ext_sales_price",
+      "ddl": "CREATE INDEX `idx_ws_date_addr_item_price` ON `web_sales` (ws_sold_date_sk,ws_bill_addr_sk,ws_item_sk,ws_ext_sales_price)"
+    },
+    {
+      "table": "web_sales",
+      "name": "idx_ws_date_cust",
+      "columns": "ws_sold_date_sk,ws_bill_customer_sk",
+      "ddl": "CREATE INDEX `idx_ws_date_cust` ON `web_sales` (ws_sold_date_sk,ws_bill_customer_sk)"
+    },
+    {
+      "table": "web_sales",
+      "name": "idx_ws_date_item_cust",
+      "columns": "ws_sold_date_sk,ws_item_sk,ws_bill_customer_sk,ws_net_paid",
+      "ddl": "CREATE INDEX `idx_ws_date_item_cust` ON `web_sales` (ws_sold_date_sk,ws_item_sk,ws_bill_customer_sk,ws_net_paid)"
+    },
+    {
+      "table": "web_sales",
+      "name": "idx_ws_date_item_paid",
+      "columns": "ws_sold_date_sk,ws_item_sk,ws_net_paid",
+      "ddl": "CREATE INDEX `idx_ws_date_item_paid` ON `web_sales` (ws_sold_date_sk,ws_item_sk,ws_net_paid)"
+    },
+    {
+      "table": "web_sales",
+      "name": "idx_ws_date_item_price",
+      "columns": "ws_sold_date_sk,ws_item_sk,ws_ext_sales_price",
+      "ddl": "CREATE INDEX `idx_ws_date_item_price` ON `web_sales` (ws_sold_date_sk,ws_item_sk,ws_ext_sales_price)"
+    },
+    {
+      "table": "web_sales",
+      "name": "idx_ws_item_sk",
+      "columns": "ws_item_sk",
+      "ddl": "CREATE INDEX `idx_ws_item_sk` ON `web_sales` (ws_item_sk)"
+    },
+    {
+      "table": "web_sales",
+      "name": "idx_ws_order_number",
+      "columns": "ws_order_number",
+      "ddl": "CREATE INDEX `idx_ws_order_number` ON `web_sales` (ws_order_number)"
+    },
+    {
+      "table": "web_sales",
+      "name": "idx_ws_q66",
+      "columns": "ws_ship_mode_sk, ws_sold_date_sk, ws_sold_time_sk, ws_warehouse_sk,\n   ws_sales_price, ws_quantity, ws_net_paid_inc_ship",
+      "ddl": "CREATE INDEX `idx_ws_q66` ON `web_sales` (ws_ship_mode_sk, ws_sold_date_sk, ws_sold_time_sk, ws_warehouse_sk,\n   ws_sales_price, ws_quantity, ws_net_paid_inc_ship)"
+    },
+    {
+      "table": "web_sales",
+      "name": "idx_ws_ship_mode_sk",
+      "columns": "ws_ship_mode_sk",
+      "ddl": "CREATE INDEX `idx_ws_ship_mode_sk` ON `web_sales` (ws_ship_mode_sk)"
+    },
+    {
+      "table": "web_sales",
+      "name": "idx_ws_sold_date_ext_price",
+      "columns": "ws_sold_date_sk,ws_ext_sales_price",
+      "ddl": "CREATE INDEX `idx_ws_sold_date_ext_price` ON `web_sales` (ws_sold_date_sk,ws_ext_sales_price)"
+    },
+    {
+      "table": "web_sales",
+      "name": "idx_ws_sold_date_sk",
+      "columns": "ws_sold_date_sk",
+      "ddl": "CREATE INDEX `idx_ws_sold_date_sk` ON `web_sales` (ws_sold_date_sk)"
+    },
+    {
+      "table": "web_sales",
+      "name": "idx_ws_sold_time_sk",
+      "columns": "ws_sold_time_sk",
+      "ddl": "CREATE INDEX `idx_ws_sold_time_sk` ON `web_sales` (ws_sold_time_sk)"
+    },
+    {
+      "table": "web_sales",
+      "name": "idx_ws_warehouse_sk",
+      "columns": "ws_warehouse_sk",
+      "ddl": "CREATE INDEX `idx_ws_warehouse_sk` ON `web_sales` (ws_warehouse_sk)"
+    },
+    {
+      "table": "web_sales",
+      "name": "idx_ws_web_page_sk",
+      "columns": "ws_web_page_sk",
+      "ddl": "CREATE INDEX `idx_ws_web_page_sk` ON `web_sales` (ws_web_page_sk)"
+    }
+  ]
+}

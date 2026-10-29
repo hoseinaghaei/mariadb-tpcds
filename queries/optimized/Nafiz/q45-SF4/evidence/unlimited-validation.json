@@ -1,0 +1,44 @@
+[
+  {
+    "label": "original",
+    "rows": 27,
+    "match": true,
+    "comparison": "complete row multiset"
+  },
+  {
+    "label": "index_only",
+    "rows": 27,
+    "match": true,
+    "comparison": "complete row multiset"
+  },
+  {
+    "label": "bounded_cover",
+    "rows": 27,
+    "match": true,
+    "comparison": "complete row multiset"
+  },
+  {
+    "label": "union_cover",
+    "rows": 27,
+    "match": true,
+    "comparison": "complete row multiset"
+  },
+  {
+    "label": "fact_eligibility",
+    "rows": 27,
+    "match": true,
+    "comparison": "complete row multiset"
+  },
+  {
+    "label": "fact_eligibility_cover",
+    "rows": 27,
+    "match": true,
+    "comparison": "complete row multiset"
+  },
+  {
+    "label": "control_original_best_indexes",
+    "rows": 27,
+    "match": true,
+    "comparison": "complete row multiset"
+  }
+]

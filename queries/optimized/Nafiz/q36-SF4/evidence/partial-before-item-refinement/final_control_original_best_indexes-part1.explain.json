@@ -1,0 +1,338 @@
+{
+  "query_block": {
+    "select_id": 1,
+    "cost": 107.304472,
+    "filesort": {
+      "sort_key": "hierarchy.lochierarchy desc, case when hierarchy.lochierarchy = 0 then hierarchy.i_category end, rank() over ( partition by hierarchy.lochierarchy,case when hierarchy.lochierarchy = 0 then hierarchy.i_category end order by hierarchy.gross_margin)",
+      "window_functions_computation": {
+        "sorts": [
+          {
+            "filesort": {
+              "sort_key": "hierarchy.lochierarchy, case when hierarchy.lochierarchy = 0 then hierarchy.i_category end, hierarchy.gross_margin"
+            }
+          }
+        ],
+        "temporary_table": {
+          "nested_loop": [
+            {
+              "table": {
+                "table_name": "<derived3>",
+                "access_type": "ALL",
+                "loops": 1,
+                "rows": 2401151,
+                "cost": 107.304472,
+                "filtered": 100,
+                "materialized": {
+                  "query_block": {
+                    "union_result": {
+                      "query_specifications": [
+                        {
+                          "query_block": {
+                            "select_id": 3,
+                            "cost": 6182.713996,
+                            "filesort": {
+                              "sort_key": "item.i_category, item.i_class",
+                              "temporary_table": {
+                                "nested_loop": [
+                                  {
+                                    "table": {
+                                      "table_name": "d1",
+                                      "access_type": "ref",
+                                      "possible_keys": [
+                                        "PRIMARY",
+                                        "idx_date_dim_d_date_year",
+                                        "idx_date_dim_d_month_seq",
+                                        "idx_date_year_moy",
+                                        "idx_date_year_sk_day",
+                                        "inx_date_dim_year",
+                                        "idx_date_year_sk",
+                                        "idx_date_ym"
+                                      ],
+                                      "key": "idx_date_year_moy",
+                                      "key_length": "9",
+                                      "used_key_parts": ["d_year"],
+                                      "ref": ["const"],
+                                      "loops": 1,
+                                      "rows": 365,
+                                      "cost": 0.056005145,
+                                      "filtered": 100,
+                                      "using_index": true
+                                    }
+                                  },
+                                  {
+                                    "table": {
+                                      "table_name": "store_sales",
+                                      "access_type": "ref",
+                                      "possible_keys": [
+                                        "PRIMARY",
+                                        "idx_ss_date_addr_item_price",
+                                        "idx_ss_date_cust",
+                                        "idx_ss_date_item_store_cover",
+                                        "idx_ss_item_sk",
+                                        "idx_ss_q78",
+                                        "idx_ss_sold_date_sk",
+                                        "idx_ss_store_hdemo_time",
+                                        "idx_ss_date_store_price",
+                                        "idx_ss_q61",
+                                        "idx_ss_sold_date_sk_store_sales_price",
+                                        "idx_ss_store_sk",
+                                        "idx_nf_q36_date_cover"
+                                      ],
+                                      "key": "idx_nf_q36_date_cover",
+                                      "key_length": "9",
+                                      "used_key_parts": ["ss_sold_date_sk"],
+                                      "ref": ["tpcds.d1.d_date_sk"],
+                                      "loops": 365,
+                                      "rows": 6455,
+                                      "cost": 353.2217402,
+                                      "filtered": 100,
+                                      "attached_condition": "store_sales.ss_store_sk is not null",
+                                      "using_index": true
+                                    }
+                                  },
+                                  {
+                                    "table": {
+                                      "table_name": "item",
+                                      "access_type": "eq_ref",
+                                      "possible_keys": ["PRIMARY"],
+                                      "key": "PRIMARY",
+                                      "key_length": "8",
+                                      "used_key_parts": ["i_item_sk"],
+                                      "ref": ["tpcds.store_sales.ss_item_sk"],
+                                      "loops": 2356075,
+                                      "rows": 1,
+                                      "cost": 2108.784939,
+                                      "filtered": 100
+                                    }
+                                  },
+                                  {
+                                    "table": {
+                                      "table_name": "store",
+                                      "access_type": "eq_ref",
+                                      "possible_keys": ["PRIMARY"],
+                                      "key": "PRIMARY",
+                                      "key_length": "8",
+                                      "used_key_parts": ["s_store_sk"],
+                                      "ref": ["tpcds.store_sales.ss_store_sk"],
+                                      "loops": 2356075,
+                                      "rows": 1,
+                                      "cost": 2107.369361,
+                                      "filtered": 100,
+                                      "attached_condition": "store.s_state = 'TN'"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "query_block": {
+                            "select_id": 4,
+                            "operation": "UNION",
+                            "cost": 6182.713996,
+                            "filesort": {
+                              "sort_key": "item.i_category",
+                              "temporary_table": {
+                                "nested_loop": [
+                                  {
+                                    "table": {
+                                      "table_name": "d1",
+                                      "access_type": "ref",
+                                      "possible_keys": [
+                                        "PRIMARY",
+                                        "idx_date_dim_d_date_year",
+                                        "idx_date_dim_d_month_seq",
+                                        "idx_date_year_moy",
+                                        "idx_date_year_sk_day",
+                                        "inx_date_dim_year",
+                                        "idx_date_year_sk",
+                                        "idx_date_ym"
+                                      ],
+                                      "key": "idx_date_year_moy",
+                                      "key_length": "9",
+                                      "used_key_parts": ["d_year"],
+                                      "ref": ["const"],
+                                      "loops": 1,
+                                      "rows": 365,
+                                      "cost": 0.056005145,
+                                      "filtered": 100,
+                                      "using_index": true
+                                    }
+                                  },
+                                  {
+                                    "table": {
+                                      "table_name": "store_sales",
+                                      "access_type": "ref",
+                                      "possible_keys": [
+                                        "PRIMARY",
+                                        "idx_ss_date_addr_item_price",
+                                        "idx_ss_date_cust",
+                                        "idx_ss_date_item_store_cover",
+                                        "idx_ss_item_sk",
+                                        "idx_ss_q78",
+                                        "idx_ss_sold_date_sk",
+                                        "idx_ss_store_hdemo_time",
+                                        "idx_ss_date_store_price",
+                                        "idx_ss_q61",
+                                        "idx_ss_sold_date_sk_store_sales_price",
+                                        "idx_ss_store_sk",
+                                        "idx_nf_q36_date_cover"
+                                      ],
+                                      "key": "idx_nf_q36_date_cover",
+                                      "key_length": "9",
+                                      "used_key_parts": ["ss_sold_date_sk"],
+                                      "ref": ["tpcds.d1.d_date_sk"],
+                                      "loops": 365,
+                                      "rows": 6455,
+                                      "cost": 353.2217402,
+                                      "filtered": 100,
+                                      "attached_condition": "store_sales.ss_store_sk is not null",
+                                      "using_index": true
+                                    }
+                                  },
+                                  {
+                                    "table": {
+                                      "table_name": "item",
+                                      "access_type": "eq_ref",
+                                      "possible_keys": ["PRIMARY"],
+                                      "key": "PRIMARY",
+                                      "key_length": "8",
+                                      "used_key_parts": ["i_item_sk"],
+                                      "ref": ["tpcds.store_sales.ss_item_sk"],
+                                      "loops": 2356075,
+                                      "rows": 1,
+                                      "cost": 2108.784939,
+                                      "filtered": 100
+                                    }
+                                  },
+                                  {
+                                    "table": {
+                                      "table_name": "store",
+                                      "access_type": "eq_ref",
+                                      "possible_keys": ["PRIMARY"],
+                                      "key": "PRIMARY",
+                                      "key_length": "8",
+                                      "used_key_parts": ["s_store_sk"],
+                                      "ref": ["tpcds.store_sales.ss_store_sk"],
+                                      "loops": 2356075,
+                                      "rows": 1,
+                                      "cost": 2107.369361,
+                                      "filtered": 100,
+                                      "attached_condition": "store.s_state = 'TN'"
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        },
+                        {
+                          "query_block": {
+                            "select_id": 5,
+                            "operation": "UNION",
+                            "cost": 4569.432046,
+                            "having_condition": "count(0) > 0",
+                            "nested_loop": [
+                              {
+                                "table": {
+                                  "table_name": "d1",
+                                  "access_type": "ref",
+                                  "possible_keys": [
+                                    "PRIMARY",
+                                    "idx_date_dim_d_date_year",
+                                    "idx_date_dim_d_month_seq",
+                                    "idx_date_year_moy",
+                                    "idx_date_year_sk_day",
+                                    "inx_date_dim_year",
+                                    "idx_date_year_sk",
+                                    "idx_date_ym"
+                                  ],
+                                  "key": "idx_date_year_moy",
+                                  "key_length": "9",
+                                  "used_key_parts": ["d_year"],
+                                  "ref": ["const"],
+                                  "loops": 1,
+                                  "rows": 365,
+                                  "cost": 0.056005145,
+                                  "filtered": 100,
+                                  "using_index": true
+                                }
+                              },
+                              {
+                                "table": {
+                                  "table_name": "store_sales",
+                                  "access_type": "ref",
+                                  "possible_keys": [
+                                    "PRIMARY",
+                                    "idx_ss_date_addr_item_price",
+                                    "idx_ss_date_cust",
+                                    "idx_ss_date_item_store_cover",
+                                    "idx_ss_item_sk",
+                                    "idx_ss_q78",
+                                    "idx_ss_sold_date_sk",
+                                    "idx_ss_store_hdemo_time",
+                                    "idx_ss_date_store_price",
+                                    "idx_ss_q61",
+                                    "idx_ss_sold_date_sk_store_sales_price",
+                                    "idx_ss_store_sk",
+                                    "idx_nf_q36_date_cover"
+                                  ],
+                                  "key": "idx_nf_q36_date_cover",
+                                  "key_length": "9",
+                                  "used_key_parts": ["ss_sold_date_sk"],
+                                  "ref": ["tpcds.d1.d_date_sk"],
+                                  "loops": 365,
+                                  "rows": 6455,
+                                  "cost": 353.2217402,
+                                  "filtered": 100,
+                                  "attached_condition": "store_sales.ss_store_sk is not null",
+                                  "using_index": true
+                                }
+                              },
+                              {
+                                "table": {
+                                  "table_name": "item",
+                                  "access_type": "eq_ref",
+                                  "possible_keys": ["PRIMARY"],
+                                  "key": "PRIMARY",
+                                  "key_length": "8",
+                                  "used_key_parts": ["i_item_sk"],
+                                  "ref": ["tpcds.store_sales.ss_item_sk"],
+                                  "loops": 2356075,
+                                  "rows": 1,
+                                  "cost": 2108.784939,
+                                  "filtered": 100
+                                }
+                              },
+                              {
+                                "table": {
+                                  "table_name": "store",
+                                  "access_type": "eq_ref",
+                                  "possible_keys": ["PRIMARY"],
+                                  "key": "PRIMARY",
+                                  "key_length": "8",
+                                  "used_key_parts": ["s_store_sk"],
+                                  "ref": ["tpcds.store_sales.ss_store_sk"],
+                                  "loops": 2356075,
+                                  "rows": 1,
+                                  "cost": 2107.369361,
+                                  "filtered": 100,
+                                  "attached_condition": "store.s_state = 'TN'"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

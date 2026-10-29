@@ -1,0 +1,6 @@
+label,reason,stage
+bounds,"Less than 3% exploratory improvement, or slower",screening speed
+disjoint_union,"Less than 3% exploratory improvement, or slower",screening speed
+selective_union,"Less than 3% exploratory improvement, or slower",screening speed
+selective_cover,"Less than 3% exploratory improvement, or slower",screening speed
+all_cover,"Less than 3% exploratory improvement, or slower",screening speed

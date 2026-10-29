@@ -1,0 +1,14 @@
+[
+  {
+    "name": "idx_nf_q34_hd_date_cover",
+    "table": "store_sales",
+    "columns": "ss_hdemo_sk,ss_sold_date_sk,ss_store_sk,ss_customer_sk",
+    "build_seconds": 12.88068687300256
+  },
+  {
+    "name": "idx_nf_q34_date_hd_cover",
+    "table": "store_sales",
+    "columns": "ss_sold_date_sk,ss_hdemo_sk,ss_store_sk,ss_customer_sk",
+    "build_seconds": 12.864953160998994
+  }
+]

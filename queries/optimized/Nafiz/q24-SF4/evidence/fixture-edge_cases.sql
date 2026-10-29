@@ -1,0 +1,12 @@
+CREATE TEMPORARY TABLE nf_tmp_store_sales LIKE tpcds.store_sales;
+CREATE TEMPORARY TABLE nf_tmp_store_returns LIKE tpcds.store_returns;
+CREATE TEMPORARY TABLE nf_tmp_store LIKE tpcds.store;
+CREATE TEMPORARY TABLE nf_tmp_item LIKE tpcds.item;
+CREATE TEMPORARY TABLE nf_tmp_customer LIKE tpcds.customer;
+CREATE TEMPORARY TABLE nf_tmp_customer_address LIKE tpcds.customer_address;
+INSERT INTO nf_tmp_store (s_store_sk,s_store_id,s_store_name,s_state,s_zip,s_market_id) VALUES (1,'S1','Twin','TN','12345',10),(2,'S2','Twin','CA','12345',10),(3,'S3','Other','TN','12345',9);
+INSERT INTO nf_tmp_customer_address (ca_address_sk,ca_address_id,ca_state,ca_zip,ca_country) VALUES (1,'A1','TN','12345','United States'),(2,'A2','CA','12345','United States'),(3,'A3','TN','99999','United States');
+INSERT INTO nf_tmp_customer (c_customer_sk,c_customer_id,c_last_name,c_first_name,c_current_addr_sk,c_birth_country) VALUES (1,'C1','Alpha','A',1,'FRANCE'),(2,'C2','Alpha','A',2,'FRANCE'),(3,'C3','Low','B',1,'FRANCE'),(4,'C4','Excluded','X',1,'UNITED STATES'),(5,'C5','Null','N',1,NULL),(6,'C6','Wrongzip','W',3,'FRANCE');
+INSERT INTO nf_tmp_item (i_item_sk,i_item_id,i_color,i_current_price,i_manager_id,i_units,i_size) VALUES (1,'I1','sky',10,1,'Each','S'),(2,'I2','sky',10,1,'Each','S'),(3,'I3','slate',20,2,'Each','M'),(4,'I4','red',30,3,'Each','L'),(5,'I5','sky',NULL,NULL,NULL,NULL);
+INSERT INTO nf_tmp_store_sales (ss_item_sk,ss_ticket_number,ss_customer_sk,ss_store_sk,ss_ext_sales_price) VALUES (1,1,1,1,600),(2,2,1,1,400),(1,3,2,2,100),(3,4,1,1,500),(4,5,1,1,1000),(1,6,3,1,10),(5,7,3,1,NULL),(1,8,4,1,10000),(1,9,5,1,10000),(1,10,6,1,10000),(1,11,1,3,10000),(99,12,1,1,10000),(1,13,99,1,10000),(1,14,1,99,10000),(1,15,1,1,30000);
+INSERT INTO nf_tmp_store_returns (sr_item_sk,sr_ticket_number) VALUES (1,1),(2,2),(1,3),(3,4),(4,5),(1,6),(5,7),(1,8),(1,9),(1,10),(1,11),(99,12),(1,13),(1,14);

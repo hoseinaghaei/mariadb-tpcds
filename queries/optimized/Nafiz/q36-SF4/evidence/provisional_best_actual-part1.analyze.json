@@ -1,0 +1,348 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.690446595
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 6.051134497,
+    "r_loops": 1,
+    "r_total_time_ms": 1228.282897,
+    "filesort": {
+      "sort_key": "hierarchy.lochierarchy desc, case when hierarchy.lochierarchy = 0 then hierarchy.i_category end, rank() over ( partition by hierarchy.lochierarchy,case when hierarchy.lochierarchy = 0 then hierarchy.i_category end order by hierarchy.gross_margin)",
+      "r_loops": 1,
+      "r_total_time_ms": 0.02168547,
+      "r_limit": 100,
+      "r_used_priority_queue": true,
+      "r_output_rows": 101,
+      "r_sort_mode": "sort_key,rowid",
+      "window_functions_computation": {
+        "sorts": [
+          {
+            "filesort": {
+              "sort_key": "hierarchy.lochierarchy, case when hierarchy.lochierarchy = 0 then hierarchy.i_category end, hierarchy.gross_margin",
+              "r_loops": 1,
+              "r_total_time_ms": 0.022998202,
+              "r_used_priority_queue": false,
+              "r_output_rows": 137,
+              "r_buffer_size": "37KiB",
+              "r_sort_mode": "packed_sort_key,rowid"
+            }
+          }
+        ],
+        "temporary_table": {
+          "nested_loop": [
+            {
+              "table": {
+                "table_name": "<derived7>",
+                "access_type": "ALL",
+                "loops": 1,
+                "r_loops": 1,
+                "rows": 135195,
+                "r_rows": 137,
+                "cost": 6.051134497,
+                "r_table_time_ms": 0.024315804,
+                "r_other_time_ms": 0.086097688,
+                "filtered": 100,
+                "r_total_filtered": 100,
+                "r_filtered": 100,
+                "materialized": {
+                  "query_block": {
+                    "select_id": 7,
+                    "cost": 14.58904702,
+                    "r_loops": 1,
+                    "r_total_time_ms": 1228.150081,
+                    "filesort": {
+                      "sort_key": "levels.lev, case when levels.lev < 2 then leaf.i_category end, case when levels.lev = 0 then leaf.i_class end",
+                      "r_loops": 1,
+                      "r_total_time_ms": 0.028840103,
+                      "r_used_priority_queue": false,
+                      "r_output_rows": 137,
+                      "r_buffer_size": "61KiB",
+                      "r_sort_mode": "packed_sort_key,rowid",
+                      "temporary_table": {
+                        "nested_loop": [
+                          {
+                            "table": {
+                              "table_name": "<derived4>",
+                              "access_type": "ALL",
+                              "loops": 1,
+                              "r_loops": 1,
+                              "rows": 3,
+                              "r_rows": 3,
+                              "cost": 0.010134054,
+                              "r_table_time_ms": 0.013639334,
+                              "r_other_time_ms": 0.00341679,
+                              "filtered": 100,
+                              "r_total_filtered": 100,
+                              "r_filtered": 100,
+                              "materialized": {
+                                "query_block": {
+                                  "union_result": {
+                                    "query_specifications": [
+                                      {
+                                        "query_block": {
+                                          "select_id": 4,
+                                          "table": {
+                                            "message": "No tables used"
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "query_block": {
+                                          "select_id": 5,
+                                          "operation": "UNION",
+                                          "table": {
+                                            "message": "No tables used"
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "query_block": {
+                                          "select_id": 6,
+                                          "operation": "UNION",
+                                          "table": {
+                                            "message": "No tables used"
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "block-nl-join": {
+                              "table": {
+                                "table_name": "<derived3>",
+                                "access_type": "ALL",
+                                "loops": 3,
+                                "r_loops": 1,
+                                "rows": 45065,
+                                "r_rows": 125,
+                                "cost": 14.57891297,
+                                "r_table_time_ms": 0.034212078,
+                                "r_other_time_ms": 0.04609832,
+                                "filtered": 100,
+                                "r_total_filtered": 100,
+                                "r_filtered": 100
+                              },
+                              "buffer_type": "flat",
+                              "buffer_size": "54",
+                              "join_type": "BNL",
+                              "r_loops": 3,
+                              "r_filtered": 100,
+                              "r_unpack_time_ms": 0.006685402,
+                              "r_other_time_ms": 0.180715264,
+                              "r_effective_rows": 125,
+                              "materialized": {
+                                "query_block": {
+                                  "select_id": 3,
+                                  "cost": 3111.984773,
+                                  "r_loops": 1,
+                                  "r_total_time_ms": 1227.832799,
+                                  "filesort": {
+                                    "sort_key": "item.i_category, item.i_class",
+                                    "r_loops": 1,
+                                    "r_total_time_ms": 0.036958241,
+                                    "r_used_priority_queue": false,
+                                    "r_output_rows": 125,
+                                    "r_buffer_size": "55KiB",
+                                    "r_sort_mode": "packed_sort_key,rowid",
+                                    "temporary_table": {
+                                      "nested_loop": [
+                                        {
+                                          "table": {
+                                            "table_name": "item",
+                                            "access_type": "ALL",
+                                            "possible_keys": ["PRIMARY"],
+                                            "loops": 1,
+                                            "r_loops": 1,
+                                            "rows": 45065,
+                                            "r_rows": 46000,
+                                            "cost": 8.803605,
+                                            "r_table_time_ms": 7.262016025,
+                                            "r_other_time_ms": 1.288665593,
+                                            "r_engine_stats": {
+                                              "pages_accessed": 820
+                                            },
+                                            "filtered": 100,
+                                            "r_total_filtered": 100,
+                                            "r_filtered": 100
+                                          }
+                                        },
+                                        {
+                                          "table": {
+                                            "table_name": "<derived2>",
+                                            "access_type": "ref",
+                                            "possible_keys": ["key0"],
+                                            "key": "key0",
+                                            "key_length": "8",
+                                            "used_key_parts": ["ss_item_sk"],
+                                            "ref": ["tpcds.item.i_item_sk"],
+                                            "loops": 45065,
+                                            "r_loops": 46000,
+                                            "rows": 1,
+                                            "r_rows": 0.500021739,
+                                            "cost": 3073.019414,
+                                            "r_table_time_ms": 4.471857033,
+                                            "r_other_time_ms": 25.92778014,
+                                            "filtered": 100,
+                                            "r_total_filtered": 100,
+                                            "r_filtered": 100,
+                                            "materialized": {
+                                              "query_block": {
+                                                "select_id": 2,
+                                                "cost": 0.212956015,
+                                                "r_loops": 1,
+                                                "r_total_time_ms": 1191.831388,
+                                                "filesort": {
+                                                  "sort_key": "store_sales.ss_item_sk",
+                                                  "r_loops": 1,
+                                                  "r_total_time_ms": 1.15336863,
+                                                  "r_used_priority_queue": false,
+                                                  "r_output_rows": 23001,
+                                                  "r_buffer_size": "539KiB",
+                                                  "r_sort_mode": "sort_key,rowid",
+                                                  "temporary_table": {
+                                                    "nested_loop": [
+                                                      {
+                                                        "table": {
+                                                          "table_name": "d1",
+                                                          "access_type": "ref",
+                                                          "possible_keys": [
+                                                            "PRIMARY",
+                                                            "idx_date_dim_d_date_year",
+                                                            "idx_date_dim_d_month_seq",
+                                                            "idx_date_year_moy",
+                                                            "idx_date_year_sk_day",
+                                                            "inx_date_dim_year",
+                                                            "idx_date_year_sk",
+                                                            "idx_date_ym"
+                                                          ],
+                                                          "key": "idx_date_year_moy",
+                                                          "key_length": "9",
+                                                          "used_key_parts": [
+                                                            "d_year"
+                                                          ],
+                                                          "ref": ["const"],
+                                                          "loops": 1,
+                                                          "r_loops": 1,
+                                                          "rows": 365,
+                                                          "r_rows": 365,
+                                                          "cost": 0.056005145,
+                                                          "r_table_time_ms": 0.139297074,
+                                                          "r_other_time_ms": 0.155275256,
+                                                          "r_engine_stats": {
+                                                            "pages_accessed": 22
+                                                          },
+                                                          "filtered": 100,
+                                                          "r_total_filtered": 100,
+                                                          "attached_condition": "d1.d_date_sk between 2451911 and 2452275",
+                                                          "r_filtered": 100,
+                                                          "using_index": true
+                                                        }
+                                                      },
+                                                      {
+                                                        "table": {
+                                                          "table_name": "store_sales",
+                                                          "access_type": "ref",
+                                                          "possible_keys": [
+                                                            "PRIMARY",
+                                                            "idx_ss_date_addr_item_price",
+                                                            "idx_ss_date_cust",
+                                                            "idx_ss_date_item_store_cover",
+                                                            "idx_ss_item_sk",
+                                                            "idx_ss_q78",
+                                                            "idx_ss_sold_date_sk",
+                                                            "idx_ss_store_hdemo_time",
+                                                            "idx_ss_date_store_price",
+                                                            "idx_ss_q61",
+                                                            "idx_ss_sold_date_sk_store_sales_price",
+                                                            "idx_ss_store_sk",
+                                                            "idx_nf_q36_date_cover"
+                                                          ],
+                                                          "key": "idx_nf_q36_date_cover",
+                                                          "key_length": "9",
+                                                          "used_key_parts": [
+                                                            "ss_sold_date_sk"
+                                                          ],
+                                                          "ref": [
+                                                            "tpcds.d1.d_date_sk"
+                                                          ],
+                                                          "loops": 365,
+                                                          "r_loops": 365,
+                                                          "rows": 5783,
+                                                          "r_rows": 5997.863014,
+                                                          "cost": 317.8538534,
+                                                          "r_table_time_ms": 205.4097631,
+                                                          "r_other_time_ms": 83.06831075,
+                                                          "r_engine_stats": {
+                                                            "pages_accessed": 4327
+                                                          },
+                                                          "filtered": 99.34290314,
+                                                          "r_total_filtered": 97.63276418,
+                                                          "attached_condition": "store_sales.ss_store_sk is not null",
+                                                          "r_filtered": 97.63276418,
+                                                          "using_index": true
+                                                        }
+                                                      },
+                                                      {
+                                                        "table": {
+                                                          "table_name": "store",
+                                                          "access_type": "eq_ref",
+                                                          "possible_keys": [
+                                                            "PRIMARY"
+                                                          ],
+                                                          "key": "PRIMARY",
+                                                          "key_length": "8",
+                                                          "used_key_parts": [
+                                                            "s_store_sk"
+                                                          ],
+                                                          "ref": [
+                                                            "tpcds.store_sales.ss_store_sk"
+                                                          ],
+                                                          "loops": 2096925,
+                                                          "r_loops": 2137396,
+                                                          "r_table_loops": 2031517,
+                                                          "rows": 1,
+                                                          "r_rows": 1,
+                                                          "cost": 1875.575235,
+                                                          "r_table_time_ms": 513.2113467,
+                                                          "r_other_time_ms": 385.6135331,
+                                                          "r_engine_stats": {
+                                                            "pages_accessed": 2031517
+                                                          },
+                                                          "filtered": 100,
+                                                          "r_total_filtered": 100,
+                                                          "attached_condition": "store.s_state = 'TN'",
+                                                          "r_filtered": 100
+                                                        }
+                                                      }
+                                                    ]
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

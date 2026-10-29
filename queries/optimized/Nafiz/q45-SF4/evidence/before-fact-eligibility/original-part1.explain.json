@@ -1,0 +1,146 @@
+{
+  "query_block": {
+    "select_id": 1,
+    "cost": 2627.172889,
+    "filesort": {
+      "sort_key": "customer_address.ca_zip, customer_address.ca_county",
+      "temporary_table": {
+        "nested_loop": [
+          {
+            "table": {
+              "table_name": "date_dim",
+              "access_type": "ref",
+              "possible_keys": [
+                "PRIMARY",
+                "idx_date_dim_d_date_year",
+                "idx_date_dim_d_month_seq",
+                "idx_date_year_moy",
+                "idx_date_year_sk_day",
+                "inx_date_dim_year",
+                "idx_date_year_sk",
+                "idx_date_ym"
+              ],
+              "key": "idx_date_year_moy",
+              "key_length": "9",
+              "used_key_parts": ["d_year"],
+              "ref": ["const"],
+              "loops": 1,
+              "rows": 365,
+              "cost": 0.96308672,
+              "filtered": 100,
+              "attached_condition": "date_dim.d_qoy = 1"
+            }
+          },
+          {
+            "block-nl-join": {
+              "table": {
+                "table_name": "web_sales",
+                "access_type": "ref",
+                "possible_keys": [
+                  "PRIMARY",
+                  "idx_ws_date_addr_item_price",
+                  "idx_ws_date_cust",
+                  "idx_ws_date_item_cust",
+                  "idx_ws_date_item_price",
+                  "idx_ws_sold_date_ext_price",
+                  "idx_ws_bill_customer_sk",
+                  "idx_ws_cust_date",
+                  "idx_ws_date_item_paid",
+                  "idx_ws_item_sk",
+                  "idx_ws_sold_date_sk"
+                ],
+                "key": "idx_ws_date_item_price",
+                "key_length": "9",
+                "used_key_parts": ["ws_sold_date_sk"],
+                "ref": ["tpcds.date_dim.d_date_sk"],
+                "loops": 365,
+                "rows": 1605,
+                "cost": 650.7882952,
+                "filtered": 100
+              },
+              "buffer_type": "flat",
+              "buffer_size": "13760KiB",
+              "join_type": "BKAH",
+              "mrr_type": "Rowid-ordered scan",
+              "attached_condition": "web_sales.ws_bill_customer_sk is not null"
+            }
+          },
+          {
+            "table": {
+              "table_name": "customer",
+              "access_type": "eq_ref",
+              "possible_keys": ["PRIMARY", "idx_c_addr", "idx_c_current_addr_sk"],
+              "key": "PRIMARY",
+              "key_length": "8",
+              "used_key_parts": ["c_customer_sk"],
+              "ref": ["tpcds.web_sales.ws_bill_customer_sk"],
+              "loops": 585825,
+              "rows": 1,
+              "cost": 526.9786698,
+              "filtered": 100,
+              "attached_condition": "customer.c_current_addr_sk is not null"
+            }
+          },
+          {
+            "table": {
+              "table_name": "customer_address",
+              "access_type": "eq_ref",
+              "possible_keys": ["PRIMARY"],
+              "key": "PRIMARY",
+              "key_length": "8",
+              "used_key_parts": ["ca_address_sk"],
+              "ref": ["tpcds.customer.c_current_addr_sk"],
+              "loops": 585825,
+              "rows": 1,
+              "cost": 525.0879562,
+              "filtered": 100
+            }
+          },
+          {
+            "table": {
+              "table_name": "item",
+              "access_type": "eq_ref",
+              "possible_keys": ["PRIMARY"],
+              "key": "PRIMARY",
+              "key_length": "8",
+              "used_key_parts": ["i_item_sk"],
+              "ref": ["tpcds.web_sales.ws_item_sk"],
+              "loops": 585825,
+              "rows": 1,
+              "cost": 525.402529,
+              "filtered": 100,
+              "attached_condition": "substr(customer_address.ca_zip,1,5) in ('85669','86197','88274','83405','86475','85392','85460','80348','81792') or <in_optimizer>(item.i_item_id,item.i_item_id in (subquery#2))"
+            }
+          }
+        ],
+        "subqueries": [
+          {
+            "materialization": {
+              "query_block": {
+                "select_id": 2,
+                "cost": 0.02611952,
+                "nested_loop": [
+                  {
+                    "table": {
+                      "table_name": "item",
+                      "access_type": "range",
+                      "possible_keys": ["PRIMARY"],
+                      "key": "PRIMARY",
+                      "key_length": "8",
+                      "used_key_parts": ["i_item_sk"],
+                      "loops": 1,
+                      "rows": 10,
+                      "cost": 0.02611952,
+                      "filtered": 100,
+                      "attached_condition": "item.i_item_sk in (2,3,5,7,11,13,17,19,23,29)"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

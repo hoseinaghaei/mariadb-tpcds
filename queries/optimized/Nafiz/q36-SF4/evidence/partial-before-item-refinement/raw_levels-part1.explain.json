@@ -1,0 +1,180 @@
+{
+  "query_block": {
+    "select_id": 1,
+    "cost": 1049.105197,
+    "filesort": {
+      "sort_key": "hierarchy.lochierarchy desc, case when hierarchy.lochierarchy = 0 then hierarchy.i_category end, rank() over ( partition by hierarchy.lochierarchy,case when hierarchy.lochierarchy = 0 then hierarchy.i_category end order by hierarchy.gross_margin)",
+      "window_functions_computation": {
+        "sorts": [
+          {
+            "filesort": {
+              "sort_key": "hierarchy.lochierarchy, case when hierarchy.lochierarchy = 0 then hierarchy.i_category end, hierarchy.gross_margin"
+            }
+          }
+        ],
+        "temporary_table": {
+          "nested_loop": [
+            {
+              "table": {
+                "table_name": "<derived6>",
+                "access_type": "ALL",
+                "loops": 1,
+                "rows": 4712150,
+                "cost": 1049.105197,
+                "filtered": 100,
+                "materialized": {
+                  "query_block": {
+                    "select_id": 6,
+                    "cost": 13261.88279,
+                    "filesort": {
+                      "sort_key": "levels.lev, case when levels.lev < 2 then item.i_category end, case when levels.lev = 0 then item.i_class end",
+                      "temporary_table": {
+                        "nested_loop": [
+                          {
+                            "table": {
+                              "table_name": "<derived3>",
+                              "access_type": "ALL",
+                              "loops": 1,
+                              "rows": 2,
+                              "cost": 0.010089369,
+                              "filtered": 100,
+                              "materialized": {
+                                "query_block": {
+                                  "union_result": {
+                                    "query_specifications": [
+                                      {
+                                        "query_block": {
+                                          "select_id": 3,
+                                          "table": {
+                                            "message": "No tables used"
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "query_block": {
+                                          "select_id": 4,
+                                          "operation": "UNION",
+                                          "table": {
+                                            "message": "No tables used"
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "query_block": {
+                                          "select_id": 5,
+                                          "operation": "UNION",
+                                          "table": {
+                                            "message": "No tables used"
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          {
+                            "table": {
+                              "table_name": "d1",
+                              "access_type": "ref",
+                              "possible_keys": [
+                                "PRIMARY",
+                                "idx_date_dim_d_date_year",
+                                "idx_date_dim_d_month_seq",
+                                "idx_date_year_moy",
+                                "idx_date_year_sk_day",
+                                "inx_date_dim_year",
+                                "idx_date_year_sk",
+                                "idx_date_ym"
+                              ],
+                              "key": "idx_date_year_moy",
+                              "key_length": "9",
+                              "used_key_parts": ["d_year"],
+                              "ref": ["const"],
+                              "loops": 2,
+                              "rows": 365,
+                              "cost": 0.11037189,
+                              "filtered": 100,
+                              "using_index": true
+                            }
+                          },
+                          {
+                            "block-nl-join": {
+                              "table": {
+                                "table_name": "store_sales",
+                                "access_type": "ref",
+                                "possible_keys": [
+                                  "PRIMARY",
+                                  "idx_ss_date_addr_item_price",
+                                  "idx_ss_date_cust",
+                                  "idx_ss_date_item_store_cover",
+                                  "idx_ss_item_sk",
+                                  "idx_ss_q78",
+                                  "idx_ss_sold_date_sk",
+                                  "idx_ss_store_hdemo_time",
+                                  "idx_ss_date_store_price",
+                                  "idx_ss_q61",
+                                  "idx_ss_sold_date_sk_store_sales_price",
+                                  "idx_ss_store_sk"
+                                ],
+                                "key": "idx_ss_sold_date_sk",
+                                "key_length": "9",
+                                "used_key_parts": ["ss_sold_date_sk"],
+                                "ref": ["tpcds.d1.d_date_sk"],
+                                "loops": 730,
+                                "rows": 6455,
+                                "cost": 4830.872584,
+                                "filtered": 100
+                              },
+                              "buffer_type": "flat",
+                              "buffer_size": "63MiB",
+                              "join_type": "BKAH",
+                              "mrr_type": "Rowid-ordered scan",
+                              "attached_condition": "store_sales.ss_store_sk is not null"
+                            }
+                          },
+                          {
+                            "table": {
+                              "table_name": "item",
+                              "access_type": "eq_ref",
+                              "possible_keys": ["PRIMARY"],
+                              "key": "PRIMARY",
+                              "key_length": "8",
+                              "used_key_parts": ["i_item_sk"],
+                              "ref": ["tpcds.store_sales.ss_item_sk"],
+                              "loops": 4712150,
+                              "rows": 1,
+                              "cost": 4216.152662,
+                              "filtered": 100
+                            }
+                          },
+                          {
+                            "table": {
+                              "table_name": "store",
+                              "access_type": "eq_ref",
+                              "possible_keys": ["PRIMARY"],
+                              "key": "PRIMARY",
+                              "key_length": "8",
+                              "used_key_parts": ["s_store_sk"],
+                              "ref": ["tpcds.store_sales.ss_store_sk"],
+                              "loops": 4712150,
+                              "rows": 1,
+                              "cost": 4214.737084,
+                              "filtered": 100,
+                              "attached_condition": "store.s_state = 'TN'"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

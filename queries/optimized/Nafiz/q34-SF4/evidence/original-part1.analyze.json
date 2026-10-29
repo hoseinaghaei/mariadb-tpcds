@@ -1,0 +1,213 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.314741584
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 1750.564704,
+    "r_loops": 1,
+    "r_total_time_ms": 7084.661731,
+    "filesort": {
+      "sort_key": "customer.c_last_name, customer.c_first_name, customer.c_salutation, customer.c_preferred_cust_flag desc, dn.ss_ticket_number",
+      "r_loops": 1,
+      "r_total_time_ms": 0.447914315,
+      "r_used_priority_queue": false,
+      "r_output_rows": 1872,
+      "r_buffer_size": "514KiB",
+      "r_sort_mode": "packed_sort_key,rowid",
+      "temporary_table": {
+        "nested_loop": [
+          {
+            "table": {
+              "table_name": "customer",
+              "access_type": "ALL",
+              "possible_keys": ["PRIMARY"],
+              "loops": 1,
+              "r_loops": 1,
+              "rows": 231185,
+              "r_rows": 233000,
+              "cost": 40.751553,
+              "r_table_time_ms": 23.46974791,
+              "r_other_time_ms": 4.580769613,
+              "r_engine_stats": {
+                "pages_accessed": 1813
+              },
+              "filtered": 100,
+              "r_total_filtered": 100,
+              "r_filtered": 100
+            }
+          },
+          {
+            "table": {
+              "table_name": "<derived2>",
+              "access_type": "ref",
+              "possible_keys": ["key0"],
+              "key": "key0",
+              "key_length": "9",
+              "used_key_parts": ["ss_customer_sk"],
+              "ref": ["tpcds.customer.c_customer_sk"],
+              "loops": 231185,
+              "r_loops": 233000,
+              "rows": 54,
+              "r_rows": 0.008034335,
+              "cost": 1709.813151,
+              "r_table_time_ms": 9.605525781,
+              "r_other_time_ms": 3.750237748,
+              "filtered": 100,
+              "r_total_filtered": 100,
+              "attached_condition": "dn.cnt between 15 and 20",
+              "r_filtered": 100,
+              "materialized": {
+                "query_block": {
+                  "select_id": 2,
+                  "cost": 0.286935873,
+                  "r_loops": 1,
+                  "r_total_time_ms": 7043.062741,
+                  "having_condition": "cnt between 15 and 20",
+                  "filesort": {
+                    "sort_key": "store_sales.ss_ticket_number, store_sales.ss_customer_sk",
+                    "r_loops": 1,
+                    "r_total_time_ms": 0.4546105,
+                    "r_used_priority_queue": false,
+                    "r_output_rows": 1872,
+                    "r_buffer_size": "655KiB",
+                    "r_sort_mode": "sort_key,rowid",
+                    "temporary_table": {
+                      "nested_loop": [
+                        {
+                          "table": {
+                            "table_name": "store_sales",
+                            "access_type": "ALL",
+                            "possible_keys": [
+                              "idx_ss_date_addr_item_price",
+                              "idx_ss_date_cust",
+                              "idx_ss_date_item_store_cover",
+                              "idx_ss_q78",
+                              "idx_ss_sold_date_sk",
+                              "idx_ss_store_hdemo_time",
+                              "idx_ss_cust_date",
+                              "idx_ss_customer_sk",
+                              "idx_ss_date_store_price",
+                              "idx_ss_hdemo_sk",
+                              "idx_ss_q61",
+                              "idx_ss_sold_date_sk_store_sales_price",
+                              "idx_ss_store_sk"
+                            ],
+                            "loops": 1,
+                            "r_loops": 1,
+                            "rows": 12665572,
+                            "r_rows": 11516885,
+                            "cost": 2208.05378,
+                            "r_table_time_ms": 1397.771444,
+                            "r_other_time_ms": 386.0316699,
+                            "r_engine_stats": {
+                              "pages_accessed": 85310
+                            },
+                            "filtered": 100,
+                            "r_total_filtered": 92.13528658,
+                            "attached_condition": "store_sales.ss_sold_date_sk is not null and store_sales.ss_hdemo_sk is not null and store_sales.ss_store_sk is not null",
+                            "r_filtered": 92.13528658
+                          }
+                        },
+                        {
+                          "table": {
+                            "table_name": "date_dim",
+                            "access_type": "eq_ref",
+                            "possible_keys": [
+                              "PRIMARY",
+                              "idx_date_dim_d_date_year",
+                              "idx_date_dim_d_month_seq",
+                              "idx_date_year_moy",
+                              "idx_date_year_sk_day",
+                              "inx_date_dim_year",
+                              "idx_date_year_sk",
+                              "idx_date_ym"
+                            ],
+                            "key": "PRIMARY",
+                            "key_length": "8",
+                            "used_key_parts": ["d_date_sk"],
+                            "ref": ["tpcds.store_sales.ss_sold_date_sk"],
+                            "loops": 12665572,
+                            "r_loops": 10611115,
+                            "r_table_loops": 10596114,
+                            "rows": 1,
+                            "r_rows": 1,
+                            "cost": 11329.48715,
+                            "r_table_time_ms": 3995.037319,
+                            "r_other_time_ms": 431.7912398,
+                            "r_engine_stats": {
+                              "pages_accessed": 21335700
+                            },
+                            "filtered": 1.512078643,
+                            "r_total_filtered": 13.66160861,
+                            "attached_condition": "(date_dim.d_dom between 1 and 3 or date_dim.d_dom between 25 and 28) and date_dim.d_year in (1998,<cache>(1998 + 1),<cache>(1998 + 2))",
+                            "r_filtered": 13.66160861
+                          }
+                        },
+                        {
+                          "table": {
+                            "table_name": "household_demographics",
+                            "access_type": "eq_ref",
+                            "possible_keys": [
+                              "PRIMARY",
+                              "idx_hd_demo_sk_buy_potential"
+                            ],
+                            "key": "PRIMARY",
+                            "key_length": "8",
+                            "used_key_parts": ["hd_demo_sk"],
+                            "ref": ["tpcds.store_sales.ss_hdemo_sk"],
+                            "loops": 191513.4157,
+                            "r_loops": 1449649,
+                            "r_table_loops": 1449474,
+                            "rows": 1,
+                            "r_rows": 1,
+                            "cost": 171.3267508,
+                            "r_table_time_ms": 538.7668911,
+                            "r_other_time_ms": 152.4304639,
+                            "r_engine_stats": {
+                              "pages_accessed": 2905483
+                            },
+                            "filtered": 100,
+                            "r_total_filtered": 14.580495,
+                            "attached_condition": "(household_demographics.hd_buy_potential = '>10000' or household_demographics.hd_buy_potential = 'Unknown') and household_demographics.hd_vehicle_count > 0 and case when household_demographics.hd_vehicle_count > 0 then household_demographics.hd_dep_count / household_demographics.hd_vehicle_count else NULL end > 1.2",
+                            "r_filtered": 14.580495
+                          }
+                        },
+                        {
+                          "table": {
+                            "table_name": "store",
+                            "access_type": "eq_ref",
+                            "possible_keys": ["PRIMARY"],
+                            "key": "PRIMARY",
+                            "key_length": "8",
+                            "used_key_parts": ["s_store_sk"],
+                            "ref": ["tpcds.store_sales.ss_store_sk"],
+                            "loops": 191513.4157,
+                            "r_loops": 211366,
+                            "r_table_loops": 201568,
+                            "rows": 1,
+                            "r_rows": 1,
+                            "cost": 171.298898,
+                            "r_table_time_ms": 60.64393752,
+                            "r_other_time_ms": 79.78108165,
+                            "r_engine_stats": {
+                              "pages_accessed": 201568
+                            },
+                            "filtered": 100,
+                            "r_total_filtered": 100,
+                            "attached_condition": "store.s_county = 'Williamson County'",
+                            "r_filtered": 100
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

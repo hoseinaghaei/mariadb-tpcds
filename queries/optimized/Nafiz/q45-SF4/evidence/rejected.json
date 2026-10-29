@@ -1,0 +1,27 @@
+[
+  {
+    "label": "bounds",
+    "reason": "Less than 3% exploratory improvement, or slower",
+    "stage": "screening speed"
+  },
+  {
+    "label": "disjoint_union",
+    "reason": "Less than 3% exploratory improvement, or slower",
+    "stage": "screening speed"
+  },
+  {
+    "label": "selective_union",
+    "reason": "Less than 3% exploratory improvement, or slower",
+    "stage": "screening speed"
+  },
+  {
+    "label": "selective_cover",
+    "reason": "Less than 3% exploratory improvement, or slower",
+    "stage": "screening speed"
+  },
+  {
+    "label": "all_cover",
+    "reason": "Less than 3% exploratory improvement, or slower",
+    "stage": "screening speed"
+  }
+]

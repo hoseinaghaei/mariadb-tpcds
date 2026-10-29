@@ -1,0 +1,464 @@
+{
+  "versions": [
+    {
+      "version": "v0_original",
+      "trial_label": "final_original",
+      "method": "Original",
+      "index_profile": "team95",
+      "runs": 7,
+      "median_seconds": 6.837074069000664,
+      "min_seconds": 6.813122093997663,
+      "max_seconds": 7.052778372999455,
+      "speedup_vs_reference_original": 1.0,
+      "reduction_percent": 0.0,
+      "exact_result_match": true,
+      "rows": 1872,
+      "days": 0,
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 6,
+      "milliseconds": 837,
+      "ticks_100ns": 68370741,
+      "total_days": 7.913280172454473e-05,
+      "total_hours": 0.0018991872413890733,
+      "total_minutes": 0.1139512344833444,
+      "total_seconds": 6.837074069000664,
+      "total_milliseconds": 6837.074069000664,
+      "output_sha256": "0d06db3ec41e09e41c924a7248e9dd5c9fbc0ad4ca637fc16fcf94c1d7af2a14"
+    },
+    {
+      "version": "v1_no_split",
+      "trial_label": "final_no_split",
+      "method": "Materialize ticket groups once",
+      "index_profile": "team95",
+      "runs": 7,
+      "median_seconds": 5.117325504004839,
+      "min_seconds": 5.008048497998971,
+      "max_seconds": 5.260247029997117,
+      "speedup_vs_reference_original": 1.3360639387996607,
+      "reduction_percent": 25.153282641666497,
+      "exact_result_match": true,
+      "rows": 1872,
+      "days": 0,
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 5,
+      "milliseconds": 117,
+      "ticks_100ns": 51173255,
+      "total_days": 5.922830444450045e-05,
+      "total_hours": 0.0014214793066680109,
+      "total_minutes": 0.08528875840008064,
+      "total_seconds": 5.117325504004839,
+      "total_milliseconds": 5117.325504004839,
+      "output_sha256": "0d06db3ec41e09e41c924a7248e9dd5c9fbc0ad4ca637fc16fcf94c1d7af2a14"
+    },
+    {
+      "version": "v2_bounds",
+      "trial_label": "final_bounds",
+      "method": "Date bounds + simplification",
+      "index_profile": "team95",
+      "runs": 7,
+      "median_seconds": 5.08194917000219,
+      "min_seconds": 5.037432429002365,
+      "max_seconds": 5.228358152999135,
+      "speedup_vs_reference_original": 1.345364512765821,
+      "reduction_percent": 25.67070184241854,
+      "exact_result_match": true,
+      "rows": 1872,
+      "days": 0,
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 5,
+      "milliseconds": 81,
+      "ticks_100ns": 50819492,
+      "total_days": 5.8818856134284605e-05,
+      "total_hours": 0.0014116525472228306,
+      "total_minutes": 0.08469915283336983,
+      "total_seconds": 5.08194917000219,
+      "total_milliseconds": 5081.94917000219,
+      "output_sha256": "0d06db3ec41e09e41c924a7248e9dd5c9fbc0ad4ca637fc16fcf94c1d7af2a14"
+    },
+    {
+      "version": "v3_date_first",
+      "trial_label": "final_date_first",
+      "method": "Date-first ticket groups",
+      "index_profile": "team95",
+      "runs": 7,
+      "median_seconds": 2.271366578002926,
+      "min_seconds": 2.1531370129960123,
+      "max_seconds": 2.3203328370000236,
+      "speedup_vs_reference_original": 3.010114763162574,
+      "reduction_percent": 66.77867527717278,
+      "exact_result_match": true,
+      "rows": 1872,
+      "days": 0,
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 2,
+      "milliseconds": 271,
+      "ticks_100ns": 22713666,
+      "total_days": 2.6288965023182014e-05,
+      "total_hours": 0.0006309351605563683,
+      "total_minutes": 0.0378561096333821,
+      "total_seconds": 2.271366578002926,
+      "total_milliseconds": 2271.366578002926,
+      "output_sha256": "0d06db3ec41e09e41c924a7248e9dd5c9fbc0ad4ca637fc16fcf94c1d7af2a14"
+    },
+    {
+      "version": "v4_hd_first",
+      "trial_label": "final_hd_first",
+      "method": "Household-first groups",
+      "index_profile": "team95",
+      "runs": 7,
+      "median_seconds": 2.189998192996427,
+      "min_seconds": 2.0443915520008886,
+      "max_seconds": 2.2420647730032215,
+      "speedup_vs_reference_original": 3.121954205654369,
+      "reduction_percent": 67.96878063781857,
+      "exact_result_match": true,
+      "rows": 1872,
+      "days": 0,
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 2,
+      "milliseconds": 189,
+      "ticks_100ns": 21899982,
+      "total_days": 2.5347201307829015e-05,
+      "total_hours": 0.0006083328313878964,
+      "total_minutes": 0.03649996988327378,
+      "total_seconds": 2.189998192996427,
+      "total_milliseconds": 2189.998192996427,
+      "output_sha256": "0d06db3ec41e09e41c924a7248e9dd5c9fbc0ad4ca637fc16fcf94c1d7af2a14"
+    },
+    {
+      "version": "v5_date_index",
+      "trial_label": "final_date_index",
+      "method": "Date covering",
+      "index_profile": "team95 + idx_nf_q34_date_hd_cover",
+      "runs": 7,
+      "median_seconds": 1.5989259709967882,
+      "min_seconds": 1.581130196005688,
+      "max_seconds": 1.6216916359990137,
+      "speedup_vs_reference_original": 4.276041663603948,
+      "reduction_percent": 76.61388548873079,
+      "exact_result_match": true,
+      "rows": 1872,
+      "days": 0,
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 1,
+      "milliseconds": 598,
+      "ticks_100ns": 15989260,
+      "total_days": 1.8506087627277642e-05,
+      "total_hours": 0.0004441461030546634,
+      "total_minutes": 0.026648766183279805,
+      "total_seconds": 1.5989259709967882,
+      "total_milliseconds": 1598.9259709967882,
+      "output_sha256": "0d06db3ec41e09e41c924a7248e9dd5c9fbc0ad4ca637fc16fcf94c1d7af2a14"
+    },
+    {
+      "version": "v6_bounded_date_cover",
+      "trial_label": "final_bounded_date_cover",
+      "method": "Bounds + date cover",
+      "index_profile": "team95 + idx_nf_q34_date_hd_cover",
+      "runs": 7,
+      "median_seconds": 1.1438819800023339,
+      "min_seconds": 1.1239309939992381,
+      "max_seconds": 1.173591363003652,
+      "speedup_vs_reference_original": 5.977079968500521,
+      "reduction_percent": 83.26942243921707,
+      "exact_result_match": true,
+      "rows": 1872,
+      "days": 0,
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 1,
+      "milliseconds": 143,
+      "ticks_100ns": 11438820,
+      "total_days": 1.323937476854553e-05,
+      "total_hours": 0.00031774499444509275,
+      "total_minutes": 0.019064699666705563,
+      "total_seconds": 1.1438819800023339,
+      "total_milliseconds": 1143.8819800023339,
+      "output_sha256": "0d06db3ec41e09e41c924a7248e9dd5c9fbc0ad4ca637fc16fcf94c1d7af2a14"
+    },
+    {
+      "version": "v7_date_cover",
+      "trial_label": "final_date_cover",
+      "method": "Date first + cover",
+      "index_profile": "team95 + idx_nf_q34_date_hd_cover",
+      "runs": 7,
+      "median_seconds": 0.36601186000189045,
+      "min_seconds": 0.360163052995631,
+      "max_seconds": 0.3729466430013417,
+      "speedup_vs_reference_original": 18.679924931846063,
+      "reduction_percent": 94.64665942904743,
+      "exact_result_match": true,
+      "rows": 1872,
+      "days": 0,
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 0,
+      "milliseconds": 366,
+      "ticks_100ns": 3660119,
+      "total_days": 4.23624837965151e-06,
+      "total_hours": 0.00010166996111163623,
+      "total_minutes": 0.006100197666698174,
+      "total_seconds": 0.36601186000189045,
+      "total_milliseconds": 366.01186000189045,
+      "output_sha256": "0d06db3ec41e09e41c924a7248e9dd5c9fbc0ad4ca637fc16fcf94c1d7af2a14"
+    },
+    {
+      "version": "v8_hd_index",
+      "trial_label": "final_hd_index",
+      "method": "Household covering",
+      "index_profile": "team95 + idx_nf_q34_hd_date_cover",
+      "runs": 7,
+      "median_seconds": 0.3374290139981895,
+      "min_seconds": 0.33153630000015255,
+      "max_seconds": 0.34640338600001996,
+      "speedup_vs_reference_original": 20.26225898000979,
+      "reduction_percent": 95.06471612574603,
+      "exact_result_match": true,
+      "rows": 1872,
+      "days": 0,
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 0,
+      "milliseconds": 337,
+      "ticks_100ns": 3374290,
+      "total_days": 3.9054284027568225e-06,
+      "total_hours": 9.373028166616374e-05,
+      "total_minutes": 0.005623816899969825,
+      "total_seconds": 0.3374290139981895,
+      "total_milliseconds": 337.4290139981895,
+      "output_sha256": "0d06db3ec41e09e41c924a7248e9dd5c9fbc0ad4ca637fc16fcf94c1d7af2a14"
+    },
+    {
+      "version": "v9_hd_cover",
+      "trial_label": "final_hd_cover",
+      "method": "Household first + cover",
+      "index_profile": "team95 + idx_nf_q34_hd_date_cover",
+      "runs": 7,
+      "median_seconds": 0.3044202960008988,
+      "min_seconds": 0.29648257399821887,
+      "max_seconds": 0.30526717199973064,
+      "speedup_vs_reference_original": 22.459324029369178,
+      "reduction_percent": 95.54750624421135,
+      "exact_result_match": true,
+      "rows": 1872,
+      "days": 0,
+      "hours": 0,
+      "minutes": 0,
+      "seconds": 0,
+      "milliseconds": 304,
+      "ticks_100ns": 3044203,
+      "total_days": 3.5233830555659587e-06,
+      "total_hours": 8.456119333358301e-05,
+      "total_minutes": 0.0050736716000149805,
+      "total_seconds": 0.3044202960008988,
+      "total_milliseconds": 304.4202960008988,
+      "output_sha256": "0d06db3ec41e09e41c924a7248e9dd5c9fbc0ad4ca637fc16fcf94c1d7af2a14"
+    }
+  ],
+  "best_extra_index_bytes": 627015680,
+  "validation": {
+    "all_timed_outputs_exact": true,
+    "persistent_statistics_unchanged": true,
+    "q24_both_parts_verified": false,
+    "final_repetitions": 7,
+    "exploratory_repetitions": 3,
+    "metadata_unchanged_during_measurements": true
+  },
+  "fixtures": [
+    {
+      "case": "empty",
+      "label": "original",
+      "match": true,
+      "rows_by_part": [
+        0
+      ],
+      "comparison": "exact ordered bytes per result set"
+    },
+    {
+      "case": "empty",
+      "label": "bounds",
+      "match": true,
+      "rows_by_part": [
+        0
+      ],
+      "comparison": "exact ordered bytes per result set"
+    },
+    {
+      "case": "empty",
+      "label": "no_split",
+      "match": true,
+      "rows_by_part": [
+        0
+      ],
+      "comparison": "exact ordered bytes per result set"
+    },
+    {
+      "case": "empty",
+      "label": "date_first",
+      "match": true,
+      "rows_by_part": [
+        0
+      ],
+      "comparison": "exact ordered bytes per result set"
+    },
+    {
+      "case": "empty",
+      "label": "hd_first",
+      "match": true,
+      "rows_by_part": [
+        0
+      ],
+      "comparison": "exact ordered bytes per result set"
+    },
+    {
+      "case": "empty",
+      "label": "hd_index",
+      "match": true,
+      "rows_by_part": [
+        0
+      ],
+      "comparison": "exact ordered bytes per result set"
+    },
+    {
+      "case": "empty",
+      "label": "date_index",
+      "match": true,
+      "rows_by_part": [
+        0
+      ],
+      "comparison": "exact ordered bytes per result set"
+    },
+    {
+      "case": "empty",
+      "label": "hd_cover",
+      "match": true,
+      "rows_by_part": [
+        0
+      ],
+      "comparison": "exact ordered bytes per result set"
+    },
+    {
+      "case": "empty",
+      "label": "date_cover",
+      "match": true,
+      "rows_by_part": [
+        0
+      ],
+      "comparison": "exact ordered bytes per result set"
+    },
+    {
+      "case": "empty",
+      "label": "bounded_date_cover",
+      "match": true,
+      "rows_by_part": [
+        0
+      ],
+      "comparison": "exact ordered bytes per result set"
+    },
+    {
+      "case": "edge_cases",
+      "label": "original",
+      "match": true,
+      "rows_by_part": [
+        5
+      ],
+      "comparison": "exact ordered bytes per result set"
+    },
+    {
+      "case": "edge_cases",
+      "label": "bounds",
+      "match": true,
+      "rows_by_part": [
+        5
+      ],
+      "comparison": "exact ordered bytes per result set"
+    },
+    {
+      "case": "edge_cases",
+      "label": "no_split",
+      "match": true,
+      "rows_by_part": [
+        5
+      ],
+      "comparison": "exact ordered bytes per result set"
+    },
+    {
+      "case": "edge_cases",
+      "label": "date_first",
+      "match": true,
+      "rows_by_part": [
+        5
+      ],
+      "comparison": "exact ordered bytes per result set"
+    },
+    {
+      "case": "edge_cases",
+      "label": "hd_first",
+      "match": true,
+      "rows_by_part": [
+        5
+      ],
+      "comparison": "exact ordered bytes per result set"
+    },
+    {
+      "case": "edge_cases",
+      "label": "hd_index",
+      "match": true,
+      "rows_by_part": [
+        5
+      ],
+      "comparison": "exact ordered bytes per result set"
+    },
+    {
+      "case": "edge_cases",
+      "label": "date_index",
+      "match": true,
+      "rows_by_part": [
+        5
+      ],
+      "comparison": "exact ordered bytes per result set"
+    },
+    {
+      "case": "edge_cases",
+      "label": "hd_cover",
+      "match": true,
+      "rows_by_part": [
+        5
+      ],
+      "comparison": "exact ordered bytes per result set"
+    },
+    {
+      "case": "edge_cases",
+      "label": "date_cover",
+      "match": true,
+      "rows_by_part": [
+        5
+      ],
+      "comparison": "exact ordered bytes per result set"
+    },
+    {
+      "case": "edge_cases",
+      "label": "bounded_date_cover",
+      "match": true,
+      "rows_by_part": [
+        5
+      ],
+      "comparison": "exact ordered bytes per result set"
+    }
+  ],
+  "unlimited_checks": [],
+  "original_same_index_control": {
+    "median_seconds": 0.3362888080009725,
+    "min_seconds": 0.3299234919977607,
+    "max_seconds": 0.34273047700116877,
+    "indexes": [
+      "idx_nf_q34_hd_date_cover"
+    ]
+  }
+}

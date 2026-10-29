@@ -1,0 +1,1 @@
+Incomplete first batch: original hit the server 180-second limit during round 5, after earlier runs around 12 seconds. Persistent statistics remained unchanged. No final table uses these partial trials. The full study is restarted with an additional aggregate-before-item method; the timeout is preserved rather than assigned a fabricated runtime.
