@@ -1,0 +1,10 @@
+{
+  "sf4_ordered_limit100_exact": true,
+  "rows": 100,
+  "full_canonical_exact": true,
+  "full_rows": 53434,
+  "full_order": "all seven projected columns for tie-independent complete comparison",
+  "fixture_retained_passed": true,
+  "historical_null_neighbor_rejected": true,
+  "output_sha256": "e1e8114f1238f2cc4b201f1c3251c1f0515fe7da1f94d8cf62c47586ff04a894"
+}

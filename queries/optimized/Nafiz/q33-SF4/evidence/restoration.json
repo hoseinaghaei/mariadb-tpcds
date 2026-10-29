@@ -1,0 +1,14 @@
+{
+  "secondary_indexes": 167,
+  "ignored_indexes": 0,
+  "removed_only_experiment_owned_indexes": [
+    [
+      "item",
+      "idx_nf_q33_item_cover"
+    ],
+    [
+      "item",
+      "idx_nf_q33_book_manufact"
+    ]
+  ]
+}

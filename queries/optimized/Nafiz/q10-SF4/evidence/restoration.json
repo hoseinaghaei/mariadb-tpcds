@@ -1,0 +1,14 @@
+{
+  "secondary_indexes": 167,
+  "ignored_indexes": 0,
+  "removed_only_experiment_owned_indexes": [
+    [
+      "customer_address",
+      "idx_nf_q10_county"
+    ],
+    [
+      "customer",
+      "idx_nf_q10_addr_demo"
+    ]
+  ]
+}

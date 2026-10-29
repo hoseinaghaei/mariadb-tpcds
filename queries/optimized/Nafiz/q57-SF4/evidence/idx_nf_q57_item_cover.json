@@ -1,0 +1,6 @@
+{
+  "table": "item",
+  "columns": "i_item_sk,i_category,i_brand",
+  "bytes": 7372800,
+  "build_seconds": 0.24214085299900034
+}

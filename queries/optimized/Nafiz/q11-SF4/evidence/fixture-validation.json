@@ -1,0 +1,62 @@
+[
+  {
+    "label": "year_filter",
+    "exact_match": true,
+    "reason": "Matched original"
+  },
+  {
+    "label": "narrow_years",
+    "exact_match": true,
+    "reason": "Matched original"
+  },
+  {
+    "label": "late_customer",
+    "exact_match": true,
+    "reason": "Matched original"
+  },
+  {
+    "label": "late_customer_range",
+    "exact_match": true,
+    "reason": "Matched original"
+  },
+  {
+    "label": "original_split_off",
+    "exact_match": true,
+    "reason": "Matched original"
+  },
+  {
+    "label": "late_split_off",
+    "exact_match": true,
+    "reason": "Matched original"
+  },
+  {
+    "label": "historical_pivot",
+    "exact_match": false,
+    "reason": "Pivot loses original cross-group combinations when business IDs repeat"
+  },
+  {
+    "label": "historical_pivot_split_off",
+    "exact_match": false,
+    "reason": "Pivot loses original cross-group combinations when business IDs repeat"
+  },
+  {
+    "label": "repeat_late",
+    "exact_match": true,
+    "reason": "Matched original"
+  },
+  {
+    "label": "repeat_late_range",
+    "exact_match": true,
+    "reason": "Matched original"
+  },
+  {
+    "label": "repeat_late_split_off",
+    "exact_match": true,
+    "reason": "Matched original"
+  },
+  {
+    "label": "repeat_range_split_off",
+    "exact_match": true,
+    "reason": "Matched original"
+  }
+]

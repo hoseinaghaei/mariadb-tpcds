@@ -1,0 +1,80 @@
+[
+  {
+    "label": "original",
+    "exact_match": true,
+    "rows": 2,
+    "sha256": "1b0d655d44804e861fd0e0b57c09c0cb4d1e52770360da96e7d09ecea99e971d"
+  },
+  {
+    "label": "date_range",
+    "exact_match": true,
+    "rows": 2,
+    "sha256": "1b0d655d44804e861fd0e0b57c09c0cb4d1e52770360da96e7d09ecea99e971d"
+  },
+  {
+    "label": "zip_store_first",
+    "exact_match": true,
+    "rows": 2,
+    "sha256": "1b0d655d44804e861fd0e0b57c09c0cb4d1e52770360da96e7d09ecea99e971d"
+  },
+  {
+    "label": "filtered_group",
+    "exact_match": true,
+    "rows": 2,
+    "sha256": "1b0d655d44804e861fd0e0b57c09c0cb4d1e52770360da96e7d09ecea99e971d"
+  },
+  {
+    "label": "weighted_prefix",
+    "exact_match": true,
+    "rows": 2,
+    "sha256": "1b0d655d44804e861fd0e0b57c09c0cb4d1e52770360da96e7d09ecea99e971d"
+  },
+  {
+    "label": "filtered_range",
+    "exact_match": true,
+    "rows": 2,
+    "sha256": "1b0d655d44804e861fd0e0b57c09c0cb4d1e52770360da96e7d09ecea99e971d"
+  },
+  {
+    "label": "filtered_no_order_hint",
+    "exact_match": true,
+    "rows": 2,
+    "sha256": "1b0d655d44804e861fd0e0b57c09c0cb4d1e52770360da96e7d09ecea99e971d"
+  },
+  {
+    "label": "filtered_address_first",
+    "exact_match": true,
+    "rows": 2,
+    "sha256": "1b0d655d44804e861fd0e0b57c09c0cb4d1e52770360da96e7d09ecea99e971d"
+  },
+  {
+    "label": "prefix_ranges",
+    "exact_match": true,
+    "rows": 2,
+    "sha256": "1b0d655d44804e861fd0e0b57c09c0cb4d1e52770360da96e7d09ecea99e971d"
+  },
+  {
+    "label": "store_pushdown",
+    "exact_match": true,
+    "rows": 2,
+    "sha256": "1b0d655d44804e861fd0e0b57c09c0cb4d1e52770360da96e7d09ecea99e971d"
+  },
+  {
+    "label": "prefix_and_store",
+    "exact_match": true,
+    "rows": 2,
+    "sha256": "1b0d655d44804e861fd0e0b57c09c0cb4d1e52770360da96e7d09ecea99e971d"
+  },
+  {
+    "label": "prefix_ordered_address",
+    "exact_match": true,
+    "rows": 2,
+    "sha256": "1b0d655d44804e861fd0e0b57c09c0cb4d1e52770360da96e7d09ecea99e971d"
+  },
+  {
+    "label": "prefix_no_order_hint",
+    "exact_match": true,
+    "rows": 2,
+    "sha256": "1b0d655d44804e861fd0e0b57c09c0cb4d1e52770360da96e7d09ecea99e971d"
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "secondary_indexes": 167,
+  "ignored_indexes": 0,
+  "removed_only_experiment_owned_indexes": [
+    [
+      "store_sales",
+      "idx_nf_q11_ss_cover"
+    ],
+    [
+      "web_sales",
+      "idx_nf_q11_ws_cover"
+    ]
+  ]
+}

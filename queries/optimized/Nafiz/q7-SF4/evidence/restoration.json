@@ -1,0 +1,23 @@
+{
+  "reference_secondary_indexes": 167,
+  "ignored_indexes": 0,
+  "removed_only_experiment_owned_indexes": [
+    [
+      "store_sales",
+      "idx_nf_q7_demo_cover"
+    ],
+    [
+      "store_sales",
+      "idx_nf_q7_date_cover"
+    ],
+    [
+      "store_sales",
+      "idx_nf_q7_item_cover"
+    ],
+    [
+      "item",
+      "idx_nf_q7_item_id"
+    ]
+  ],
+  "completed_utc": "2026-10-29T13:09:01.510177+00:00"
+}

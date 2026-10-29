@@ -1,0 +1,6 @@
+{
+  "table": "customer_address",
+  "columns": "ca_county",
+  "build_seconds": 0.14714482899944414,
+  "bytes": 5275648
+}

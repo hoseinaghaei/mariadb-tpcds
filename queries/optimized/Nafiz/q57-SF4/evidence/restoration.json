@@ -1,0 +1,14 @@
+{
+  "secondary_indexes": 167,
+  "ignored_indexes": 0,
+  "removed_only_experiment_owned_indexes": [
+    [
+      "catalog_sales",
+      "idx_nf_q57_catalog_cover"
+    ],
+    [
+      "item",
+      "idx_nf_q57_item_cover"
+    ]
+  ]
+}

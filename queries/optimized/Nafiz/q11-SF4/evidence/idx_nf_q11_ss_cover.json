@@ -1,0 +1,6 @@
+{
+  "table": "store_sales",
+  "columns": "ss_sold_date_sk,ss_customer_sk,ss_ext_list_price,ss_ext_discount_amt",
+  "bytes": 536674304,
+  "build_seconds": 21.791436105002504
+}

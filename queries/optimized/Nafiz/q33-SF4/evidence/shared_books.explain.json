@@ -1,0 +1,477 @@
+{
+  "query_block": {
+    "select_id": 1,
+    "cost": 6.064807985,
+    "filesort": {
+      "sort_key": "sum(channel_totals.total_sales)",
+      "temporary_table": {
+        "nested_loop": [
+          {
+            "table": {
+              "table_name": "<derived3>",
+              "access_type": "ALL",
+              "loops": 1,
+              "rows": 135501,
+              "cost": 6.064807985,
+              "filtered": 100,
+              "materialized": {
+                "query_block": {
+                  "union_result": {
+                    "query_specifications": [
+                      {
+                        "query_block": {
+                          "select_id": 3,
+                          "cost": 542.2836231,
+                          "filesort": {
+                            "sort_key": "i.i_manufact_id",
+                            "temporary_table": {
+                              "nested_loop": [
+                                {
+                                  "table": {
+                                    "table_name": "d",
+                                    "access_type": "ref",
+                                    "possible_keys": [
+                                      "PRIMARY",
+                                      "idx_date_dim_d_date_year",
+                                      "idx_date_dim_d_month_seq",
+                                      "idx_date_year_moy",
+                                      "idx_date_year_sk_day",
+                                      "inx_date_dim_year",
+                                      "idx_date_year_sk",
+                                      "idx_date_ym"
+                                    ],
+                                    "key": "idx_date_year_moy",
+                                    "key_length": "18",
+                                    "used_key_parts": ["d_year", "d_moy"],
+                                    "ref": ["const", "const"],
+                                    "loops": 1,
+                                    "rows": 31,
+                                    "cost": 0.007012355,
+                                    "filtered": 100,
+                                    "using_index": true
+                                  }
+                                },
+                                {
+                                  "table": {
+                                    "table_name": "f",
+                                    "access_type": "ref",
+                                    "possible_keys": [
+                                      "PRIMARY",
+                                      "idx_ss_date_addr_item_price",
+                                      "idx_ss_date_cust",
+                                      "idx_ss_date_item_store_cover",
+                                      "idx_ss_item_sk",
+                                      "idx_ss_q78",
+                                      "idx_ss_sold_date_sk",
+                                      "idx_ss_addr_sk",
+                                      "idx_ss_date_store_price",
+                                      "idx_ss_date_store_profit",
+                                      "idx_ss_sold_date_sk_store_sales_price"
+                                    ],
+                                    "key": "idx_ss_date_addr_item_price",
+                                    "key_length": "9",
+                                    "used_key_parts": ["ss_sold_date_sk"],
+                                    "ref": ["tpcds.d.d_date_sk"],
+                                    "loops": 31,
+                                    "rows": 6086,
+                                    "cost": 28.26983093,
+                                    "filtered": 100,
+                                    "attached_condition": "f.ss_addr_sk is not null",
+                                    "using_index": true
+                                  }
+                                },
+                                {
+                                  "table": {
+                                    "table_name": "a",
+                                    "access_type": "eq_ref",
+                                    "possible_keys": ["PRIMARY", "idx_ca_gmt"],
+                                    "key": "idx_ca_gmt",
+                                    "key_length": "12",
+                                    "used_key_parts": [
+                                      "ca_gmt_offset",
+                                      "ca_address_sk"
+                                    ],
+                                    "ref": ["const", "tpcds.f.ss_addr_sk"],
+                                    "loops": 188666,
+                                    "rows": 1,
+                                    "cost": 165.0638825,
+                                    "filtered": 100,
+                                    "using_index": true
+                                  }
+                                },
+                                {
+                                  "table": {
+                                    "table_name": "i",
+                                    "access_type": "eq_ref",
+                                    "possible_keys": ["PRIMARY"],
+                                    "key": "PRIMARY",
+                                    "key_length": "8",
+                                    "used_key_parts": ["i_item_sk"],
+                                    "ref": ["tpcds.f.ss_item_sk"],
+                                    "loops": 188666,
+                                    "rows": 1,
+                                    "cost": 170.167633,
+                                    "filtered": 100,
+                                    "attached_condition": "i.i_manufact_id is not null"
+                                  }
+                                },
+                                {
+                                  "table": {
+                                    "table_name": "<derived2>",
+                                    "access_type": "ref",
+                                    "possible_keys": ["key0"],
+                                    "key": "key0",
+                                    "key_length": "9",
+                                    "used_key_parts": ["i_manufact_id"],
+                                    "ref": ["tpcds.i.i_manufact_id"],
+                                    "loops": 188666,
+                                    "rows": 1,
+                                    "cost": 51.4480862,
+                                    "filtered": 100,
+                                    "materialized": {
+                                      "query_block": {
+                                        "select_id": 2,
+                                        "cost": 5.95475064,
+                                        "temporary_table": {
+                                          "nested_loop": [
+                                            {
+                                              "table": {
+                                                "table_name": "item",
+                                                "access_type": "ref",
+                                                "possible_keys": [
+                                                  "idx_item_1",
+                                                  "idx_item_2",
+                                                  "idx_item_cat",
+                                                  "idx_item_category_id"
+                                                ],
+                                                "key": "idx_item_1",
+                                                "key_length": "201",
+                                                "used_key_parts": ["i_category"],
+                                                "ref": ["const"],
+                                                "loops": 1,
+                                                "rows": 4533,
+                                                "cost": 5.95475064,
+                                                "filtered": 100,
+                                                "index_condition": "item.i_category = 'Books'",
+                                                "attached_condition": "item.i_category <=> 'Books'"
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "query_block": {
+                          "select_id": 4,
+                          "operation": "UNION",
+                          "cost": 265.6458409,
+                          "filesort": {
+                            "sort_key": "i.i_manufact_id",
+                            "temporary_table": {
+                              "nested_loop": [
+                                {
+                                  "table": {
+                                    "table_name": "d",
+                                    "access_type": "ref",
+                                    "possible_keys": [
+                                      "PRIMARY",
+                                      "idx_date_dim_d_date_year",
+                                      "idx_date_dim_d_month_seq",
+                                      "idx_date_year_moy",
+                                      "idx_date_year_sk_day",
+                                      "inx_date_dim_year",
+                                      "idx_date_year_sk",
+                                      "idx_date_ym"
+                                    ],
+                                    "key": "idx_date_year_moy",
+                                    "key_length": "18",
+                                    "used_key_parts": ["d_year", "d_moy"],
+                                    "ref": ["const", "const"],
+                                    "loops": 1,
+                                    "rows": 31,
+                                    "cost": 0.007012355,
+                                    "filtered": 100,
+                                    "using_index": true
+                                  }
+                                },
+                                {
+                                  "table": {
+                                    "table_name": "f",
+                                    "access_type": "ref",
+                                    "possible_keys": [
+                                      "PRIMARY",
+                                      "idx_cs_date_addr_item_price",
+                                      "idx_cs_date_cover",
+                                      "idx_cs_date_cust",
+                                      "idx_cs_date_customer",
+                                      "idx_cs_item_sk",
+                                      "idx_cs_sold_date_ext_price",
+                                      "idx_cs_bill_addr_sk",
+                                      "idx_cs_sold_date_sk"
+                                    ],
+                                    "key": "idx_cs_date_addr_item_price",
+                                    "key_length": "9",
+                                    "used_key_parts": ["cs_sold_date_sk"],
+                                    "ref": ["tpcds.d.d_date_sk"],
+                                    "loops": 31,
+                                    "rows": 2975,
+                                    "cost": 13.86391284,
+                                    "filtered": 100,
+                                    "attached_condition": "f.cs_bill_addr_sk is not null",
+                                    "using_index": true
+                                  }
+                                },
+                                {
+                                  "table": {
+                                    "table_name": "a",
+                                    "access_type": "eq_ref",
+                                    "possible_keys": ["PRIMARY", "idx_ca_gmt"],
+                                    "key": "idx_ca_gmt",
+                                    "key_length": "12",
+                                    "used_key_parts": [
+                                      "ca_gmt_offset",
+                                      "ca_address_sk"
+                                    ],
+                                    "ref": ["const", "tpcds.f.cs_bill_addr_sk"],
+                                    "loops": 92225,
+                                    "rows": 1,
+                                    "cost": 80.73538992,
+                                    "filtered": 100,
+                                    "using_index": true
+                                  }
+                                },
+                                {
+                                  "table": {
+                                    "table_name": "i",
+                                    "access_type": "eq_ref",
+                                    "possible_keys": ["PRIMARY"],
+                                    "key": "PRIMARY",
+                                    "key_length": "8",
+                                    "used_key_parts": ["i_item_sk"],
+                                    "ref": ["tpcds.f.cs_item_sk"],
+                                    "loops": 92225,
+                                    "rows": 1,
+                                    "cost": 83.906945,
+                                    "filtered": 100,
+                                    "attached_condition": "i.i_manufact_id is not null"
+                                  }
+                                },
+                                {
+                                  "table": {
+                                    "table_name": "<derived6>",
+                                    "access_type": "ref",
+                                    "possible_keys": ["key0"],
+                                    "key": "key0",
+                                    "key_length": "9",
+                                    "used_key_parts": ["i_manufact_id"],
+                                    "ref": ["tpcds.i.i_manufact_id"],
+                                    "loops": 92225,
+                                    "rows": 1,
+                                    "cost": 25.14920415,
+                                    "filtered": 100,
+                                    "materialized": {
+                                      "query_block": {
+                                        "select_id": 6,
+                                        "cost": 5.95475064,
+                                        "temporary_table": {
+                                          "nested_loop": [
+                                            {
+                                              "table": {
+                                                "table_name": "item",
+                                                "access_type": "ref",
+                                                "possible_keys": [
+                                                  "idx_item_1",
+                                                  "idx_item_2",
+                                                  "idx_item_cat",
+                                                  "idx_item_category_id"
+                                                ],
+                                                "key": "idx_item_1",
+                                                "key_length": "201",
+                                                "used_key_parts": ["i_category"],
+                                                "ref": ["const"],
+                                                "loops": 1,
+                                                "rows": 4533,
+                                                "cost": 5.95475064,
+                                                "filtered": 100,
+                                                "index_condition": "item.i_category = 'Books'",
+                                                "attached_condition": "item.i_category <=> 'Books'"
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "query_block": {
+                          "select_id": 5,
+                          "operation": "UNION",
+                          "cost": 137.8716914,
+                          "filesort": {
+                            "sort_key": "i.i_manufact_id",
+                            "temporary_table": {
+                              "nested_loop": [
+                                {
+                                  "table": {
+                                    "table_name": "d",
+                                    "access_type": "ref",
+                                    "possible_keys": [
+                                      "PRIMARY",
+                                      "idx_date_dim_d_date_year",
+                                      "idx_date_dim_d_month_seq",
+                                      "idx_date_year_moy",
+                                      "idx_date_year_sk_day",
+                                      "inx_date_dim_year",
+                                      "idx_date_year_sk",
+                                      "idx_date_ym"
+                                    ],
+                                    "key": "idx_date_year_moy",
+                                    "key_length": "18",
+                                    "used_key_parts": ["d_year", "d_moy"],
+                                    "ref": ["const", "const"],
+                                    "loops": 1,
+                                    "rows": 31,
+                                    "cost": 0.007012355,
+                                    "filtered": 100,
+                                    "using_index": true
+                                  }
+                                },
+                                {
+                                  "table": {
+                                    "table_name": "f",
+                                    "access_type": "ref",
+                                    "possible_keys": [
+                                      "PRIMARY",
+                                      "idx_ws_date_addr_item_price",
+                                      "idx_ws_date_cust",
+                                      "idx_ws_date_item_cust",
+                                      "idx_ws_date_item_price",
+                                      "idx_ws_sold_date_ext_price",
+                                      "idx_ws_bill_addr_sk",
+                                      "idx_ws_date_item_paid",
+                                      "idx_ws_item_sk",
+                                      "idx_ws_sold_date_sk"
+                                    ],
+                                    "key": "idx_ws_date_addr_item_price",
+                                    "key_length": "9",
+                                    "used_key_parts": ["ws_sold_date_sk"],
+                                    "ref": ["tpcds.d.d_date_sk"],
+                                    "loops": 31,
+                                    "rows": 1558,
+                                    "cost": 7.26479885,
+                                    "filtered": 98.5879364,
+                                    "attached_condition": "f.ws_bill_addr_sk is not null",
+                                    "using_index": true
+                                  }
+                                },
+                                {
+                                  "table": {
+                                    "table_name": "a",
+                                    "access_type": "eq_ref",
+                                    "possible_keys": ["PRIMARY", "idx_ca_gmt"],
+                                    "key": "idx_ca_gmt",
+                                    "key_length": "12",
+                                    "used_key_parts": [
+                                      "ca_gmt_offset",
+                                      "ca_address_sk"
+                                    ],
+                                    "ref": ["const", "tpcds.f.ws_bill_addr_sk"],
+                                    "loops": 47616,
+                                    "rows": 1,
+                                    "cost": 41.72905728,
+                                    "filtered": 100,
+                                    "using_index": true
+                                  }
+                                },
+                                {
+                                  "table": {
+                                    "table_name": "i",
+                                    "access_type": "eq_ref",
+                                    "possible_keys": ["PRIMARY"],
+                                    "key": "PRIMARY",
+                                    "key_length": "8",
+                                    "used_key_parts": ["i_item_sk"],
+                                    "ref": ["tpcds.f.ws_item_sk"],
+                                    "loops": 47616,
+                                    "rows": 1,
+                                    "cost": 44.00687104,
+                                    "filtered": 100,
+                                    "attached_condition": "i.i_manufact_id is not null"
+                                  }
+                                },
+                                {
+                                  "table": {
+                                    "table_name": "<derived7>",
+                                    "access_type": "ref",
+                                    "possible_keys": ["key0"],
+                                    "key": "key0",
+                                    "key_length": "9",
+                                    "used_key_parts": ["i_manufact_id"],
+                                    "ref": ["tpcds.i.i_manufact_id"],
+                                    "loops": 47616,
+                                    "rows": 1,
+                                    "cost": 12.9845975,
+                                    "filtered": 100,
+                                    "materialized": {
+                                      "query_block": {
+                                        "select_id": 7,
+                                        "cost": 5.95475064,
+                                        "temporary_table": {
+                                          "nested_loop": [
+                                            {
+                                              "table": {
+                                                "table_name": "item",
+                                                "access_type": "ref",
+                                                "possible_keys": [
+                                                  "idx_item_1",
+                                                  "idx_item_2",
+                                                  "idx_item_cat",
+                                                  "idx_item_category_id"
+                                                ],
+                                                "key": "idx_item_1",
+                                                "key_length": "201",
+                                                "used_key_parts": ["i_category"],
+                                                "ref": ["const"],
+                                                "loops": 1,
+                                                "rows": 4533,
+                                                "cost": 5.95475064,
+                                                "filtered": 100,
+                                                "index_condition": "item.i_category = 'Books'",
+                                                "attached_condition": "item.i_category <=> 'Books'"
+                                              }
+                                            }
+                                          ]
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

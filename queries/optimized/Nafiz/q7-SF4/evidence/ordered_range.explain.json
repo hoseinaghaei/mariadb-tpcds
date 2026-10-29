@@ -1,0 +1,107 @@
+{
+  "query_block": {
+    "select_id": 1,
+    "cost": 21934.17247,
+    "nested_loop": [
+      {
+        "table": {
+          "table_name": "item",
+          "access_type": "index",
+          "key": "idx_nf_q7_item_id",
+          "key_length": "64",
+          "used_key_parts": ["i_item_id"],
+          "loops": 1,
+          "rows": 77,
+          "cost": 6.832096645,
+          "filtered": 100,
+          "using_index": true
+        }
+      },
+      {
+        "table": {
+          "table_name": "store_sales",
+          "access_type": "ref",
+          "possible_keys": ["idx_nf_q7_item_cover"],
+          "key": "idx_nf_q7_item_cover",
+          "key_length": "8",
+          "used_key_parts": ["ss_item_sk"],
+          "ref": ["tpcds.item.i_item_sk"],
+          "loops": 45065,
+          "rows": 255,
+          "cost": 1773.290084,
+          "filtered": 100,
+          "attached_condition": "store_sales.ss_sold_date_sk between 2450815 and 2451179 and store_sales.ss_cdemo_sk is not null and store_sales.ss_sold_date_sk is not null and store_sales.ss_promo_sk is not null",
+          "using_index": true
+        }
+      },
+      {
+        "table": {
+          "table_name": "customer_demographics",
+          "access_type": "eq_ref",
+          "possible_keys": [
+            "PRIMARY",
+            "idx_cd_demo_sk_marital_status",
+            "idx_cd_filter_sk",
+            "idx_customer_demographics_1"
+          ],
+          "key": "idx_cd_filter_sk",
+          "key_length": "99",
+          "used_key_parts": [
+            "cd_gender",
+            "cd_marital_status",
+            "cd_education_status",
+            "cd_demo_sk"
+          ],
+          "ref": ["const", "const", "const", "tpcds.store_sales.ss_cdemo_sk"],
+          "loops": 11491575,
+          "rows": 1,
+          "cost": 10053.90871,
+          "filtered": 100,
+          "attached_condition": "customer_demographics.cd_gender = 'F' and customer_demographics.cd_marital_status = 'S' and customer_demographics.cd_education_status = 'Unknown'",
+          "using_index": true
+        }
+      },
+      {
+        "table": {
+          "table_name": "date_dim",
+          "access_type": "eq_ref",
+          "possible_keys": [
+            "PRIMARY",
+            "idx_date_dim_d_date_year",
+            "idx_date_dim_d_month_seq",
+            "idx_date_year_moy",
+            "idx_date_year_sk_day",
+            "inx_date_dim_year",
+            "idx_date_year_sk",
+            "idx_date_ym"
+          ],
+          "key": "inx_date_dim_year",
+          "key_length": "17",
+          "used_key_parts": ["d_year", "d_date_sk"],
+          "ref": ["const", "tpcds.store_sales.ss_sold_date_sk"],
+          "loops": 11491575,
+          "rows": 1,
+          "cost": 10048.3742,
+          "filtered": 0.503566325,
+          "using_index": true
+        }
+      },
+      {
+        "table": {
+          "table_name": "promotion",
+          "access_type": "eq_ref",
+          "possible_keys": ["PRIMARY"],
+          "key": "PRIMARY",
+          "key_length": "8",
+          "used_key_parts": ["p_promo_sk"],
+          "ref": ["tpcds.store_sales.ss_promo_sk"],
+          "loops": 57867.70519,
+          "rows": 1,
+          "cost": 51.76738223,
+          "filtered": 100,
+          "attached_condition": "promotion.p_channel_email = 'N' or promotion.p_channel_event = 'N'"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "sf4_exact_ordered_limit100": true,
+  "rows": 100,
+  "full_manufacturer_totals_exact": true,
+  "full_rows": 904,
+  "full_output_order": "i_manufact_id for complete comparison",
+  "output_sha256": "cce7fd86e6248f8899787e64345ef47a9a63b77b8611169e4a42b6d8e0529017",
+  "nonempty_fixture_passed": true
+}

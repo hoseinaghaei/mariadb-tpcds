@@ -1,0 +1,6 @@
+{
+  "table": "customer",
+  "columns": "c_customer_id",
+  "bytes": 9469952,
+  "build_seconds": 0.3608055630029412
+}

@@ -1,0 +1,6 @@
+{
+  "table": "web_sales",
+  "columns": "ws_bill_customer_sk,ws_net_paid,ws_sold_date_sk",
+  "bytes": 133398528,
+  "build_seconds": 14.174641725003312
+}

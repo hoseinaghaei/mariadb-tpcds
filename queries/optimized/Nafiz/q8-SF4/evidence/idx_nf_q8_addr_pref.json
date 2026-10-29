@@ -1,0 +1,6 @@
+{
+  "table": "customer",
+  "columns": "c_current_addr_sk,c_preferred_cust_flag",
+  "build_seconds": 0.2625279319981928,
+  "bytes": 7372800
+}

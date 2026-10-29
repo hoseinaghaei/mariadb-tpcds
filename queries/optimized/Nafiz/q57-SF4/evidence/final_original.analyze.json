@@ -1,0 +1,583 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.5235578
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 19203.63921,
+    "r_loops": 1,
+    "r_total_time_ms": 12687.58488,
+    "filesort": {
+      "sort_key": "v1.sum_sales - v1.avg_monthly_sales, v1_lag.sum_sales",
+      "r_loops": 1,
+      "r_total_time_ms": 1.588493373,
+      "r_limit": 100,
+      "r_used_priority_queue": true,
+      "r_output_rows": 101,
+      "r_sort_mode": "sort_key,rowid",
+      "temporary_table": {
+        "nested_loop": [
+          {
+            "table": {
+              "table_name": "<derived2>",
+              "access_type": "ALL",
+              "loops": 1,
+              "r_loops": 1,
+              "rows": 1361468,
+              "r_rows": 71066,
+              "cost": 60.84665299,
+              "r_table_time_ms": 17.70688296,
+              "r_other_time_ms": 52.35881317,
+              "filtered": 100,
+              "r_total_filtered": 77.80936031,
+              "attached_condition": "v1.d_year = 2000 and v1.avg_monthly_sales > 0 and case when v1.avg_monthly_sales > 0 then abs(v1.sum_sales - v1.avg_monthly_sales) / v1.avg_monthly_sales else NULL end > 0.1 and v1.i_category is not null and v1.i_brand is not null and v1.cc_name is not null and v1.i_category is not null and v1.i_brand is not null and v1.cc_name is not null",
+              "r_filtered": 77.80936031,
+              "materialized": {
+                "query_block": {
+                  "select_id": 2,
+                  "cost": 3888.885098,
+                  "r_loops": 1,
+                  "r_total_time_ms": 3882.428925,
+                  "filesort": {
+                    "sort_key": "item.i_category, item.i_brand, call_center.cc_name, date_dim.d_year, date_dim.d_moy",
+                    "r_loops": 1,
+                    "r_total_time_ms": 47.61836992,
+                    "r_used_priority_queue": false,
+                    "r_output_rows": 71066,
+                    "r_buffer_size": "43MiB",
+                    "r_sort_mode": "packed_sort_key,rowid",
+                    "window_functions_computation": {
+                      "sorts": [
+                        {
+                          "filesort": {
+                            "sort_key": "item.i_category, item.i_brand, call_center.cc_name, date_dim.d_year, date_dim.d_moy",
+                            "r_loops": 1,
+                            "r_total_time_ms": 45.58139456,
+                            "r_used_priority_queue": false,
+                            "r_output_rows": 71066,
+                            "r_buffer_size": "43MiB",
+                            "r_sort_mode": "packed_sort_key,rowid"
+                          }
+                        }
+                      ],
+                      "temporary_table": {
+                        "nested_loop": [
+                          {
+                            "table": {
+                              "table_name": "date_dim",
+                              "access_type": "range",
+                              "possible_keys": [
+                                "PRIMARY",
+                                "idx_date_dim_d_date_year",
+                                "idx_date_dim_d_month_seq",
+                                "idx_date_year_moy",
+                                "idx_date_year_sk_day",
+                                "inx_date_dim_year",
+                                "idx_date_year_sk",
+                                "idx_date_ym"
+                              ],
+                              "key": "idx_date_year_moy",
+                              "key_length": "18",
+                              "used_key_parts": ["d_year", "d_moy"],
+                              "loops": 1,
+                              "r_loops": 1,
+                              "rows": 428,
+                              "r_rows": 428,
+                              "cost": 0.07096766,
+                              "r_table_time_ms": 0.037678608,
+                              "r_other_time_ms": 390.1235522,
+                              "r_engine_stats": {
+                                "pages_accessed": 39
+                              },
+                              "filtered": 100,
+                              "r_total_filtered": 100,
+                              "attached_condition": "date_dim.d_year = 2000 or date_dim.d_year = 1999 and date_dim.d_moy = 12 or date_dim.d_year = 2001 and date_dim.d_moy = 1",
+                              "r_filtered": 100,
+                              "using_index": true
+                            }
+                          },
+                          {
+                            "block-nl-join": {
+                              "table": {
+                                "table_name": "catalog_sales",
+                                "access_type": "ref",
+                                "possible_keys": [
+                                  "PRIMARY",
+                                  "idx_cs_date_addr_item_price",
+                                  "idx_cs_date_cover",
+                                  "idx_cs_date_cust",
+                                  "idx_cs_date_customer",
+                                  "idx_cs_item_sk",
+                                  "idx_cs_sold_date_ext_price",
+                                  "idx_cs_call_center_sk",
+                                  "idx_cs_sold_date_sk"
+                                ],
+                                "key": "idx_cs_sold_date_ext_price",
+                                "key_length": "9",
+                                "used_key_parts": ["cs_sold_date_sk"],
+                                "ref": ["tpcds.date_dim.d_date_sk"],
+                                "loops": 428,
+                                "r_loops": 1,
+                                "rows": 3181,
+                                "r_rows": 1396725,
+                                "cost": 1451.8924,
+                                "r_table_time_ms": 870.5304981,
+                                "r_other_time_ms": 29.80898395,
+                                "r_engine_stats": {
+                                  "pages_accessed": 4227195
+                                },
+                                "filtered": 100,
+                                "r_total_filtered": 100,
+                                "r_filtered": 100
+                              },
+                              "buffer_type": "flat",
+                              "buffer_size": "31MiB",
+                              "join_type": "BKAH",
+                              "mrr_type": "Rowid-ordered scan",
+                              "attached_condition": "catalog_sales.cs_call_center_sk is not null",
+                              "r_loops": 428,
+                              "r_filtered": 99.74934221,
+                              "r_unpack_time_ms": 38.24217014,
+                              "r_other_time_ms": 357.0007395,
+                              "r_effective_rows": 3263.376168
+                            }
+                          },
+                          {
+                            "table": {
+                              "table_name": "item",
+                              "access_type": "eq_ref",
+                              "possible_keys": ["PRIMARY"],
+                              "key": "PRIMARY",
+                              "key_length": "8",
+                              "used_key_parts": ["i_item_sk"],
+                              "ref": ["tpcds.catalog_sales.cs_item_sk"],
+                              "loops": 1361468,
+                              "r_loops": 1393224,
+                              "r_table_loops": 53155,
+                              "rows": 1,
+                              "r_rows": 1,
+                              "cost": 1219.168654,
+                              "r_table_time_ms": 34.40836834,
+                              "r_other_time_ms": 11.14169666,
+                              "r_engine_stats": {
+                                "pages_accessed": 108200
+                              },
+                              "filtered": 100,
+                              "r_total_filtered": 100,
+                              "r_filtered": 100
+                            }
+                          },
+                          {
+                            "table": {
+                              "table_name": "call_center",
+                              "access_type": "eq_ref",
+                              "possible_keys": ["PRIMARY"],
+                              "key": "PRIMARY",
+                              "key_length": "8",
+                              "used_key_parts": ["cc_call_center_sk"],
+                              "ref": ["tpcds.catalog_sales.cs_call_center_sk"],
+                              "loops": 1361468,
+                              "r_loops": 1393224,
+                              "r_table_loops": 1165012,
+                              "rows": 1,
+                              "r_rows": 1,
+                              "cost": 1217.753076,
+                              "r_table_time_ms": 295.8869844,
+                              "r_other_time_ms": 1649.50983,
+                              "r_engine_stats": {
+                                "pages_accessed": 1165012
+                              },
+                              "filtered": 100,
+                              "r_total_filtered": 100,
+                              "r_filtered": 100
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "table": {
+              "table_name": "<derived4>",
+              "access_type": "ref",
+              "possible_keys": ["key0"],
+              "key": "key0",
+              "key_length": "605",
+              "used_key_parts": ["i_category", "i_brand", "cc_name"],
+              "ref": ["v1.i_category", "v1.i_brand", "v1.cc_name"],
+              "loops": 1361468,
+              "r_loops": 55296,
+              "rows": 10,
+              "r_rows": 13.45301649,
+              "cost": 1740.244572,
+              "r_table_time_ms": 403.1018768,
+              "r_other_time_ms": 47.09245518,
+              "filtered": 100,
+              "r_total_filtered": 7.40894585,
+              "attached_condition": "v1.rn = v1_lag.rn + 1",
+              "r_filtered": 7.40894585,
+              "materialized": {
+                "query_block": {
+                  "select_id": 4,
+                  "cost": 3888.885098,
+                  "r_loops": 1,
+                  "r_total_time_ms": 3924.314928,
+                  "filesort": {
+                    "sort_key": "item.i_category, item.i_brand, call_center.cc_name, date_dim.d_year, date_dim.d_moy",
+                    "r_loops": 1,
+                    "r_total_time_ms": 45.54143867,
+                    "r_used_priority_queue": false,
+                    "r_output_rows": 71066,
+                    "r_buffer_size": "43MiB",
+                    "r_sort_mode": "packed_sort_key,rowid",
+                    "window_functions_computation": {
+                      "sorts": [
+                        {
+                          "filesort": {
+                            "sort_key": "item.i_category, item.i_brand, call_center.cc_name, date_dim.d_year, date_dim.d_moy",
+                            "r_loops": 1,
+                            "r_total_time_ms": 45.86971907,
+                            "r_used_priority_queue": false,
+                            "r_output_rows": 71066,
+                            "r_buffer_size": "43MiB",
+                            "r_sort_mode": "packed_sort_key,rowid"
+                          }
+                        }
+                      ],
+                      "temporary_table": {
+                        "nested_loop": [
+                          {
+                            "table": {
+                              "table_name": "date_dim",
+                              "access_type": "range",
+                              "possible_keys": [
+                                "PRIMARY",
+                                "idx_date_dim_d_date_year",
+                                "idx_date_dim_d_month_seq",
+                                "idx_date_year_moy",
+                                "idx_date_year_sk_day",
+                                "inx_date_dim_year",
+                                "idx_date_year_sk",
+                                "idx_date_ym"
+                              ],
+                              "key": "idx_date_year_moy",
+                              "key_length": "18",
+                              "used_key_parts": ["d_year", "d_moy"],
+                              "loops": 1,
+                              "r_loops": 1,
+                              "rows": 428,
+                              "r_rows": 428,
+                              "cost": 0.07096766,
+                              "r_table_time_ms": 0.047413139,
+                              "r_other_time_ms": 400.0165298,
+                              "r_engine_stats": {
+                                "pages_accessed": 39
+                              },
+                              "filtered": 100,
+                              "r_total_filtered": 100,
+                              "attached_condition": "date_dim.d_year = 2000 or date_dim.d_year = 1999 and date_dim.d_moy = 12 or date_dim.d_year = 2001 and date_dim.d_moy = 1",
+                              "r_filtered": 100,
+                              "using_index": true
+                            }
+                          },
+                          {
+                            "block-nl-join": {
+                              "table": {
+                                "table_name": "catalog_sales",
+                                "access_type": "ref",
+                                "possible_keys": [
+                                  "PRIMARY",
+                                  "idx_cs_date_addr_item_price",
+                                  "idx_cs_date_cover",
+                                  "idx_cs_date_cust",
+                                  "idx_cs_date_customer",
+                                  "idx_cs_item_sk",
+                                  "idx_cs_sold_date_ext_price",
+                                  "idx_cs_call_center_sk",
+                                  "idx_cs_sold_date_sk"
+                                ],
+                                "key": "idx_cs_sold_date_ext_price",
+                                "key_length": "9",
+                                "used_key_parts": ["cs_sold_date_sk"],
+                                "ref": ["tpcds.date_dim.d_date_sk"],
+                                "loops": 428,
+                                "r_loops": 1,
+                                "rows": 3181,
+                                "r_rows": 1396725,
+                                "cost": 1451.8924,
+                                "r_table_time_ms": 866.7836389,
+                                "r_other_time_ms": 29.79511087,
+                                "r_engine_stats": {
+                                  "pages_accessed": 4227195
+                                },
+                                "filtered": 100,
+                                "r_total_filtered": 100,
+                                "r_filtered": 100
+                              },
+                              "buffer_type": "flat",
+                              "buffer_size": "31MiB",
+                              "join_type": "BKAH",
+                              "mrr_type": "Rowid-ordered scan",
+                              "attached_condition": "catalog_sales.cs_call_center_sk is not null",
+                              "r_loops": 428,
+                              "r_filtered": 99.74934221,
+                              "r_unpack_time_ms": 39.96329606,
+                              "r_other_time_ms": 357.550315,
+                              "r_effective_rows": 3263.376168
+                            }
+                          },
+                          {
+                            "table": {
+                              "table_name": "item",
+                              "access_type": "eq_ref",
+                              "possible_keys": ["PRIMARY"],
+                              "key": "PRIMARY",
+                              "key_length": "8",
+                              "used_key_parts": ["i_item_sk"],
+                              "ref": ["tpcds.catalog_sales.cs_item_sk"],
+                              "loops": 1361468,
+                              "r_loops": 1393224,
+                              "r_table_loops": 53155,
+                              "rows": 1,
+                              "r_rows": 1,
+                              "cost": 1219.168654,
+                              "r_table_time_ms": 31.32021292,
+                              "r_other_time_ms": 11.19771143,
+                              "r_engine_stats": {
+                                "pages_accessed": 108200
+                              },
+                              "filtered": 100,
+                              "r_total_filtered": 100,
+                              "r_filtered": 100
+                            }
+                          },
+                          {
+                            "table": {
+                              "table_name": "call_center",
+                              "access_type": "eq_ref",
+                              "possible_keys": ["PRIMARY"],
+                              "key": "PRIMARY",
+                              "key_length": "8",
+                              "used_key_parts": ["cc_call_center_sk"],
+                              "ref": ["tpcds.catalog_sales.cs_call_center_sk"],
+                              "loops": 1361468,
+                              "r_loops": 1393224,
+                              "r_table_loops": 1165012,
+                              "rows": 1,
+                              "r_rows": 1,
+                              "cost": 1217.753076,
+                              "r_table_time_ms": 296.8993738,
+                              "r_other_time_ms": 1665.470764,
+                              "r_engine_stats": {
+                                "pages_accessed": 1165012
+                              },
+                              "filtered": 100,
+                              "r_total_filtered": 100,
+                              "r_filtered": 100
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "table": {
+              "table_name": "<derived5>",
+              "access_type": "ref",
+              "possible_keys": ["key0"],
+              "key": "key0",
+              "key_length": "605",
+              "used_key_parts": ["i_category", "i_brand", "cc_name"],
+              "ref": ["v1.i_category", "v1.i_brand", "v1.cc_name"],
+              "loops": 13614760,
+              "r_loops": 55115,
+              "rows": 10,
+              "r_rows": 13.45459494,
+              "cost": 17402.54798,
+              "r_table_time_ms": 405.0537305,
+              "r_other_time_ms": 60.24095558,
+              "filtered": 100,
+              "r_total_filtered": 7.205717753,
+              "attached_condition": "v1.rn = v1_lead.rn - 1",
+              "r_filtered": 7.205717753,
+              "materialized": {
+                "query_block": {
+                  "select_id": 5,
+                  "cost": 3888.885098,
+                  "r_loops": 1,
+                  "r_total_time_ms": 4040.840498,
+                  "filesort": {
+                    "sort_key": "item.i_category, item.i_brand, call_center.cc_name, date_dim.d_year, date_dim.d_moy",
+                    "r_loops": 1,
+                    "r_total_time_ms": 39.47121704,
+                    "r_used_priority_queue": false,
+                    "r_output_rows": 71066,
+                    "r_buffer_size": "43MiB",
+                    "r_sort_mode": "packed_sort_key,rowid",
+                    "window_functions_computation": {
+                      "sorts": [
+                        {
+                          "filesort": {
+                            "sort_key": "item.i_category, item.i_brand, call_center.cc_name, date_dim.d_year, date_dim.d_moy",
+                            "r_loops": 1,
+                            "r_total_time_ms": 39.56489372,
+                            "r_used_priority_queue": false,
+                            "r_output_rows": 71066,
+                            "r_buffer_size": "43MiB",
+                            "r_sort_mode": "packed_sort_key,rowid"
+                          }
+                        }
+                      ],
+                      "temporary_table": {
+                        "nested_loop": [
+                          {
+                            "table": {
+                              "table_name": "date_dim",
+                              "access_type": "range",
+                              "possible_keys": [
+                                "PRIMARY",
+                                "idx_date_dim_d_date_year",
+                                "idx_date_dim_d_month_seq",
+                                "idx_date_year_moy",
+                                "idx_date_year_sk_day",
+                                "inx_date_dim_year",
+                                "idx_date_year_sk",
+                                "idx_date_ym"
+                              ],
+                              "key": "idx_date_year_moy",
+                              "key_length": "18",
+                              "used_key_parts": ["d_year", "d_moy"],
+                              "loops": 1,
+                              "r_loops": 1,
+                              "rows": 428,
+                              "r_rows": 428,
+                              "cost": 0.07096766,
+                              "r_table_time_ms": 0.045416562,
+                              "r_other_time_ms": 386.834474,
+                              "r_engine_stats": {
+                                "pages_accessed": 39
+                              },
+                              "filtered": 100,
+                              "r_total_filtered": 100,
+                              "attached_condition": "date_dim.d_year = 2000 or date_dim.d_year = 1999 and date_dim.d_moy = 12 or date_dim.d_year = 2001 and date_dim.d_moy = 1",
+                              "r_filtered": 100,
+                              "using_index": true
+                            }
+                          },
+                          {
+                            "block-nl-join": {
+                              "table": {
+                                "table_name": "catalog_sales",
+                                "access_type": "ref",
+                                "possible_keys": [
+                                  "PRIMARY",
+                                  "idx_cs_date_addr_item_price",
+                                  "idx_cs_date_cover",
+                                  "idx_cs_date_cust",
+                                  "idx_cs_date_customer",
+                                  "idx_cs_item_sk",
+                                  "idx_cs_sold_date_ext_price",
+                                  "idx_cs_call_center_sk",
+                                  "idx_cs_sold_date_sk"
+                                ],
+                                "key": "idx_cs_sold_date_ext_price",
+                                "key_length": "9",
+                                "used_key_parts": ["cs_sold_date_sk"],
+                                "ref": ["tpcds.date_dim.d_date_sk"],
+                                "loops": 428,
+                                "r_loops": 1,
+                                "rows": 3181,
+                                "r_rows": 1396725,
+                                "cost": 1451.8924,
+                                "r_table_time_ms": 868.5999747,
+                                "r_other_time_ms": 28.38070475,
+                                "r_engine_stats": {
+                                  "pages_accessed": 4227195
+                                },
+                                "filtered": 100,
+                                "r_total_filtered": 100,
+                                "r_filtered": 100
+                              },
+                              "buffer_type": "flat",
+                              "buffer_size": "31MiB",
+                              "join_type": "BKAH",
+                              "mrr_type": "Rowid-ordered scan",
+                              "attached_condition": "catalog_sales.cs_call_center_sk is not null",
+                              "r_loops": 428,
+                              "r_filtered": 99.74934221,
+                              "r_unpack_time_ms": 38.7301033,
+                              "r_other_time_ms": 387.5294814,
+                              "r_effective_rows": 3263.376168
+                            }
+                          },
+                          {
+                            "table": {
+                              "table_name": "item",
+                              "access_type": "eq_ref",
+                              "possible_keys": ["PRIMARY"],
+                              "key": "PRIMARY",
+                              "key_length": "8",
+                              "used_key_parts": ["i_item_sk"],
+                              "ref": ["tpcds.catalog_sales.cs_item_sk"],
+                              "loops": 1361468,
+                              "r_loops": 1393224,
+                              "r_table_loops": 53155,
+                              "rows": 1,
+                              "r_rows": 1,
+                              "cost": 1219.168654,
+                              "r_table_time_ms": 29.13301671,
+                              "r_other_time_ms": 11.70757355,
+                              "r_engine_stats": {
+                                "pages_accessed": 108200
+                              },
+                              "filtered": 100,
+                              "r_total_filtered": 100,
+                              "r_filtered": 100
+                            }
+                          },
+                          {
+                            "table": {
+                              "table_name": "call_center",
+                              "access_type": "eq_ref",
+                              "possible_keys": ["PRIMARY"],
+                              "key": "PRIMARY",
+                              "key_length": "8",
+                              "used_key_parts": ["cc_call_center_sk"],
+                              "ref": ["tpcds.catalog_sales.cs_call_center_sk"],
+                              "loops": 1361468,
+                              "r_loops": 1393224,
+                              "r_table_loops": 1165012,
+                              "rows": 1,
+                              "r_rows": 1,
+                              "cost": 1217.753076,
+                              "r_table_time_ms": 295.5862683,
+                              "r_other_time_ms": 1789.988139,
+                              "r_engine_stats": {
+                                "pages_accessed": 1165012
+                              },
+                              "filtered": 100,
+                              "r_total_filtered": 100,
+                              "r_filtered": 100
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

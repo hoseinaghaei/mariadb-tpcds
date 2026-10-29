@@ -1,0 +1,371 @@
+{
+  "query_block": {
+    "select_id": 1,
+    "cost": 18298.09855,
+    "filesort": {
+      "sort_key": "v1.sum_sales - v1.avg_monthly_sales, v1_lag.sum_sales",
+      "temporary_table": {
+        "nested_loop": [
+          {
+            "table": {
+              "table_name": "<derived2>",
+              "access_type": "ALL",
+              "loops": 1,
+              "rows": 1297268,
+              "cost": 57.97790167,
+              "filtered": 100,
+              "attached_condition": "v1.d_year = 2000 and v1.avg_monthly_sales > 0 and case when v1.avg_monthly_sales > 0 then abs(v1.sum_sales - v1.avg_monthly_sales) / v1.avg_monthly_sales else NULL end > 0.1 and v1.i_category is not null and v1.i_brand is not null and v1.cc_name is not null and v1.i_category is not null and v1.i_brand is not null and v1.cc_name is not null",
+              "materialized": {
+                "query_block": {
+                  "select_id": 2,
+                  "cost": 2501.760977,
+                  "filesort": {
+                    "sort_key": "item.i_category, item.i_brand, call_center.cc_name, date_dim.d_year, date_dim.d_moy",
+                    "window_functions_computation": {
+                      "sorts": [
+                        {
+                          "filesort": {
+                            "sort_key": "item.i_category, item.i_brand, call_center.cc_name, date_dim.d_year, date_dim.d_moy"
+                          }
+                        }
+                      ],
+                      "temporary_table": {
+                        "nested_loop": [
+                          {
+                            "table": {
+                              "table_name": "date_dim",
+                              "access_type": "range",
+                              "possible_keys": [
+                                "PRIMARY",
+                                "idx_date_dim_d_date_year",
+                                "idx_date_dim_d_month_seq",
+                                "idx_date_year_moy",
+                                "idx_date_year_sk_day",
+                                "inx_date_dim_year",
+                                "idx_date_year_sk",
+                                "idx_date_ym"
+                              ],
+                              "key": "idx_date_year_moy",
+                              "key_length": "18",
+                              "used_key_parts": ["d_year", "d_moy"],
+                              "loops": 1,
+                              "rows": 428,
+                              "cost": 0.07096766,
+                              "filtered": 100,
+                              "attached_condition": "date_dim.d_year = 2000 or date_dim.d_year = <cache>(2000 - 1) and date_dim.d_moy = 12 or date_dim.d_year = <cache>(2000 + 1) and date_dim.d_moy = 1",
+                              "using_index": true
+                            }
+                          },
+                          {
+                            "table": {
+                              "table_name": "catalog_sales",
+                              "access_type": "ref",
+                              "possible_keys": [
+                                "PRIMARY",
+                                "idx_cs_date_addr_item_price",
+                                "idx_cs_date_cover",
+                                "idx_cs_date_cust",
+                                "idx_cs_date_customer",
+                                "idx_cs_item_sk",
+                                "idx_cs_sold_date_ext_price",
+                                "idx_cs_call_center_sk",
+                                "idx_cs_sold_date_sk",
+                                "idx_nf_q57_catalog_cover"
+                              ],
+                              "key": "idx_nf_q57_catalog_cover",
+                              "key_length": "9",
+                              "used_key_parts": ["cs_sold_date_sk"],
+                              "ref": ["tpcds.date_dim.d_date_sk"],
+                              "loops": 428,
+                              "rows": 3031,
+                              "cost": 194.9271879,
+                              "filtered": 99.34014893,
+                              "attached_condition": "catalog_sales.cs_call_center_sk is not null",
+                              "using_index": true
+                            }
+                          },
+                          {
+                            "table": {
+                              "table_name": "item",
+                              "access_type": "eq_ref",
+                              "possible_keys": ["PRIMARY", "idx_nf_q57_item_cover"],
+                              "key": "PRIMARY",
+                              "key_length": "8",
+                              "used_key_parts": ["i_item_sk"],
+                              "ref": ["tpcds.catalog_sales.cs_item_sk"],
+                              "loops": 1288708,
+                              "rows": 1,
+                              "cost": 1154.0892,
+                              "filtered": 100
+                            }
+                          },
+                          {
+                            "table": {
+                              "table_name": "call_center",
+                              "access_type": "eq_ref",
+                              "possible_keys": ["PRIMARY"],
+                              "key": "PRIMARY",
+                              "key_length": "8",
+                              "used_key_parts": ["cc_call_center_sk"],
+                              "ref": ["tpcds.catalog_sales.cs_call_center_sk"],
+                              "loops": 1288708,
+                              "rows": 1,
+                              "cost": 1152.673622,
+                              "filtered": 100
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "table": {
+              "table_name": "<derived4>",
+              "access_type": "ref",
+              "possible_keys": ["key0"],
+              "key": "key0",
+              "key_length": "605",
+              "used_key_parts": ["i_category", "i_brand", "cc_name"],
+              "ref": ["v1.i_category", "v1.i_brand", "v1.cc_name"],
+              "loops": 1297268,
+              "rows": 10,
+              "cost": 1658.18349,
+              "filtered": 100,
+              "attached_condition": "v1.rn = v1_lag.rn + 1",
+              "materialized": {
+                "query_block": {
+                  "select_id": 4,
+                  "cost": 2501.760977,
+                  "filesort": {
+                    "sort_key": "item.i_category, item.i_brand, call_center.cc_name, date_dim.d_year, date_dim.d_moy",
+                    "window_functions_computation": {
+                      "sorts": [
+                        {
+                          "filesort": {
+                            "sort_key": "item.i_category, item.i_brand, call_center.cc_name, date_dim.d_year, date_dim.d_moy"
+                          }
+                        }
+                      ],
+                      "temporary_table": {
+                        "nested_loop": [
+                          {
+                            "table": {
+                              "table_name": "date_dim",
+                              "access_type": "range",
+                              "possible_keys": [
+                                "PRIMARY",
+                                "idx_date_dim_d_date_year",
+                                "idx_date_dim_d_month_seq",
+                                "idx_date_year_moy",
+                                "idx_date_year_sk_day",
+                                "inx_date_dim_year",
+                                "idx_date_year_sk",
+                                "idx_date_ym"
+                              ],
+                              "key": "idx_date_year_moy",
+                              "key_length": "18",
+                              "used_key_parts": ["d_year", "d_moy"],
+                              "loops": 1,
+                              "rows": 428,
+                              "cost": 0.07096766,
+                              "filtered": 100,
+                              "attached_condition": "date_dim.d_year = 2000 or date_dim.d_year = <cache>(2000 - 1) and date_dim.d_moy = 12 or date_dim.d_year = <cache>(2000 + 1) and date_dim.d_moy = 1",
+                              "using_index": true
+                            }
+                          },
+                          {
+                            "table": {
+                              "table_name": "catalog_sales",
+                              "access_type": "ref",
+                              "possible_keys": [
+                                "PRIMARY",
+                                "idx_cs_date_addr_item_price",
+                                "idx_cs_date_cover",
+                                "idx_cs_date_cust",
+                                "idx_cs_date_customer",
+                                "idx_cs_item_sk",
+                                "idx_cs_sold_date_ext_price",
+                                "idx_cs_call_center_sk",
+                                "idx_cs_sold_date_sk",
+                                "idx_nf_q57_catalog_cover"
+                              ],
+                              "key": "idx_nf_q57_catalog_cover",
+                              "key_length": "9",
+                              "used_key_parts": ["cs_sold_date_sk"],
+                              "ref": ["tpcds.date_dim.d_date_sk"],
+                              "loops": 428,
+                              "rows": 3031,
+                              "cost": 194.9271879,
+                              "filtered": 99.34014893,
+                              "attached_condition": "catalog_sales.cs_call_center_sk is not null",
+                              "using_index": true
+                            }
+                          },
+                          {
+                            "table": {
+                              "table_name": "item",
+                              "access_type": "eq_ref",
+                              "possible_keys": ["PRIMARY", "idx_nf_q57_item_cover"],
+                              "key": "PRIMARY",
+                              "key_length": "8",
+                              "used_key_parts": ["i_item_sk"],
+                              "ref": ["tpcds.catalog_sales.cs_item_sk"],
+                              "loops": 1288708,
+                              "rows": 1,
+                              "cost": 1154.0892,
+                              "filtered": 100
+                            }
+                          },
+                          {
+                            "table": {
+                              "table_name": "call_center",
+                              "access_type": "eq_ref",
+                              "possible_keys": ["PRIMARY"],
+                              "key": "PRIMARY",
+                              "key_length": "8",
+                              "used_key_parts": ["cc_call_center_sk"],
+                              "ref": ["tpcds.catalog_sales.cs_call_center_sk"],
+                              "loops": 1288708,
+                              "rows": 1,
+                              "cost": 1152.673622,
+                              "filtered": 100
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "table": {
+              "table_name": "<derived5>",
+              "access_type": "ref",
+              "possible_keys": ["key0"],
+              "key": "key0",
+              "key_length": "605",
+              "used_key_parts": ["i_category", "i_brand", "cc_name"],
+              "ref": ["v1.i_category", "v1.i_brand", "v1.cc_name"],
+              "loops": 12972760,
+              "rows": 10,
+              "cost": 16581.93716,
+              "filtered": 100,
+              "attached_condition": "v1.rn = v1_lead.rn - 1",
+              "materialized": {
+                "query_block": {
+                  "select_id": 5,
+                  "cost": 2501.760977,
+                  "filesort": {
+                    "sort_key": "item.i_category, item.i_brand, call_center.cc_name, date_dim.d_year, date_dim.d_moy",
+                    "window_functions_computation": {
+                      "sorts": [
+                        {
+                          "filesort": {
+                            "sort_key": "item.i_category, item.i_brand, call_center.cc_name, date_dim.d_year, date_dim.d_moy"
+                          }
+                        }
+                      ],
+                      "temporary_table": {
+                        "nested_loop": [
+                          {
+                            "table": {
+                              "table_name": "date_dim",
+                              "access_type": "range",
+                              "possible_keys": [
+                                "PRIMARY",
+                                "idx_date_dim_d_date_year",
+                                "idx_date_dim_d_month_seq",
+                                "idx_date_year_moy",
+                                "idx_date_year_sk_day",
+                                "inx_date_dim_year",
+                                "idx_date_year_sk",
+                                "idx_date_ym"
+                              ],
+                              "key": "idx_date_year_moy",
+                              "key_length": "18",
+                              "used_key_parts": ["d_year", "d_moy"],
+                              "loops": 1,
+                              "rows": 428,
+                              "cost": 0.07096766,
+                              "filtered": 100,
+                              "attached_condition": "date_dim.d_year = 2000 or date_dim.d_year = <cache>(2000 - 1) and date_dim.d_moy = 12 or date_dim.d_year = <cache>(2000 + 1) and date_dim.d_moy = 1",
+                              "using_index": true
+                            }
+                          },
+                          {
+                            "table": {
+                              "table_name": "catalog_sales",
+                              "access_type": "ref",
+                              "possible_keys": [
+                                "PRIMARY",
+                                "idx_cs_date_addr_item_price",
+                                "idx_cs_date_cover",
+                                "idx_cs_date_cust",
+                                "idx_cs_date_customer",
+                                "idx_cs_item_sk",
+                                "idx_cs_sold_date_ext_price",
+                                "idx_cs_call_center_sk",
+                                "idx_cs_sold_date_sk",
+                                "idx_nf_q57_catalog_cover"
+                              ],
+                              "key": "idx_nf_q57_catalog_cover",
+                              "key_length": "9",
+                              "used_key_parts": ["cs_sold_date_sk"],
+                              "ref": ["tpcds.date_dim.d_date_sk"],
+                              "loops": 428,
+                              "rows": 3031,
+                              "cost": 194.9271879,
+                              "filtered": 99.34014893,
+                              "attached_condition": "catalog_sales.cs_call_center_sk is not null",
+                              "using_index": true
+                            }
+                          },
+                          {
+                            "table": {
+                              "table_name": "item",
+                              "access_type": "eq_ref",
+                              "possible_keys": ["PRIMARY", "idx_nf_q57_item_cover"],
+                              "key": "PRIMARY",
+                              "key_length": "8",
+                              "used_key_parts": ["i_item_sk"],
+                              "ref": ["tpcds.catalog_sales.cs_item_sk"],
+                              "loops": 1288708,
+                              "rows": 1,
+                              "cost": 1154.0892,
+                              "filtered": 100
+                            }
+                          },
+                          {
+                            "table": {
+                              "table_name": "call_center",
+                              "access_type": "eq_ref",
+                              "possible_keys": ["PRIMARY"],
+                              "key": "PRIMARY",
+                              "key_length": "8",
+                              "used_key_parts": ["cc_call_center_sk"],
+                              "ref": ["tpcds.catalog_sales.cs_call_center_sk"],
+                              "loops": 1288708,
+                              "rows": 1,
+                              "cost": 1152.673622,
+                              "filtered": 100
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

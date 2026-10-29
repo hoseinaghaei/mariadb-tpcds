@@ -1,0 +1,132 @@
+{
+  "query_block": {
+    "select_id": 1,
+    "cost": 9186.121972,
+    "filesort": {
+      "sort_key": "item.i_item_id",
+      "temporary_table": {
+        "nested_loop": [
+          {
+            "table": {
+              "table_name": "date_dim",
+              "access_type": "ref",
+              "possible_keys": [
+                "PRIMARY",
+                "idx_date_dim_d_date_year",
+                "idx_date_dim_d_month_seq",
+                "idx_date_year_moy",
+                "idx_date_year_sk_day",
+                "inx_date_dim_year",
+                "idx_date_year_sk",
+                "idx_date_ym"
+              ],
+              "key": "idx_date_year_moy",
+              "key_length": "9",
+              "used_key_parts": ["d_year"],
+              "ref": ["const"],
+              "loops": 1,
+              "rows": 365,
+              "cost": 0.056005145,
+              "filtered": 100,
+              "attached_condition": "date_dim.d_date_sk between 2450815 and 2451179",
+              "using_index": true
+            }
+          },
+          {
+            "block-nl-join": {
+              "table": {
+                "table_name": "store_sales",
+                "access_type": "ref",
+                "possible_keys": [
+                  "PRIMARY",
+                  "idx_ss_date_addr_item_price",
+                  "idx_ss_date_cust",
+                  "idx_ss_date_item_store_cover",
+                  "idx_ss_item_sk",
+                  "idx_ss_q78",
+                  "idx_ss_sold_date_sk",
+                  "idx_ss_cdemo_sk",
+                  "idx_ss_date_store_price",
+                  "idx_ss_date_store_profit",
+                  "idx_ss_promo_sk",
+                  "idx_ss_sold_date_sk_store_sales_price"
+                ],
+                "key": "idx_ss_sold_date_sk",
+                "key_length": "9",
+                "used_key_parts": ["ss_sold_date_sk"],
+                "ref": ["tpcds.date_dim.d_date_sk"],
+                "loops": 365,
+                "rows": 5702,
+                "cost": 2212.03458,
+                "filtered": 100
+              },
+              "buffer_type": "flat",
+              "buffer_size": "47MiB",
+              "join_type": "BKAH",
+              "mrr_type": "Rowid-ordered scan",
+              "attached_condition": "store_sales.ss_cdemo_sk is not null and store_sales.ss_promo_sk is not null"
+            }
+          },
+          {
+            "table": {
+              "table_name": "customer_demographics",
+              "access_type": "eq_ref",
+              "possible_keys": [
+                "PRIMARY",
+                "idx_cd_demo_sk_marital_status",
+                "idx_cd_filter_sk",
+                "idx_customer_demographics_1"
+              ],
+              "key": "idx_cd_filter_sk",
+              "key_length": "99",
+              "used_key_parts": [
+                "cd_gender",
+                "cd_marital_status",
+                "cd_education_status",
+                "cd_demo_sk"
+              ],
+              "ref": ["const", "const", "const", "tpcds.store_sales.ss_cdemo_sk"],
+              "loops": 2081230,
+              "rows": 1,
+              "cost": 1825.455992,
+              "filtered": 100,
+              "attached_condition": "customer_demographics.cd_gender = 'F' and customer_demographics.cd_marital_status = 'S' and customer_demographics.cd_education_status = 'Unknown'",
+              "using_index": true
+            }
+          },
+          {
+            "table": {
+              "table_name": "item",
+              "access_type": "eq_ref",
+              "possible_keys": ["PRIMARY"],
+              "key": "PRIMARY",
+              "key_length": "8",
+              "used_key_parts": ["i_item_sk"],
+              "ref": ["tpcds.store_sales.ss_item_sk"],
+              "loops": 2081230,
+              "rows": 1,
+              "cost": 1862.952577,
+              "filtered": 100
+            }
+          },
+          {
+            "table": {
+              "table_name": "promotion",
+              "access_type": "eq_ref",
+              "possible_keys": ["PRIMARY"],
+              "key": "PRIMARY",
+              "key_length": "8",
+              "used_key_parts": ["p_promo_sk"],
+              "ref": ["tpcds.store_sales.ss_promo_sk"],
+              "loops": 2081230,
+              "rows": 1,
+              "cost": 1861.543553,
+              "filtered": 100,
+              "attached_condition": "promotion.p_channel_email = 'N' or promotion.p_channel_event = 'N'"
+            }
+          }
+        ]
+      }
+    }
+  }
+}

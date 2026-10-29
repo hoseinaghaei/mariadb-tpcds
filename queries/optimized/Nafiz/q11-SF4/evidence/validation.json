@@ -1,0 +1,9 @@
+{
+  "sf4_exact": true,
+  "rows": 100,
+  "full_output_exact": true,
+  "full_rows": 1292,
+  "fixture_retained_passed": true,
+  "historical_pivot_duplicate_id_rejected": true,
+  "output_sha256": "b9bdbcf00776c93899ef4be0fc57ecc7b0c6364b3c99ba9e2af50875c8dd0b47"
+}
