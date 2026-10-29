@@ -14,7 +14,7 @@
 -- idx_inv_item_date_sk is close enough that any ANALYZE can flip it, which
 -- is a 28s swing on a ~430s suite decided by which pages got sampled.
 -- Pinning the access path is the only thing that makes it reproducible.
--- See report/28 section 1.
+-- See report/29 section 1.
 
 SET SESSION sql_mode = CONCAT(@@sql_mode, ',IGNORE_SPACE,PIPES_AS_CONCAT');
 

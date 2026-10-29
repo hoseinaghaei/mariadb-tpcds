@@ -24,7 +24,7 @@ METHOD, in two stages so the expensive one runs rarely:
 Index HINTS rather than ALTER INDEX ... IGNORED: a hint is per-statement, so
 it perturbs nothing.  ALTER re-samples the whole table's statistics even
 though it is a metadata-only change, and at this scale that alone flips
-plans in unrelated queries -- see report/27.
+plans in unrelated queries -- see report/28.
 """
 import argparse, hashlib, importlib.util, os, re, subprocess, sys, time
 

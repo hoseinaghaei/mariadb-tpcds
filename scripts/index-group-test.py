@@ -12,7 +12,7 @@ moves.
 So candidates are taken in descending size order and hidden TOGETHER, with
 per-statement IGNORE INDEX hints applied to every reference to each
 affected table.  Hints rather than ALTER INDEX because ALTER re-samples the
-whole table's statistics and flips unrelated plans -- see report/28.
+whole table's statistics and flips unrelated plans -- see report/29.
 
 Two stages, cheap one first:
 

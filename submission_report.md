@@ -286,6 +286,15 @@ rank() over (partition by s_state …))` subquery. It groups by `s_state` and
 then partitions by `s_state`, so the rank is always 1 and the filter removes
 nothing. Deleting it: **11.6s → 3.6s**.
 
+> **Partly superseded.** That rewrite also replaced the `date_dim` join with a
+> key range and kept the TPC-DS `(s_state is null)+(s_county is null)`
+> idiom for `lochierarchy`. Riccardo later showed that idiom is **wrong**
+> whenever `s_state` or `s_county` is genuinely NULL in the data, because it
+> cannot distinguish a rollup NULL from a data NULL. The adopted q70 now
+> builds the hierarchy with explicit `UNION ALL` levels and restores the
+> `date_dim` join. The aggregate-before-join structure survives; the
+> `ROLLUP` shortcut does not. Same correction applied to q36 and q86.
+
 **(d) Convert joins that only test existence into `EXISTS`.** q82's joins feed
 a `GROUP BY` with no aggregate — which is a `DISTINCT` in disguise.
 **0.8s → 0.1s, 8.00x.**
@@ -616,7 +625,7 @@ set matches `sql/` **by name** after every run.
 | q39 | 92.5s | 0.6s | hiding two `inventory` indexes + rewrite |
 | q2 | 84s | 25.9s | push a date window into both union arms |
 | q82 | 0.8s | 0.1s | existence-only joins → `EXISTS` |
-| q70 | 11.6s | 3.6s | delete a rank subquery that filters nothing |
+| q70 | 11.6s | 3.6s | delete a rank subquery that filters nothing (see the NULL-rollup note in §5.2c) |
 
 ---
 
@@ -746,7 +755,7 @@ short-circuits each probe and never avoids the scan.
 ### 8.6 Measurement discipline — what we had to learn
 
 Each of these produced a confident, plausible, wrong answer first. Full
-write-up in [`report/28-measuring-indexes.md`](report/28-measuring-indexes.md).
+write-up in [`report/29-measuring-indexes.md`](report/29-measuring-indexes.md).
 
 | # | trap | what it cost |
 |---|---|---|
@@ -813,7 +822,7 @@ loudly rather than reporting a clean total.
 | `scripts/index-harm-scan.py` | finds indexes that make queries slower |
 | `scripts/plan-sensitivity.py` | the hide-and-diff method, with its noise filter |
 | `report/25-query-by-query.md` | all 40 queries × 4 scale factors, with notes |
-| `report/28-measuring-indexes.md` | the twelve measurement traps, in full |
+| `report/29-measuring-indexes.md` | the twelve measurement traps, in full |
 
 ---
 
@@ -841,3 +850,12 @@ loudly rather than reporting a clean total.
    compared by checksum. It is verified on sorted checksum instead.
 6. **The 5 unoptimized queries are not unexamined.** Each was rewritten and
    measured; each rewrite was slower and is kept with its measurement.
+7. **q70's measurements predate its correctness fix.** The four-scale run in
+   §6 used the adopted q70 as it stood before the NULL-rollup correction
+   (§5.2c) was merged. Its figures — 1.6s / 2.9s / 5.7s / 40.0s — are for the
+   earlier text. The corrected query restores a `date_dim` join and replaces
+   `ROLLUP` with explicit `UNION ALL` levels, so it will not be faster; q70
+   is 1.4% of the SF=4 total, so the suite totals move little, but **the q70
+   row specifically should be re-measured** before being quoted. No other
+   measured query changed: q22's `FORCE INDEX` was committed 26 hours before
+   the run.

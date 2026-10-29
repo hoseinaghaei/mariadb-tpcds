@@ -327,11 +327,11 @@ else
 # KEPT_INDEXES=1 builds only the 37 read indexes (101.7s at SF=1, 1487.0s at
 # SF=4).  IGNORE_UNUSED=1 hides the 129 from the optimizer without dropping
 # them, which is how we separate "unused at execution" from "unused for
-# planning" -- see report/27.
+# planning" -- see report/28.
 # The validated drop list: 71 indexes, 6.35 GB at SF=4, no plan at either
 # scale factor mentions 70 of them and the 71st makes query22 3.8x slower.
 # sql/drop_unused_indexes.sql is the older never-READ list, kept for the
-# record -- dropping on that test alone doubled SF=4.  See report/27.
+# record -- dropping on that test alone doubled SF=4.  See report/28.
 DROPFILE="$PROJECT/sql/drop_unreferenced_indexes.sql"
 [[ -f "$DROPFILE" ]] || DROPFILE="$PROJECT/sql/drop_unused_indexes.sql"
 
@@ -594,7 +594,7 @@ check_measured() {   # $1 = tag
 
 # SKIP_BENCH=1 brings the database up under the measured configuration and
 # stops short of running the 40 queries.  Used with KEEP_ALIVE=1 for the
-# plan-stability work (report/27): comparing EXPLAIN output with an index
+# plan-stability work (report/28): comparing EXPLAIN output with an index
 # visible against the same query with it IGNORED answers "does the optimizer
 # consult this index?" deterministically, without paying 12 minutes of
 # execution per index to find out.
