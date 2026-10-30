@@ -1,0 +1,61 @@
+@manual{tpcds,
+  author = {{Transaction Processing Performance Council}},
+  title = {{TPC Benchmark DS: Standard Specification, Version 4.0.0}},
+  year = {2024}, month = nov,
+  url = {https://www.tpc.org/TPC_Documents_Current_Versions/pdf/TPC-DS_v4.0.0.pdf}
+}
+@misc{repository,
+  author = {{Project contributors}},
+  title = {{TPC-DS on MariaDB: Implementation and Experiment Repository}},
+  year = {2026},
+  url = {https://github.com/hoseinaghaei/mariadb-tpcds},
+  note = {Executed SQL snapshots and recorded configurations identify individual experiments; repository HEAD is not an execution timestamp}
+}
+@misc{referenceimplementation,
+  author = {{Sergei Petrunia and contributors}},
+  title = {{tpcds-run-tool}},
+  url = {https://github.com/spetrunia/tpcds-run-tool},
+  note = {Reference implementation used by the existing project}
+}
+@manual{bufferpool,
+  author = {{MariaDB}}, title = {{InnoDB Buffer Pool}},
+  url = {https://mariadb.com/docs/server/server-usage/storage-engines/innodb/innodb-buffer-pool},
+  note = {Official documentation, accessed October 2026}
+}
+@manual{derivedmerge,
+  author = {{MariaDB}}, title = {{Derived Table Merge Optimization}},
+  url = {https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/query-optimizations/optimizations-for-derived-tables/derived-table-merge-optimization},
+  note = {Official documentation, accessed October 2026}
+}
+@manual{splitmaterialized,
+  author = {{MariaDB}}, title = {{Lateral Derived Optimization}},
+  url = {https://mariadb.com/docs/server/ha-and-performance/optimization-and-tuning/query-optimizations/optimizations-for-derived-tables/lateral-derived-optimization},
+  note = {Official documentation, accessed October 2026}
+}
+@manual{sumfunction,
+  author = {{MariaDB}}, title = {{SUM}},
+  url = {https://mariadb.com/docs/server/reference/sql-functions/aggregate-functions/sum},
+  note = {Official documentation, accessed October 2026}
+}
+@manual{countfunction,
+  author = {{MariaDB}}, title = {{COUNT}},
+  url = {https://mariadb.com/docs/server/reference/sql-functions/aggregate-functions/count},
+  note = {Official documentation, accessed October 2026}
+}
+@manual{nullordering,
+  author = {{MariaDB}}, title = {{NULL Values: Ordering}},
+  url = {https://mariadb.com/docs/server/reference/data-types/null-values},
+  note = {Official documentation, accessed October 2026}
+}
+@misc{oracleexample,
+  author = {Ivanovi{\'c}, Nikola and Lorencio Abril, Jose Antonio and Yusupov, Sayyor and {\v Z}ivkovi{\'c}, Bogdana},
+  title = {{A TPC-DS Benchmark Implementation Using Oracle}},
+  year = {2022},
+  note = {Prior course report supplied as nafiz\_report.pdf; used as a structural reference, not as a source of our measurements}
+}
+@misc{postgresexample,
+  author = {Ahmad and Gupta, Rishika and Khan, Mir Wise and Ogbuchi, Chidiebere},
+  title = {{TPC-DS Benchmarking with Postgres Database}},
+  year = {2022},
+  note = {Prior course report supplied as TPC\_DS\_Benchmarking\_Report.pdf; used as a structural reference, not as a source of our measurements}
+}

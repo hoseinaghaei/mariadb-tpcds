@@ -52,7 +52,7 @@ in place. See the [profile and resource guide](docker/README.md#resource-notes).
 
 A default run measures **both** of this project's contributions together: the
 tuned server settings *and* the team's optimized queries (`queries/tuned/`,
-33 of the 40 tier-4/5 queries rewritten). Two knobs separate them —
+35 of the 40 tier-4/5 queries rewritten). Two knobs separate them —
 `QUERYSET` picks the SQL, `TUNED` picks the server settings:
 
 ```sh
@@ -78,6 +78,54 @@ historical 40-query workload:
 Each run records coverage and complete per-statement answers. Successful
 execution is distinct from answer validation; see the
 [99-query comparison instructions](docker/README.md#complete-99-query-coverage-and-answer-comparison).
+
+## Four-scale results and report draft
+
+Read the [draft PDF](report/latex/report-draft.pdf), or edit the
+[LaTeX source](report/latex/main.tex). Group names and student IDs are in
+[metadata.tex](report/latex/metadata.tex).
+
+The report contains the original/optimized comparisons at SF1, SF2, SF3 and SF4,
+all 99 per-query times at each scale, scaling plots, query optimization case
+studies and analysis of the largest contributions to time saved.
+
+The saved evidence is under `experiments/evidence/docker_sf<N>_99/` for each
+of the four scales:
+
+| File | Contents |
+|---|---|
+| `original-run.zip` | Original workload: 99 timing records, complete answers, executed SQL and integrity manifest |
+| `run.zip` | Adopted/optimized workload with the same complete evidence |
+| `comparison.csv` | Per-query original/adopted times, SQL hashes and answer-comparison status |
+| `comparison.json` | Run configurations and the complete comparison, including the reviewed SF2 Q71 tied-row order |
+
+These bundles preserve eight complete workload passes: 792 query-file
+executions and 396 original/adopted result comparisons. They remain usable
+without the Docker database volumes. The actual index counts and executed SQL
+versions are recorded per run.
+
+Build a fresh PDF and an editable LaTeX/Overleaf ZIP using installed XeLaTeX,
+BibTeX and gnuplot:
+
+```sh
+python3 -B scripts/build_latex_report.py --out submission/latex-report-01
+```
+
+Choose a new output directory each time. The build verifies the saved answers,
+regenerates tables and figures, and writes `TPCDS-Part-I-report.pdf` and
+`TPCDS-Part-I-latex.zip`. Upload the LaTeX ZIP to Overleaf and select XeLaTeX.
+The build executes no Docker or SQL. It also accepts completed live runs from
+`results/check-original-sf<N>/tuned/` and `results/sf<N>-all-tuned-v1/tuned/`.
+
+To export another completed run without executing queries:
+
+```sh
+python3 -B scripts/submission.py export-run \
+  --run results/sf4-all-tuned-v1/tuned --out /tmp/sf4-run-evidence.zip
+```
+
+The report draft is a document deliverable; the course implementation ZIP
+contains the repository's code, SQL, toolkit license and replication instructions.
 
 ---
 
