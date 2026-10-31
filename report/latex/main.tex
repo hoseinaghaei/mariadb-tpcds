@@ -67,7 +67,7 @@ All 99 query identifiers are supported, with \AdoptedCount{} adopted query
 optimization variants integrated into the complete workload.
 
 The evaluation includes complete original and adopted workloads at scale
-factors \MeasuredScales{}, using a 2~GiB InnoDB buffer pool. The eight passes
+factors \MeasuredScales{}, using a 2~GiB InnoDB buffer pool. The eight selected passes
 execute \TotalQueryExecutions{} query files. At SF4, the original workload
 completed in \SFfourOriginalSeconds{} seconds and the adopted workload in
 \SFfourAdoptedSeconds{} seconds. Result comparison confirms matching values
@@ -259,6 +259,7 @@ original and adopted configurations.
 Executed SQL is identified by SHA-256. The preserved bundles include the exact
 query versions, including the Q22 revision used by the SF4 adopted run.
 Summary hashes connect the report's numeric tables to their input artifacts.
+\input{generated/run-selection}
 
 \subsection{Timing and aggregation}
 \file{docker/bench.py} measures wall-clock time around the MariaDB client call.
@@ -291,25 +292,13 @@ exact returned numeric text.
 
 Artifact checks verify coverage of IDs 1--99, successful execution status,
 answer hashes and recorded row counts. The offline comparator then compares
-original and adopted answers on the same declared scale and seed. The four
-pairs provide \TotalAnswerComparisons{} query-result comparisons:
-\TotalOrderedMatches{} identical ordered outputs and \ReviewedTieMatches{}
-reviewed permutation within equal ordering keys. All \TotalMatchedAnswers{}
-query results have matching values.
+original and adopted answers on the same declared scale and seed.
+\input{generated/answer-summary}
 
 The ordered \file{md5} and within-result-set row-sorted \file{md5_sorted}
 fingerprints support diagnosis of value and ordering differences. Comparisons
 retain the serialization format and dataset identity. Complete saved values
 are available for inspection alongside the fingerprints.
-
-At SF2, Q71 returns the same 1,895 rows in both runs. Four row positions differ
-within two tied groups. Its ordering is \file{ext_price DESC, i_brand_id};
-hour, minute and brand text are outside those ordering keys. The review checks
-the identical executed SELECT, duplicate-preserving value equality, the full
-sort-key sequence and the absence of a row limit. Both sequences satisfy the
-specified ordering, including NULL prices at the end of descending order
-\citep{nullordering}. This reviewed result is retained alongside the original
-comparator status in the evidence inventory.
 
 \subsection{NULL-safe hierarchy translation}
 The rollup translations for Q36, Q70 and Q86 distinguish genuine NULL keys from
@@ -468,7 +457,7 @@ Table~\ref{tab:environments}.
 \caption{Complete workload measurements. Each workload executes all 99 query
 files. Ratio is original/adopted total time; Saved is the percentage reduction.
 Answers compares complete result values. O/A denotes the recorded total index
-counts. The SF2 marker identifies Q71's reviewed tied-row ordering.}
+counts.}
 \label{tab:scales}
 \end{table}
 
@@ -517,12 +506,7 @@ smaller sizes on the same measurement machine.
 multiplier divides the later workload total by the previous one.}
 \end{table}
 
-The largest relative step for the adopted workload is SF1--SF2, where the
-workload increases from 219.9 to 785.0 seconds, a factor of 3.57. Its smallest
-relative step is SF3--SF4, from 1,318.0 to 1,536.4 seconds, a factor of 1.17.
-The original series grows from 431.4 to 2,921.5 seconds across the four sizes.
-The recorded benefit therefore varies with scale: the middle-size ratios
-are 1.40 and 1.34, compared with 1.96 at SF1 and 1.90 at SF4.
+\input{generated/growth-summary}
 
 \begin{figure}[htbp]\centering
 \includegraphics[width=\linewidth]{assets/normalized-growth.pdf}
@@ -542,9 +526,7 @@ reference at one denotes equal total execution time.}
 \end{figure}
 
 \subsection{Where the aggregate time is saved}
-Q14, Q23 and Q59 are the three largest contributors to elapsed-time savings
-at every scale. Together they account for approximately 41--43\% of original
-workload time and 14--15\% of adopted workload time.
+\input{generated/contribution-overview}
 
 \begin{table}[htbp]\centering\small
 \input{generated/contributions}
@@ -552,11 +534,7 @@ workload time and 14--15\% of adopted workload time.
 complete workload's runtime.}
 \end{table}
 
-At SF3, these three queries save 534.8 seconds, while the net 99-query saving
-is 447.3 seconds. The remaining queries collectively offset 87.5 seconds of
-that reduction. At SF4, the three save 1,013.4 of the net 1,385.1 seconds.
-This illustrates why the full-workload total and individual-query counts
-provide complementary views of performance.
+\input{generated/contribution-discussion}
 
 \begin{table}[htbp]\centering\small
 \input{generated/runtime-distribution}
@@ -564,10 +542,7 @@ provide complementary views of performance.
 adopted pass. Equality uses the stored 0.1-second timing precision.}
 \end{table}
 
-For example, the SF3 total decreases even though only 22 queries record
-lower time: the largest reductions outweigh the increases elsewhere. The
-workload ratio is computed from the two sums of query times, giving each
-query's elapsed cost its contribution to the total.
+\input{generated/distribution-discussion}
 
 \subsection{How individual query behavior changes with scale}
 \begin{figure}[htbp]\centering
@@ -576,19 +551,7 @@ query's elapsed cost its contribution to the total.
 original and adopted versions at each measured size.}
 \end{figure}
 
-Q4 shows a consistent lower adopted runtime: from 27.8 versus 16.1 seconds
-at SF1 to 122.1 versus 71.9 at SF4. Q39 retains an original/adopted ratio
-between approximately 2.7 and 3.4 across the four sizes.
-
-Q59 has the strongest increase in its recorded ratio among these examples.
-Original time grows from 25.5 to 334.0 seconds, while adopted time changes
-from 2.3 to 9.0 seconds. Its ratio therefore grows from 11.09 at SF1 to 37.11
-at SF4, making it increasingly important to the larger-scale workload saving.
-
-Q27 shows a different pattern: the adopted pass has higher time at all four
-scales. Q67's ratio also varies, from below one at SF1--SF3 to 1.12 at SF4.
-These cases connect the query transformations to their measured behavior
-under the complete Docker configuration.
+\input{generated/case-growth-discussion}
 
 \begin{table}[htbp]\centering\small
 \input{generated/case-ratios}

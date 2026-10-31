@@ -135,7 +135,7 @@
   },
   "adopted_summary": {
     "tag": "tuned",
-    "total_seconds": 1318.0,
+    "total_seconds": 987.5,
     "profile": "full",
     "result_format": "result-sets-json-v1",
     "timing_protocol": "whole-file-xml-v1",
@@ -262,7 +262,7 @@
     "queryset": "all-tuned"
   },
   "original_summary_sha256": "510cb1d67fa8b2a8561928c31ebf5b21b56207c2567f1bce56a6ac3ac2157413",
-  "adopted_summary_sha256": "9145f7f849f3cb63b7bc6b650ad4d410437ce573b77ad7829030f389619e3546",
+  "adopted_summary_sha256": "2dba8a5876caeb9342e12d5eb1c21a776e19b3277db856007f0ab23fd819e439",
   "ordered_matches": 99,
   "accepted_matches": 99,
   "all_ordered_results_match": true,

@@ -557,7 +557,7 @@
   ],
   "current_report_source": "report/latex/main.tex",
   "completed_four_scale_campaign": {
-    "evidence_level": "COMPLETE_RUNS_AND_REVIEWED_ANSWER_COMPARISONS",
+    "evidence_level": "COMPLETE_RUNS_AND_ORDERED_ANSWER_COMPARISONS",
     "scale_factors": [
       1,
       2,
@@ -567,8 +567,8 @@
     "runs": 8,
     "query_files_executed": 792,
     "query_result_comparisons": 396,
-    "ordered_matches": 395,
-    "reviewed_tied_order_matches": 1,
+    "ordered_matches": 396,
+    "reviewed_tied_order_matches": 0,
     "accepted_matches": 396,
     "statistics": [
       {
@@ -600,51 +600,51 @@
       {
         "scale": 2,
         "original_seconds": 1102.4,
-        "adopted_seconds": 785.0,
-        "ratio": 1.404331210191083,
-        "seconds_saved": 317.4000000000001,
-        "reduction_percent": 28.79172714078375,
-        "faster": 27,
-        "slower": 65,
-        "same_rounded_time": 7,
+        "adopted_seconds": 572.7,
+        "ratio": 1.9249170595425178,
+        "seconds_saved": 529.7,
+        "reduction_percent": 48.04970972423803,
+        "faster": 52,
+        "slower": 15,
+        "same_rounded_time": 32,
         "top_savings_queries": [
           14,
           23,
           59,
           70,
-          5
+          4
         ],
         "core_original_seconds": 449.9,
-        "core_adopted_seconds": 109.7,
-        "core_seconds_saved": 340.2,
+        "core_adopted_seconds": 81.4,
+        "core_seconds_saved": 368.5,
         "core_original_share_percent": 40.81095791001451,
-        "core_adopted_share_percent": 13.97452229299363,
-        "ordered_matches": 98,
-        "reviewed_tie_matches": 1,
+        "core_adopted_share_percent": 14.213375240090798,
+        "ordered_matches": 99,
+        "reviewed_tie_matches": 0,
         "accepted_matches": 99
       },
       {
         "scale": 3,
         "original_seconds": 1765.3,
-        "adopted_seconds": 1318.0,
-        "ratio": 1.3393778452200302,
-        "seconds_saved": 447.29999999999995,
-        "reduction_percent": 25.338469381974733,
-        "faster": 22,
-        "slower": 69,
-        "same_rounded_time": 8,
+        "adopted_seconds": 987.5,
+        "ratio": 1.7876455696202531,
+        "seconds_saved": 777.8,
+        "reduction_percent": 44.060499631790634,
+        "faster": 43,
+        "slower": 31,
+        "same_rounded_time": 25,
         "top_savings_queries": [
           14,
-          59,
           23,
+          59,
           70,
-          5
+          4
         ],
         "core_original_seconds": 729.4,
-        "core_adopted_seconds": 194.6,
-        "core_seconds_saved": 534.8,
+        "core_adopted_seconds": 151.4,
+        "core_seconds_saved": 578.0,
         "core_original_share_percent": 41.318756018807,
-        "core_adopted_share_percent": 14.764795144157814,
+        "core_adopted_share_percent": 15.331645569620253,
         "ordered_matches": 99,
         "reviewed_tie_matches": 0,
         "accepted_matches": 99
@@ -856,7 +856,7 @@
           "68": "MATCH",
           "69": "MATCH",
           "70": "MATCH",
-          "71": "ORDER_DIFFERENCE_REQUIRES_REVIEW",
+          "71": "MATCH",
           "72": "MATCH",
           "73": "MATCH",
           "74": "MATCH",
@@ -886,20 +886,8 @@
           "98": "MATCH",
           "99": "MATCH"
         },
-        "ordered_matches": 98,
-        "reviewed_tie_matches": {
-          "71": {
-            "status": "EQUAL_VALUES_AND_VALID_ORDER_BY_TIES",
-            "rows": 1895,
-            "changed_row_positions": 4,
-            "order_by": "ext_price DESC, i_brand_id ASC",
-            "identical_executed_select": true,
-            "limit_absent": true,
-            "duplicate_preserving_values_equal": true,
-            "both_sequences_sorted": true,
-            "identical_order_key_sequences": true
-          }
-        },
+        "ordered_matches": 99,
+        "reviewed_tie_matches": {},
         "accepted_matches": 99,
         "declared_configuration_differences": {}
       },
@@ -1395,10 +1383,10 @@
       {
         "scale": 2,
         "mode": "adopted",
-        "summary_sha256": "969ee3931d9655d78d97a46865176ee67fc3931ac30bff71f0d63ccd9f61e524",
+        "summary_sha256": "e410761fc40668a04ac6d5b4758efb5764e994457274104df99a8b303a072610",
         "summary": {
           "tag": "tuned",
-          "total_seconds": 785.0,
+          "total_seconds": 572.7,
           "profile": "full",
           "result_format": "result-sets-json-v1",
           "timing_protocol": "whole-file-xml-v1",
@@ -1663,10 +1651,10 @@
       {
         "scale": 3,
         "mode": "adopted",
-        "summary_sha256": "9145f7f849f3cb63b7bc6b650ad4d410437ce573b77ad7829030f389619e3546",
+        "summary_sha256": "2dba8a5876caeb9342e12d5eb1c21a776e19b3277db856007f0ab23fd819e439",
         "summary": {
           "tag": "tuned",
-          "total_seconds": 1318.0,
+          "total_seconds": 987.5,
           "profile": "full",
           "result_format": "result-sets-json-v1",
           "timing_protocol": "whole-file-xml-v1",
@@ -2197,5 +2185,43 @@
         "bundle": "experiments/evidence/docker_sf4_99/original-run.zip"
       }
     ]
-  }
+  },
+  "run_replacements": [
+    {
+      "scale": 2,
+      "mode": "adopted",
+      "power_source": "AC mains",
+      "power_source_evidence": "User confirmed the PC was plugged in for these optimized reruns on 2026-10-31.",
+      "recorded_at_utc": "2026-10-31T14:49:21.839742+00:00",
+      "selected_bundle": "experiments/evidence/docker_sf2_99/run.zip",
+      "selected_summary_sha256": "e410761fc40668a04ac6d5b4758efb5764e994457274104df99a8b303a072610",
+      "selected_bundle_sha256": "e06555e892d4af8180dd28ebee5f494c97ec46cd0dab0f3aebb3e514bfcee12d",
+      "history_directory": "experiments/evidence/docker_sf2_99/history/pre-ac-rerun",
+      "previous_bundle": "experiments/evidence/docker_sf2_99/history/pre-ac-rerun/run.zip",
+      "previous_summary_sha256": "969ee3931d9655d78d97a46865176ee67fc3931ac30bff71f0d63ccd9f61e524",
+      "previous_bundle_sha256": "4db621e4d01585f9a6305201f85880626d7a3c5332291be12dd55fdf0abce2f7",
+      "previous_seconds": 785.0,
+      "selected_seconds": 572.7,
+      "sql_changed_query_ids": [],
+      "recorded_setting_changes": {}
+    },
+    {
+      "scale": 3,
+      "mode": "adopted",
+      "power_source": "AC mains",
+      "power_source_evidence": "User confirmed the PC was plugged in for these optimized reruns on 2026-10-31.",
+      "recorded_at_utc": "2026-10-31T14:49:22.985468+00:00",
+      "selected_bundle": "experiments/evidence/docker_sf3_99/run.zip",
+      "selected_summary_sha256": "2dba8a5876caeb9342e12d5eb1c21a776e19b3277db856007f0ab23fd819e439",
+      "selected_bundle_sha256": "a6bbcbdd158129a95ca0add8a2e98a6ee23c7adf6cb8140a96646bcb505d771f",
+      "history_directory": "experiments/evidence/docker_sf3_99/history/pre-ac-rerun",
+      "previous_bundle": "experiments/evidence/docker_sf3_99/history/pre-ac-rerun/run.zip",
+      "previous_summary_sha256": "9145f7f849f3cb63b7bc6b650ad4d410437ce573b77ad7829030f389619e3546",
+      "previous_bundle_sha256": "aa726bde7c2866ae1429b88679583f50cd7889c2cc9a621b9c309b43f53a5173",
+      "previous_seconds": 1318.0,
+      "selected_seconds": 987.5,
+      "sql_changed_query_ids": [],
+      "recorded_setting_changes": {}
+    }
+  ]
 }

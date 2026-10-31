@@ -135,7 +135,7 @@
   },
   "adopted_summary": {
     "tag": "tuned",
-    "total_seconds": 785.0,
+    "total_seconds": 572.7,
     "profile": "full",
     "result_format": "result-sets-json-v1",
     "timing_protocol": "whole-file-xml-v1",
@@ -262,24 +262,12 @@
     "queryset": "all-tuned"
   },
   "original_summary_sha256": "8d4cb2629f82128781f387db0514d77c69eba819029dc379cc2c85a01d98e8cc",
-  "adopted_summary_sha256": "969ee3931d9655d78d97a46865176ee67fc3931ac30bff71f0d63ccd9f61e524",
-  "ordered_matches": 98,
+  "adopted_summary_sha256": "e410761fc40668a04ac6d5b4758efb5764e994457274104df99a8b303a072610",
+  "ordered_matches": 99,
   "accepted_matches": 99,
-  "all_ordered_results_match": false,
+  "all_ordered_results_match": true,
   "all_result_values_match": true,
-  "reviewed_tie_matches": {
-    "71": {
-      "status": "EQUAL_VALUES_AND_VALID_ORDER_BY_TIES",
-      "rows": 1895,
-      "changed_row_positions": 4,
-      "order_by": "ext_price DESC, i_brand_id ASC",
-      "identical_executed_select": true,
-      "limit_absent": true,
-      "duplicate_preserving_values_equal": true,
-      "both_sequences_sorted": true,
-      "identical_order_key_sequences": true
-    }
-  },
+  "reviewed_tie_matches": {},
   "declared_configuration_differences": {},
   "results": [
     {
@@ -634,18 +622,8 @@
     },
     {
       "query": 71,
-      "status": "ORDER_DIFFERENCE_REQUIRES_REVIEW",
-      "review": {
-        "status": "EQUAL_VALUES_AND_VALID_ORDER_BY_TIES",
-        "rows": 1895,
-        "changed_row_positions": 4,
-        "order_by": "ext_price DESC, i_brand_id ASC",
-        "identical_executed_select": true,
-        "limit_absent": true,
-        "duplicate_preserving_values_equal": true,
-        "both_sequences_sorted": true,
-        "identical_order_key_sequences": true
-      }
+      "status": "MATCH",
+      "review": null
     },
     {
       "query": 72,

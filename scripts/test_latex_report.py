@@ -1,5 +1,6 @@
 """Offline evidence checks for the LaTeX report; no database or TeX required."""
 import importlib.util
+import copy
 import json
 from pathlib import Path
 import tempfile
@@ -241,6 +242,58 @@ class ReportInputs(unittest.TestCase):
         self.assertEqual(len(query_rows), 99)
         self.assertTrue(all(line.count('&') == 8 for line in query_rows))
         self.assertEqual(len((latex / 'assets/normalized-growth.dat').read_text().splitlines()), 4)
+
+    def test_power_context_does_not_follow_an_unrelated_run_summary(self):
+        metadata = self.root / 'report/submission_evidence.json'
+        metadata.parent.mkdir()
+        metadata.write_text(json.dumps({'run_replacements': [
+            {'scale': 2, 'mode': 'adopted', 'selected_summary_sha256': 'older-summary'}]}))
+        runs = {(2, 'adopted'): {'summary_sha256': 'newer-summary'}}
+        self.assertEqual(report.selected_replacements(runs, self.root), [])
+
+    def test_matching_power_context_checks_and_preserves_previous_evidence(self):
+        previous = report.read_run(self.run_folder('previous', 'all-tuned'))
+        path = self.run_folder('selected', 'all-tuned')
+        summary = json.loads((path / '_summary.json').read_text())
+        summary['total_seconds'] = 198.0
+        (path / '_summary.json').write_text(json.dumps(summary))
+        for n in range(1, 100):
+            p = path / f'query{n}.json';r = json.loads(p.read_text());r['seconds'] = 2.0
+            p.write_text(json.dumps(r))
+        selected = report.read_run(path)
+        history = self.root / 'history/run.zip';history.parent.mkdir();history.write_bytes(b'previous-bundle')
+        record = {'scale': 1, 'mode': 'adopted', 'selected_summary_sha256': selected['summary_sha256'],
+                  'history_directory': 'history', 'previous_bundle': 'history/run.zip',
+                  'previous_bundle_sha256': report.sha(history.read_bytes()),
+                  'previous_summary_sha256': previous['summary_sha256']}
+        p = self.root / 'report/submission_evidence.json';p.parent.mkdir()
+        p.write_text(json.dumps({'run_replacements': [record]}))
+        with patch.object(report, 'read_run', return_value=previous):
+            context = report.selected_replacements({(1, 'adopted'): selected}, self.root)
+        self.assertEqual(context[0]['previous_seconds'], 99.0)
+        self.assertEqual(context[0]['selected_seconds'], 198.0)
+        self.assertEqual(context[0]['sql_changed_query_ids'], [])
+        history.write_bytes(b'changed')
+        with self.assertRaisesRegex(ValueError, 'historical evidence hash mismatch'):
+            report.selected_replacements({(1, 'adopted'): selected}, self.root)
+
+    def test_discussion_updates_when_selected_measurements_change(self):
+        runs, comparisons = self.generation_inputs(extra_scale=True)
+        for sf, totals in [(2, (1102.4, 572.7)), (3, (1765.3, 987.5))]:
+            for mode, total in zip(('original', 'adopted'), totals):
+                run = copy.deepcopy(runs[1, mode])
+                run['summary'].update(scale=sf, total_seconds=total)
+                for r in run['records'].values():r['seconds'] = total / 99
+                runs[sf, mode] = run
+            comparisons[sf] = report.compare_pair(runs[sf, 'original'], runs[sf, 'adopted'])
+        report.write_discussion(self.root, runs, comparisons,
+                                report.campaign_statistics(runs, comparisons), [])
+        text = (self.root / 'growth-summary.tex').read_text()
+        self.assertIn('572.7', text)
+        self.assertIn('987.5', text)
+        self.assertNotIn('785.0', text)
+        self.assertNotIn('318.0', text)
+        self.assertIn('All 396 saved ordered query results match', (self.root / 'answer-summary.tex').read_text())
 
 
 if __name__ == '__main__':

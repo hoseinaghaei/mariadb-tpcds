@@ -216,6 +216,140 @@ def campaign_statistics(runs, comparisons):
     return rows
 
 
+def selected_replacements(runs, root=REPO):
+    """Attach operator context only to its exact selected run summary."""
+    path = root / 'report/submission_evidence.json'
+    if not path.is_file():
+        return []
+    records = json.loads(path.read_text()).get('run_replacements', [])
+    selected = []
+    for record in records:
+        key = (record['scale'], record['mode'])
+        run = runs.get(key)
+        if not run or run['summary_sha256'] != record['selected_summary_sha256']:
+            continue
+        relative = Path(record['previous_bundle'])
+        if (relative.is_absolute() or '..' in relative.parts
+                or Path(record['history_directory']) != relative.parent):
+            raise ValueError('unsafe historical evidence path')
+        previous_path = root / relative
+        if sha(previous_path.read_bytes()) != record['previous_bundle_sha256']:
+            raise ValueError(f'historical evidence hash mismatch: {relative}')
+        previous = read_run(previous_path)
+        if previous['summary_sha256'] != record['previous_summary_sha256']:
+            raise ValueError('historical summary does not match the run-selection record')
+        if any(str(previous['summary'].get(k)) != str(run['summary'].get(k))
+               for k in ('scale', 'rngseed', 'queryset')):
+            raise ValueError('selected rerun and historical run describe different workloads or datasets')
+        changed = [n for n in range(1, 100)
+                   if previous['records'][n]['sql_sha256'] != run['records'][n]['sql_sha256']]
+        selected.append({**record, 'previous_seconds': previous['summary']['total_seconds'],
+                         'selected_seconds': run['summary']['total_seconds'],
+                         'sql_changed_query_ids': changed})
+    return selected
+
+
+def write_discussion(output, runs, comparisons, statistics, contexts):
+    """Keep prose synchronized with whichever measured runs are selected."""
+    count = 99 * len(comparisons)
+    ordered = sum(c['ordered_matches'] for c in comparisons.values())
+    reviewed = sum(len(c.get('reviewed_tie_matches', {})) for c in comparisons.values())
+    if ordered == count:
+        answer = f'All {count} saved ordered query results match between the original and adopted workloads at their respective scales.\n'
+    else:
+        answer = (f'The comparison includes {count} query results: {ordered} identical ordered outputs '
+                  f'and {reviewed} reviewed permutations within tied ordering keys.\n')
+        for sf, c in sorted(comparisons.items()):
+            for n, review in c.get('reviewed_tie_matches', {}).items():
+                answer += (f'At SF{sf}, Q{n} returns the same {number(review["rows"], 0)} rows. '
+                           f'{review["changed_row_positions"]} row positions change within tied groups. '
+                           r'The review checks the identical executed SELECT, full duplicate-preserving '
+                           r'values, absence of LIMIT and both complete sort-key sequences, including '
+                           r'MariaDB NULL ordering \citep{nullordering}.' + '\n')
+    (output / 'answer-summary.tex').write_text(answer)
+
+    growth = ''
+    steps = list(zip(statistics, statistics[1:]))
+    if steps:
+        highest = max(steps, key=lambda pair: pair[1]['adopted_seconds'] / pair[0]['adopted_seconds'])
+        lowest = min(steps, key=lambda pair: pair[1]['adopted_seconds'] / pair[0]['adopted_seconds'])
+        for label, (previous, current) in [('largest', highest), ('smallest', lowest)]:
+            growth += (f"The {label} relative step for the adopted workload is SF{previous['scale']}--SF{current['scale']}, "
+                       f"from {number(previous['adopted_seconds'])} to {number(current['adopted_seconds'])} seconds, "
+                       f"a factor of {current['adopted_seconds']/previous['adopted_seconds']:.2f}. ")
+        growth += ('The original/adopted ratios at ' + ', '.join(f"SF{r['scale']}" for r in statistics)
+                   + ' are ' + ', '.join(f"{r['ratio']:.2f}" for r in statistics) + ', respectively.\n')
+    (output / 'growth-summary.tex').write_text(growth)
+
+    core = {14, 23, 59}
+    if all(set(r['top_savings_queries'][:3]) == core for r in statistics):
+        overview = 'Q14, Q23 and Q59 are the three largest contributors to elapsed-time savings at every measured scale. '
+    else:
+        overview = 'We examine Q14, Q23 and Q59 together to show their contribution to complete-workload execution time. '
+    overview += (f"Their combined share ranges from {min(r['core_original_share_percent'] for r in statistics):.1f}"
+                 f"--{max(r['core_original_share_percent'] for r in statistics):.1f}\\% of original workload time "
+                 f"and {min(r['core_adopted_share_percent'] for r in statistics):.1f}"
+                 f"--{max(r['core_adopted_share_percent'] for r in statistics):.1f}\\% of adopted workload time.\n")
+    (output / 'contribution-overview.tex').write_text(overview)
+    contributions = []
+    for row in statistics:
+        if row['scale'] not in (3, 4):
+            continue
+        remainder = row['seconds_saved'] - row['core_seconds_saved']
+        contributions.append(f"At SF{row['scale']}, these three queries save {number(row['core_seconds_saved'])} seconds "
+                             f"of the net {number(row['seconds_saved'])}-second reduction. ")
+        if remainder >= 0:
+            contributions.append(f'The remaining queries collectively contribute another {number(remainder)} seconds.\n\n')
+        else:
+            contributions.append(f'The remaining queries collectively offset {number(-remainder)} seconds.\n\n')
+    (output / 'contribution-discussion.tex').write_text(''.join(contributions))
+    focus = next((r for r in statistics if r['scale'] == 3), statistics[-1])
+    (output / 'distribution-discussion.tex').write_text(
+        f"At SF{focus['scale']}, {focus['faster']} queries record lower time, {focus['slower']} higher time "
+        f"and {focus['same_rounded_time']} the same rounded time in the adopted pass. "
+        'The full-workload ratio combines their elapsed costs through the two sums of query times.\n')
+
+    first, last = statistics[0]['scale'], statistics[-1]['scale']
+    def seconds(sf, mode, n):
+        return runs[sf, mode]['records'][n]['seconds']
+    def ratio(sf, n):
+        return seconds(sf, 'original', n) / seconds(sf, 'adopted', n) if seconds(sf, 'adopted', n) else None
+    q39 = [ratio(r['scale'], 39) for r in statistics]
+    cases = (f"Q4 records {number(seconds(first, 'original', 4))} versus {number(seconds(first, 'adopted', 4))} seconds "
+             f"at SF{first}, and {number(seconds(last, 'original', 4))} versus {number(seconds(last, 'adopted', 4))} seconds at SF{last}. "
+             f"Q39's original/adopted ratio ranges from {min(v for v in q39 if v is not None):.2f} "
+             f"to {max(v for v in q39 if v is not None):.2f} across the measured sizes.\n\n")
+    cases += (f"Q59's original time changes from {number(seconds(first, 'original', 59))} to {number(seconds(last, 'original', 59))} seconds, "
+              f"while adopted time changes from {number(seconds(first, 'adopted', 59))} to {number(seconds(last, 'adopted', 59))} seconds. "
+              f"Its corresponding ratios are {ratio(first, 59):.2f} and {ratio(last, 59):.2f}.\n\n")
+    if all(seconds(r['scale'], 'adopted', 27) > seconds(r['scale'], 'original', 27) for r in statistics):
+        cases += 'Q27 has higher adopted time at every measured scale. '
+    cases += ('Q67 records ratios of ' + ', '.join(f"{ratio(r['scale'], 67):.2f}" for r in statistics)
+              + ' at ' + ', '.join(f"SF{r['scale']}" for r in statistics) + ', respectively. '
+              'The per-query table connects each transformation to its measured behavior in the complete workload.\n')
+    (output / 'case-growth-discussion.tex').write_text(cases)
+
+    selection = ''
+    if contexts:
+        names = ' and '.join(f"SF{r['scale']}" for r in contexts)
+        selection = (r'\subsection{AC-powered optimized reruns}' + '\n'
+                     f'The adopted workloads at {names} were repeated with the laptop connected to AC power. '
+                     'The main comparisons, tables and plots use these replacement runs. ')
+        if all(not r['sql_changed_query_ids'] and not r['recorded_setting_changes'] for r in contexts):
+            selection += 'Their SQL snapshots and recorded standing server settings agree with the preceding runs. '
+        selection += ('Earlier execution artifacts are retained under the corresponding evidence directory in '
+                      r'\file{history/pre-ac-rerun/}.' + '\n\n'
+                      r'\begin{table}[htbp]\centering\small' + '\n'
+                      r'\begin{tabular}{lrrr}\toprule' + '\n'
+                      r'Scale & Previous adopted (s) & Selected AC-powered (s) & Unchanged SQL files \\ \midrule' + '\n')
+        for r in contexts:
+            selection += f"SF{r['scale']} & {number(r['previous_seconds'])} & {number(r['selected_seconds'])} & {99-len(r['sql_changed_query_ids'])}/99" + r' \\' + '\n'
+        selection += (r'\bottomrule\end{tabular}' + '\n'
+                      r'\caption{Adopted-run selection for the AC-powered reruns.}' + '\n'
+                      r'\end{table}' + '\n')
+    (output / 'run-selection.tex').write_text(selection)
+
+
 def adopted_sources(root=REPO):
     sources = {}
     for path in (root / 'queries/tuned').glob('query*.sql'):
@@ -334,12 +468,14 @@ plot {json.dumps(str(ratios))} using 0:2:xtic(1) with boxes lc rgb '#339388', 1 
                        check=True, capture_output=True)
 
 
-def generate(latex, runs, comparisons, sources, environment):
+def generate(latex, runs, comparisons, sources, environment, contexts=None):
+    contexts = contexts or []
     generated, assets = latex / 'generated', latex / 'assets'
     generated.mkdir(); assets.mkdir()
     originals = runs[4, 'original']['records']; adopted = runs[4, 'adopted']['records']
     optimized = sorted(n for n, p in sources.items() if '/optimized/' in p)
     statistics = campaign_statistics(runs, comparisons)
+    write_discussion(generated, runs, comparisons, statistics, contexts)
     by_scale = {r['scale']: r for r in statistics}
     macros = {'AdoptedCount': str(len(optimized)), 'SelectedCount': str(len(sources)),
               'SFfourOriginalSeconds': number(runs[4, 'original']['summary']['total_seconds']),
@@ -522,6 +658,7 @@ workloads. Markers identify the measured scale factors.}
                  'adopted_optimization_ids': optimized,
                  'unsupported_legacy_scaling_table_used': False,
                  'statistics': statistics,
+                 'run_replacements': contexts,
                  'runs': [{'scale': sf, 'mode': mode, 'source': str(r['path'].relative_to(REPO)),
                            'summary_sha256': r['summary_sha256'], 'summary': r['summary']}
                           for (sf, mode), r in sorted(runs.items())],
@@ -535,6 +672,7 @@ def build(output):
         if not shutil.which(executable):
             raise ValueError(f'{executable} is required; no dependencies were installed')
     runs, comparisons = collect()
+    contexts = selected_replacements(runs)
     sources = adopted_sources()
     output = Path(output).resolve()
     output.mkdir(parents=True, exist_ok=False)
@@ -546,7 +684,7 @@ def build(output):
     for name in ('main.tex', 'metadata.tex', 'references.bib', 'README.txt'):
         shutil.copyfile(REPO / 'report/latex' / name, latex / name)
     shutil.copyfile(REPO / 'DSGen-software-code-4.0.0/EULA.txt', latex / 'TPC-EULA.txt')
-    generate(latex, runs, comparisons, sources, env)
+    generate(latex, runs, comparisons, sources, env, contexts)
     preserved = latex / 'evidence'; preserved.mkdir()
     # Preserve completed inputs in the shareable source package. Exporting
     # live directories is offline and never executes queries or changes data.
@@ -558,6 +696,11 @@ def build(output):
         else:
             payload, _ = run_payload(run['path'])
             write_zip(destination, payload)
+    for context in contexts:
+        historical = preserved / 'history' / f'sf{context["scale"]}-pre-ac-rerun'
+        historical.mkdir(parents=True)
+        for name in ('run.zip', 'comparison.csv', 'comparison.json'):
+            shutil.copyfile(REPO / context['history_directory'] / name, historical / name)
     command = ['xelatex', '-no-shell-escape', '-interaction=nonstopmode', '-halt-on-error',
                '-file-line-error', '-output-directory=' + str(builddir), 'main.tex']
     log = output / 'latex-build.log'

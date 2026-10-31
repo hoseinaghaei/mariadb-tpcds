@@ -34,6 +34,9 @@ The old unsupported four-scale table is not used as experimental evidence.
 
 generated/evidence.json identifies each input summary and configuration.
 generated/campaign-statistics.json stores the derived totals, ratios and contributions.
+generated/run-selection.tex records the selected AC-powered SF2/SF3 reruns.
+Their previous adopted passes are retained under evidence/history/ in this ZIP
+and history/pre-ac-rerun/ in the corresponding repository evidence folders.
 generated/sf<N>-comparison.csv contains all 99 per-query times and answer statuses.
 The raw comparison status is preserved. Q71 permutations within tied ordering
 keys are recorded as a separate review only after checking the executed SQL,

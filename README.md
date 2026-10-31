@@ -97,12 +97,17 @@ of the four scales:
 | `original-run.zip` | Original workload: 99 timing records, complete answers, executed SQL and integrity manifest |
 | `run.zip` | Adopted/optimized workload with the same complete evidence |
 | `comparison.csv` | Per-query original/adopted times, SQL hashes and answer-comparison status |
-| `comparison.json` | Run configurations and the complete comparison, including the reviewed SF2 Q71 tied-row order |
+| `comparison.json` | Run configurations and the complete per-query answer comparison |
 
 These bundles preserve eight complete workload passes: 792 query-file
 executions and 396 original/adopted result comparisons. They remain usable
 without the Docker database volumes. The actual index counts and executed SQL
 versions are recorded per run.
+
+The selected SF2/SF3 optimized measurements are reruns made with the PC
+connected to AC power. Earlier adopted passes are preserved in each scale's
+`history/pre-ac-rerun/` directory; `report/submission_evidence.json` records the
+run selection and summary hashes.
 
 Build a fresh PDF and an editable LaTeX/Overleaf ZIP using installed XeLaTeX,
 BibTeX and gnuplot:

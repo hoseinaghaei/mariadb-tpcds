@@ -190,6 +190,8 @@ def source_payload(root=REPO):
                      'experiments/evidence/docker_sf4_99/original-run.zip',
                      'experiments/evidence/docker_sf4_99/comparison.json',
                      'experiments/evidence/docker_sf4_99/comparison.csv'}
+    allowed_extra.update(f'experiments/evidence/docker_sf{sf}_99/history/pre-ac-rerun/{name}'
+                         for sf in (2, 3) for name in ('run.zip', 'comparison.csv', 'comparison.json'))
     names = set(filter(None, tracked)) | (set(extra) & allowed_extra)
     payload = {}
     for name in sorted(names):
