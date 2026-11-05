@@ -1,0 +1,48 @@
+{
+ "schema": "four-scale-twice-v1",
+ "recorded_at_utc": "2026-11-04T21:53:34Z",
+ "scales": [
+  1,
+  2,
+  4,
+  8
+ ],
+ "repetitions_per_scale": 2,
+ "query_count": 40,
+ "errors": 0,
+ "configuration": {
+  "seed": 10,
+  "page_kib": 32,
+  "buffer_pool_gib": 8,
+  "sample_pages": 160,
+  "secondary_indexes": 95,
+  "query_set": "queries/tuned",
+  "optimize_table": false
+ },
+ "totals_seconds": {
+  "1": {
+   "a": 141.9,
+   "b": 139.8,
+   "best": 139.8,
+   "spread_pct": 1.5
+  },
+  "2": {
+   "a": 291.2,
+   "b": 339.6,
+   "best": 291.2,
+   "spread_pct": 16.6
+  },
+  "4": {
+   "a": 741.2,
+   "b": 793.1,
+   "best": 741.2,
+   "spread_pct": 7.0
+  },
+  "8": {
+   "a": 2736.2,
+   "b": 2692.2,
+   "best": 2692.2,
+   "spread_pct": 1.6
+  }
+ }
+}
