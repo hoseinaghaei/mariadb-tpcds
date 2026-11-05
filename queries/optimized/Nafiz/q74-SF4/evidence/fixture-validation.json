@@ -1,0 +1,212 @@
+[
+  {
+    "case": "duplicate_ids",
+    "label": "late_customer",
+    "exact_match": true,
+    "rows": 13,
+    "reason": "Matched original"
+  },
+  {
+    "case": "duplicate_ids",
+    "label": "late_range",
+    "exact_match": true,
+    "rows": 13,
+    "reason": "Matched original"
+  },
+  {
+    "case": "duplicate_ids",
+    "label": "historical_pivot",
+    "exact_match": false,
+    "rows": 6,
+    "reason": "Historical pivot loses original duplicate-ID combinations"
+  },
+  {
+    "case": "duplicate_ids",
+    "label": "guarded_ordered_max",
+    "exact_match": true,
+    "rows": 13,
+    "reason": "Matched original"
+  },
+  {
+    "case": "duplicate_ids",
+    "label": "guarded_unforced",
+    "exact_match": true,
+    "rows": 13,
+    "reason": "Matched original"
+  },
+  {
+    "case": "duplicate_ids",
+    "label": "guarded_webfirst",
+    "exact_match": true,
+    "rows": 13,
+    "reason": "Matched original"
+  },
+  {
+    "case": "duplicate_ids",
+    "label": "guarded_presence",
+    "exact_match": true,
+    "rows": 13,
+    "reason": "Matched original"
+  },
+  {
+    "case": "duplicate_ids",
+    "label": "stream_guard",
+    "exact_match": true,
+    "rows": 13,
+    "reason": "Matched original"
+  },
+  {
+    "case": "duplicate_ids",
+    "label": "stream_guard_web",
+    "exact_match": true,
+    "rows": 13,
+    "reason": "Matched original"
+  },
+  {
+    "case": "duplicate_ids",
+    "label": "stream_guard_presence",
+    "exact_match": true,
+    "rows": 13,
+    "reason": "Matched original"
+  },
+  {
+    "case": "unique_ids",
+    "label": "late_customer",
+    "exact_match": true,
+    "rows": 6,
+    "reason": "Matched original"
+  },
+  {
+    "case": "unique_ids",
+    "label": "late_range",
+    "exact_match": true,
+    "rows": 6,
+    "reason": "Matched original"
+  },
+  {
+    "case": "unique_ids",
+    "label": "historical_pivot",
+    "exact_match": true,
+    "rows": 6,
+    "reason": "Matched original"
+  },
+  {
+    "case": "unique_ids",
+    "label": "guarded_ordered_max",
+    "exact_match": true,
+    "rows": 6,
+    "reason": "Matched original"
+  },
+  {
+    "case": "unique_ids",
+    "label": "guarded_unforced",
+    "exact_match": true,
+    "rows": 6,
+    "reason": "Matched original"
+  },
+  {
+    "case": "unique_ids",
+    "label": "guarded_webfirst",
+    "exact_match": true,
+    "rows": 6,
+    "reason": "Matched original"
+  },
+  {
+    "case": "unique_ids",
+    "label": "guarded_presence",
+    "exact_match": true,
+    "rows": 6,
+    "reason": "Matched original"
+  },
+  {
+    "case": "unique_ids",
+    "label": "stream_guard",
+    "exact_match": true,
+    "rows": 6,
+    "reason": "Matched original"
+  },
+  {
+    "case": "unique_ids",
+    "label": "stream_guard_web",
+    "exact_match": true,
+    "rows": 6,
+    "reason": "Matched original"
+  },
+  {
+    "case": "unique_ids",
+    "label": "stream_guard_presence",
+    "exact_match": true,
+    "rows": 6,
+    "reason": "Matched original"
+  },
+  {
+    "case": "empty_unique",
+    "label": "late_customer",
+    "exact_match": true,
+    "rows": 0,
+    "reason": "Matched original"
+  },
+  {
+    "case": "empty_unique",
+    "label": "late_range",
+    "exact_match": true,
+    "rows": 0,
+    "reason": "Matched original"
+  },
+  {
+    "case": "empty_unique",
+    "label": "historical_pivot",
+    "exact_match": true,
+    "rows": 0,
+    "reason": "Matched original"
+  },
+  {
+    "case": "empty_unique",
+    "label": "guarded_ordered_max",
+    "exact_match": true,
+    "rows": 0,
+    "reason": "Matched original"
+  },
+  {
+    "case": "empty_unique",
+    "label": "guarded_unforced",
+    "exact_match": true,
+    "rows": 0,
+    "reason": "Matched original"
+  },
+  {
+    "case": "empty_unique",
+    "label": "guarded_webfirst",
+    "exact_match": true,
+    "rows": 0,
+    "reason": "Matched original"
+  },
+  {
+    "case": "empty_unique",
+    "label": "guarded_presence",
+    "exact_match": true,
+    "rows": 0,
+    "reason": "Matched original"
+  },
+  {
+    "case": "empty_unique",
+    "label": "stream_guard",
+    "exact_match": true,
+    "rows": 0,
+    "reason": "Matched original"
+  },
+  {
+    "case": "empty_unique",
+    "label": "stream_guard_web",
+    "exact_match": true,
+    "rows": 0,
+    "reason": "Matched original"
+  },
+  {
+    "case": "empty_unique",
+    "label": "stream_guard_presence",
+    "exact_match": true,
+    "rows": 0,
+    "reason": "Matched original"
+  }
+]

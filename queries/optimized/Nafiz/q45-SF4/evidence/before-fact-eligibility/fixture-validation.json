@@ -1,0 +1,164 @@
+[
+  {
+    "case": "empty",
+    "label": "original",
+    "match": true,
+    "rows_by_part": [
+      0
+    ],
+    "comparison": "exact ordered bytes per result set"
+  },
+  {
+    "case": "empty",
+    "label": "bounds",
+    "match": true,
+    "rows_by_part": [
+      0
+    ],
+    "comparison": "exact ordered bytes per result set"
+  },
+  {
+    "case": "empty",
+    "label": "index_only",
+    "match": true,
+    "rows_by_part": [
+      0
+    ],
+    "comparison": "exact ordered bytes per result set"
+  },
+  {
+    "case": "empty",
+    "label": "bounded_cover",
+    "match": true,
+    "rows_by_part": [
+      0
+    ],
+    "comparison": "exact ordered bytes per result set"
+  },
+  {
+    "case": "empty",
+    "label": "disjoint_union",
+    "match": true,
+    "rows_by_part": [
+      0
+    ],
+    "comparison": "exact ordered bytes per result set"
+  },
+  {
+    "case": "empty",
+    "label": "union_cover",
+    "match": true,
+    "rows_by_part": [
+      0
+    ],
+    "comparison": "exact ordered bytes per result set"
+  },
+  {
+    "case": "empty",
+    "label": "selective_union",
+    "match": true,
+    "rows_by_part": [
+      0
+    ],
+    "comparison": "exact ordered bytes per result set"
+  },
+  {
+    "case": "empty",
+    "label": "selective_cover",
+    "match": true,
+    "rows_by_part": [
+      0
+    ],
+    "comparison": "exact ordered bytes per result set"
+  },
+  {
+    "case": "empty",
+    "label": "all_cover",
+    "match": true,
+    "rows_by_part": [
+      0
+    ],
+    "comparison": "exact ordered bytes per result set"
+  },
+  {
+    "case": "edge_cases",
+    "label": "original",
+    "match": true,
+    "rows_by_part": [
+      5
+    ],
+    "comparison": "exact ordered bytes per result set"
+  },
+  {
+    "case": "edge_cases",
+    "label": "bounds",
+    "match": true,
+    "rows_by_part": [
+      5
+    ],
+    "comparison": "exact ordered bytes per result set"
+  },
+  {
+    "case": "edge_cases",
+    "label": "index_only",
+    "match": true,
+    "rows_by_part": [
+      5
+    ],
+    "comparison": "exact ordered bytes per result set"
+  },
+  {
+    "case": "edge_cases",
+    "label": "bounded_cover",
+    "match": true,
+    "rows_by_part": [
+      5
+    ],
+    "comparison": "exact ordered bytes per result set"
+  },
+  {
+    "case": "edge_cases",
+    "label": "disjoint_union",
+    "match": true,
+    "rows_by_part": [
+      5
+    ],
+    "comparison": "exact ordered bytes per result set"
+  },
+  {
+    "case": "edge_cases",
+    "label": "union_cover",
+    "match": true,
+    "rows_by_part": [
+      5
+    ],
+    "comparison": "exact ordered bytes per result set"
+  },
+  {
+    "case": "edge_cases",
+    "label": "selective_union",
+    "match": true,
+    "rows_by_part": [
+      5
+    ],
+    "comparison": "exact ordered bytes per result set"
+  },
+  {
+    "case": "edge_cases",
+    "label": "selective_cover",
+    "match": true,
+    "rows_by_part": [
+      5
+    ],
+    "comparison": "exact ordered bytes per result set"
+  },
+  {
+    "case": "edge_cases",
+    "label": "all_cover",
+    "match": true,
+    "rows_by_part": [
+      5
+    ],
+    "comparison": "exact ordered bytes per result set"
+  }
+]

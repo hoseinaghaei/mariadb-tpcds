@@ -1,0 +1,203 @@
+{
+  "query_block": {
+    "select_id": 1,
+    "cost": 14.94099386,
+    "having_condition": "sum(with_threshold.netpaid) > max(with_threshold.threshold)",
+    "filesort": {
+      "sort_key": "with_threshold.c_last_name, with_threshold.c_first_name, with_threshold.s_store_name",
+      "temporary_table": {
+        "nested_loop": [
+          {
+            "table": {
+              "table_name": "<derived3>",
+              "access_type": "ALL",
+              "loops": 1,
+              "rows": 21000,
+              "cost": 0.9483766,
+              "filtered": 100,
+              "attached_condition": "with_threshold.i_color = 'slate'",
+              "materialized": {
+                "query_block": {
+                  "select_id": 3,
+                  "cost": 0.9483766,
+                  "window_functions_computation": {
+                    "sorts": [
+                      {
+                        "filesort": {
+                          "sort_key": "tmp_field"
+                        }
+                      }
+                    ],
+                    "temporary_table": {
+                      "nested_loop": [
+                        {
+                          "table": {
+                            "table_name": "<derived2>",
+                            "access_type": "ALL",
+                            "loops": 1,
+                            "rows": 21000,
+                            "cost": 0.9483766,
+                            "filtered": 100,
+                            "materialized": {
+                              "query_block": {
+                                "select_id": 2,
+                                "cost": 57.06879944,
+                                "filesort": {
+                                  "sort_key": "customer.c_last_name, customer.c_first_name, store.s_store_name, customer_address.ca_state, store.s_state, item.i_color, item.i_current_price, item.i_manager_id, item.i_units, item.i_size",
+                                  "temporary_table": {
+                                    "nested_loop": [
+                                      {
+                                        "table": {
+                                          "table_name": "store",
+                                          "access_type": "ALL",
+                                          "possible_keys": ["PRIMARY"],
+                                          "loops": 1,
+                                          "rows": 42,
+                                          "cost": 0.01852,
+                                          "filtered": 100,
+                                          "attached_condition": "store.s_market_id = 10 and store.s_zip is not null"
+                                        }
+                                      },
+                                      {
+                                        "block-nl-join": {
+                                          "table": {
+                                            "table_name": "customer_address",
+                                            "access_type": "ref",
+                                            "possible_keys": [
+                                              "PRIMARY",
+                                              "idx_nf_q24_zip"
+                                            ],
+                                            "key": "idx_nf_q24_zip",
+                                            "key_length": "41",
+                                            "used_key_parts": ["ca_zip"],
+                                            "ref": ["tpcds.store.s_zip"],
+                                            "loops": 42,
+                                            "rows": 25,
+                                            "cost": 2.24929024,
+                                            "filtered": 100
+                                          },
+                                          "buffer_type": "flat",
+                                          "buffer_size": "32KiB",
+                                          "join_type": "BKAH",
+                                          "mrr_type": "Rowid-ordered scan"
+                                        }
+                                      },
+                                      {
+                                        "block-nl-join": {
+                                          "table": {
+                                            "table_name": "customer",
+                                            "access_type": "ref",
+                                            "possible_keys": [
+                                              "PRIMARY",
+                                              "idx_c_addr",
+                                              "idx_c_current_addr_sk"
+                                            ],
+                                            "key": "idx_c_addr",
+                                            "key_length": "9",
+                                            "used_key_parts": ["c_current_addr_sk"],
+                                            "ref": [
+                                              "tpcds.customer_address.ca_address_sk"
+                                            ],
+                                            "loops": 1050,
+                                            "rows": 2,
+                                            "cost": 6.2097808,
+                                            "filtered": 100
+                                          },
+                                          "buffer_type": "incremental",
+                                          "buffer_size": "231KiB",
+                                          "join_type": "BKAH",
+                                          "mrr_type": "Rowid-ordered scan",
+                                          "attached_condition": "customer.c_birth_country <> ucase(customer_address.ca_country)"
+                                        }
+                                      },
+                                      {
+                                        "table": {
+                                          "table_name": "store_sales",
+                                          "access_type": "ref",
+                                          "possible_keys": [
+                                            "PRIMARY",
+                                            "idx_ss_item_sk",
+                                            "idx_ss_store_hdemo_time",
+                                            "idx_ss_cust_date",
+                                            "idx_ss_customer_sk",
+                                            "idx_ss_q61",
+                                            "idx_ss_store_sk",
+                                            "idx_nf_q24_cust_store_cover"
+                                          ],
+                                          "key": "idx_nf_q24_cust_store_cover",
+                                          "key_length": "18",
+                                          "used_key_parts": [
+                                            "ss_customer_sk",
+                                            "ss_store_sk"
+                                          ],
+                                          "ref": [
+                                            "tpcds.customer.c_customer_sk",
+                                            "tpcds.store.s_store_sk"
+                                          ],
+                                          "loops": 2100,
+                                          "rows": 10,
+                                          "cost": 8.257137,
+                                          "filtered": 100,
+                                          "using_index": true
+                                        }
+                                      },
+                                      {
+                                        "table": {
+                                          "table_name": "store_returns",
+                                          "access_type": "eq_ref",
+                                          "possible_keys": [
+                                            "PRIMARY",
+                                            "idx_sr_item_sk",
+                                            "idx_sr_ticket_number"
+                                          ],
+                                          "key": "idx_sr_item_sk",
+                                          "key_length": "16",
+                                          "used_key_parts": [
+                                            "sr_item_sk",
+                                            "sr_ticket_number"
+                                          ],
+                                          "ref": [
+                                            "tpcds.store_sales.ss_item_sk",
+                                            "tpcds.store_sales.ss_ticket_number"
+                                          ],
+                                          "loops": 21000,
+                                          "rows": 1,
+                                          "cost": 20.1336154,
+                                          "filtered": 100,
+                                          "using_index": true
+                                        }
+                                      },
+                                      {
+                                        "table": {
+                                          "table_name": "item",
+                                          "access_type": "eq_ref",
+                                          "possible_keys": ["PRIMARY"],
+                                          "key": "PRIMARY",
+                                          "key_length": "8",
+                                          "used_key_parts": ["i_item_sk"],
+                                          "ref": ["tpcds.store_sales.ss_item_sk"],
+                                          "loops": 21000,
+                                          "rows": 1,
+                                          "cost": 20.200456,
+                                          "filtered": 100
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

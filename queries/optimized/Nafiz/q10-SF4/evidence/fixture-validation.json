@@ -1,0 +1,67 @@
+[
+  {
+    "label": "date_ranges",
+    "exact_match": true,
+    "reason": "Matched original"
+  },
+  {
+    "label": "county_first",
+    "exact_match": true,
+    "reason": "Matched original"
+  },
+  {
+    "label": "county_ranges",
+    "exact_match": true,
+    "reason": "Matched original"
+  },
+  {
+    "label": "previous_nodate",
+    "exact_match": false,
+    "reason": "Date join removal admits an orphan date key"
+  },
+  {
+    "label": "correlated",
+    "exact_match": true,
+    "reason": "Matched original"
+  },
+  {
+    "label": "correlated_ranges",
+    "exact_match": true,
+    "reason": "Matched original"
+  },
+  {
+    "label": "swap_web_catalog",
+    "exact_match": true,
+    "reason": "Matched original"
+  },
+  {
+    "label": "union_exists",
+    "exact_match": true,
+    "reason": "Matched original"
+  },
+  {
+    "label": "union_no_order",
+    "exact_match": true,
+    "reason": "Matched original"
+  },
+  {
+    "label": "union_correlated",
+    "exact_match": true,
+    "reason": "Matched original"
+  },
+  {
+    "label": "county_range",
+    "exact_match": true,
+    "reason": "Matched original"
+  },
+  {
+    "label": "channel_first",
+    "exact_match": true,
+    "reason": "Matched original"
+  },
+  {
+    "label": "channel_first_no_bka",
+    "exact_match": true,
+    "reason": "Matched original"
+  }
+]

@@ -1,0 +1,6 @@
+{
+  "table": "store_sales",
+  "columns": "ss_customer_sk,ss_net_paid,ss_sold_date_sk",
+  "bytes": 492503040,
+  "build_seconds": 20.172196849998727
+}

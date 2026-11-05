@@ -1,0 +1,6 @@
+{
+  "table": "customer_address",
+  "columns": "ca_zip",
+  "build_seconds": 0.16811036600120133,
+  "bytes": 5275648
+}

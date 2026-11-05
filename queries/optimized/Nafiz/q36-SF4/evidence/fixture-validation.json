@@ -1,0 +1,272 @@
+[
+  {
+    "case": "empty",
+    "label": "original",
+    "match": true,
+    "rows_by_part": [
+      0
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "empty",
+    "label": "bounds",
+    "match": true,
+    "rows_by_part": [
+      0
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "empty",
+    "label": "leaf_levels",
+    "match": true,
+    "rows_by_part": [
+      0
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "empty",
+    "label": "bounded_leaf",
+    "match": true,
+    "rows_by_part": [
+      0
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "empty",
+    "label": "index_only",
+    "match": true,
+    "rows_by_part": [
+      0
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "empty",
+    "label": "leaf_cover",
+    "match": true,
+    "rows_by_part": [
+      0
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "empty",
+    "label": "bounded_cover",
+    "match": true,
+    "rows_by_part": [
+      0
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "empty",
+    "label": "late_item",
+    "match": true,
+    "rows_by_part": [
+      0
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "empty",
+    "label": "late_item_cover",
+    "match": true,
+    "rows_by_part": [
+      0
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "empty",
+    "label": "raw_levels",
+    "match": true,
+    "rows_by_part": [
+      0
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "edge_cases",
+    "label": "original",
+    "match": true,
+    "rows_by_part": [
+      12
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "edge_cases",
+    "label": "bounds",
+    "match": true,
+    "rows_by_part": [
+      12
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "edge_cases",
+    "label": "leaf_levels",
+    "match": true,
+    "rows_by_part": [
+      12
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "edge_cases",
+    "label": "bounded_leaf",
+    "match": true,
+    "rows_by_part": [
+      12
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "edge_cases",
+    "label": "index_only",
+    "match": true,
+    "rows_by_part": [
+      12
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "edge_cases",
+    "label": "leaf_cover",
+    "match": true,
+    "rows_by_part": [
+      12
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "edge_cases",
+    "label": "bounded_cover",
+    "match": true,
+    "rows_by_part": [
+      12
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "edge_cases",
+    "label": "late_item",
+    "match": true,
+    "rows_by_part": [
+      12
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "edge_cases",
+    "label": "late_item_cover",
+    "match": true,
+    "rows_by_part": [
+      12
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "edge_cases",
+    "label": "raw_levels",
+    "match": true,
+    "rows_by_part": [
+      12
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "all_null_metrics",
+    "label": "original",
+    "match": true,
+    "rows_by_part": [
+      12
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "all_null_metrics",
+    "label": "bounds",
+    "match": true,
+    "rows_by_part": [
+      12
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "all_null_metrics",
+    "label": "leaf_levels",
+    "match": true,
+    "rows_by_part": [
+      12
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "all_null_metrics",
+    "label": "bounded_leaf",
+    "match": true,
+    "rows_by_part": [
+      12
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "all_null_metrics",
+    "label": "index_only",
+    "match": true,
+    "rows_by_part": [
+      12
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "all_null_metrics",
+    "label": "leaf_cover",
+    "match": true,
+    "rows_by_part": [
+      12
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "all_null_metrics",
+    "label": "bounded_cover",
+    "match": true,
+    "rows_by_part": [
+      12
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "all_null_metrics",
+    "label": "late_item",
+    "match": true,
+    "rows_by_part": [
+      12
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "all_null_metrics",
+    "label": "late_item_cover",
+    "match": true,
+    "rows_by_part": [
+      12
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  },
+  {
+    "case": "all_null_metrics",
+    "label": "raw_levels",
+    "match": true,
+    "rows_by_part": [
+      12
+    ],
+    "comparison": "full row multiset for tied Q36 order"
+  }
+]

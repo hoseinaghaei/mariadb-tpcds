@@ -1,0 +1,12 @@
+[
+  {
+    "name": "idx_nf_q24_zip",
+    "table": "customer_address",
+    "columns": "ca_zip"
+  },
+  {
+    "name": "idx_nf_q24_cust_store_cover",
+    "table": "store_sales",
+    "columns": "ss_customer_sk,ss_store_sk,ss_ext_sales_price"
+  }
+]

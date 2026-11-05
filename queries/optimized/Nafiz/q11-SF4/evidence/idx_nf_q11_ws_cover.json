@@ -1,0 +1,6 @@
+{
+  "table": "web_sales",
+  "columns": "ws_sold_date_sk,ws_bill_customer_sk,ws_ext_list_price,ws_ext_discount_amt",
+  "bytes": 143917056,
+  "build_seconds": 8.009983128002204
+}

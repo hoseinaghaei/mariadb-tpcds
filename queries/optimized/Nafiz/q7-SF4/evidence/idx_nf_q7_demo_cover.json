@@ -1,0 +1,5 @@
+{
+  "columns": "ss_cdemo_sk,ss_sold_date_sk,ss_item_sk,ss_promo_sk,ss_quantity,ss_list_price,ss_coupon_amt,ss_sales_price",
+  "build_seconds": 32.04030428100032,
+  "bytes": 759136256
+}

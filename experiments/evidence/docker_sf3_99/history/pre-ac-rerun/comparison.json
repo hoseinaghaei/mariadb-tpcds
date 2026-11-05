@@ -1,0 +1,769 @@
+{
+  "schema": "tpcds-original-adopted-comparison-v1",
+  "scale": 3,
+  "rngseed": "10",
+  "queries": 99,
+  "original_bundle": "original-run.zip",
+  "adopted_bundle": "run.zip",
+  "original_summary": {
+    "tag": "tuned",
+    "total_seconds": 1765.3,
+    "profile": "full",
+    "result_format": "result-sets-json-v1",
+    "timing_protocol": "whole-file-xml-v1",
+    "correctness": "NOT_COMPARED",
+    "purpose": "performance-experiment",
+    "scale": 3,
+    "rngseed": "10",
+    "queries": 99,
+    "errors": 0,
+    "query_ids": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99
+    ],
+    "statement_timeout_seconds": 3600,
+    "server_settings_bytes": {
+      "tmp_table_size": 1610612736,
+      "max_heap_table_size": 1610612736,
+      "aria_pagecache_buffer_size": 1073741824,
+      "sort_buffer_size": 67108864,
+      "join_buffer_size": 67108864,
+      "join_buffer_space_limit": 268435456
+    },
+    "page_kb": 32,
+    "sample_pages": 160,
+    "indexes": 190,
+    "buffer_pool_bytes": 2147483648,
+    "queryset": "all"
+  },
+  "adopted_summary": {
+    "tag": "tuned",
+    "total_seconds": 1318.0,
+    "profile": "full",
+    "result_format": "result-sets-json-v1",
+    "timing_protocol": "whole-file-xml-v1",
+    "correctness": "NOT_COMPARED",
+    "purpose": "performance-experiment",
+    "scale": 3,
+    "rngseed": "10",
+    "queries": 99,
+    "errors": 0,
+    "query_ids": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54,
+      55,
+      56,
+      57,
+      58,
+      59,
+      60,
+      61,
+      62,
+      63,
+      64,
+      65,
+      66,
+      67,
+      68,
+      69,
+      70,
+      71,
+      72,
+      73,
+      74,
+      75,
+      76,
+      77,
+      78,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87,
+      88,
+      89,
+      90,
+      91,
+      92,
+      93,
+      94,
+      95,
+      96,
+      97,
+      98,
+      99
+    ],
+    "statement_timeout_seconds": 3600,
+    "server_settings_bytes": {
+      "tmp_table_size": 1610612736,
+      "max_heap_table_size": 1610612736,
+      "aria_pagecache_buffer_size": 1073741824,
+      "sort_buffer_size": 67108864,
+      "join_buffer_size": 67108864,
+      "join_buffer_space_limit": 268435456
+    },
+    "page_kb": 32,
+    "sample_pages": 160,
+    "indexes": 190,
+    "buffer_pool_bytes": 2147483648,
+    "queryset": "all-tuned"
+  },
+  "original_summary_sha256": "510cb1d67fa8b2a8561928c31ebf5b21b56207c2567f1bce56a6ac3ac2157413",
+  "adopted_summary_sha256": "9145f7f849f3cb63b7bc6b650ad4d410437ce573b77ad7829030f389619e3546",
+  "ordered_matches": 99,
+  "accepted_matches": 99,
+  "all_ordered_results_match": true,
+  "all_result_values_match": true,
+  "reviewed_tie_matches": {},
+  "declared_configuration_differences": {},
+  "results": [
+    {
+      "query": 1,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 2,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 3,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 4,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 5,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 6,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 7,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 8,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 9,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 10,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 11,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 12,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 13,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 14,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 15,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 16,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 17,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 18,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 19,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 20,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 21,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 22,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 23,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 24,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 25,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 26,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 27,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 28,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 29,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 30,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 31,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 32,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 33,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 34,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 35,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 36,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 37,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 38,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 39,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 40,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 41,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 42,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 43,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 44,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 45,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 46,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 47,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 48,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 49,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 50,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 51,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 52,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 53,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 54,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 55,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 56,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 57,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 58,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 59,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 60,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 61,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 62,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 63,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 64,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 65,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 66,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 67,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 68,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 69,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 70,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 71,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 72,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 73,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 74,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 75,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 76,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 77,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 78,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 79,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 80,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 81,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 82,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 83,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 84,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 85,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 86,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 87,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 88,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 89,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 90,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 91,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 92,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 93,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 94,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 95,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 96,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 97,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 98,
+      "status": "MATCH",
+      "review": null
+    },
+    {
+      "query": 99,
+      "status": "MATCH",
+      "review": null
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "secondary_indexes": 167,
+  "ignored_indexes": 0,
+  "removed_only_experiment_owned_indexes": [
+    [
+      "store_sales",
+      "idx_nf_q74_ss_top"
+    ],
+    [
+      "web_sales",
+      "idx_nf_q74_ws_top"
+    ],
+    [
+      "customer",
+      "idx_nf_q74_customer_order"
+    ],
+    [
+      "customer",
+      "idx_nf_q74_customer_id"
+    ]
+  ]
+}

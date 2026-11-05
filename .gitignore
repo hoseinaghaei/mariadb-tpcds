@@ -59,3 +59,6 @@ pagesize/*-sf4.sock
 # Docker reproduction output (regenerate with ./reproduce.sh)
 /results/
 
+# Generated course PDF/ZIP releases; source and selected evidence stay in Git.
+/submission/
+

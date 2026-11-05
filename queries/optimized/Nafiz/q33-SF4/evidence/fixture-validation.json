@@ -1,0 +1,62 @@
+[
+  {
+    "label": "date_range",
+    "exact_match": true,
+    "rows": 4,
+    "sha256": "79596060027039b1bbeb07dbda0a01c19d27ac57b586b5a1ab1b99406355c215"
+  },
+  {
+    "label": "shared_books",
+    "exact_match": true,
+    "rows": 4,
+    "sha256": "79596060027039b1bbeb07dbda0a01c19d27ac57b586b5a1ab1b99406355c215"
+  },
+  {
+    "label": "union_first",
+    "exact_match": true,
+    "rows": 4,
+    "sha256": "79596060027039b1bbeb07dbda0a01c19d27ac57b586b5a1ab1b99406355c215"
+  },
+  {
+    "label": "preaggregate_items",
+    "exact_match": true,
+    "rows": 4,
+    "sha256": "79596060027039b1bbeb07dbda0a01c19d27ac57b586b5a1ab1b99406355c215"
+  },
+  {
+    "label": "late_books",
+    "exact_match": true,
+    "rows": 4,
+    "sha256": "79596060027039b1bbeb07dbda0a01c19d27ac57b586b5a1ab1b99406355c215"
+  },
+  {
+    "label": "eligible_items",
+    "exact_match": true,
+    "rows": 4,
+    "sha256": "79596060027039b1bbeb07dbda0a01c19d27ac57b586b5a1ab1b99406355c215"
+  },
+  {
+    "label": "forced_union",
+    "exact_match": true,
+    "rows": 4,
+    "sha256": "79596060027039b1bbeb07dbda0a01c19d27ac57b586b5a1ab1b99406355c215"
+  },
+  {
+    "label": "forced_original",
+    "exact_match": true,
+    "rows": 4,
+    "sha256": "79596060027039b1bbeb07dbda0a01c19d27ac57b586b5a1ab1b99406355c215"
+  },
+  {
+    "label": "global_item_totals",
+    "exact_match": true,
+    "rows": 4,
+    "sha256": "79596060027039b1bbeb07dbda0a01c19d27ac57b586b5a1ab1b99406355c215"
+  },
+  {
+    "label": "union_no_cache",
+    "exact_match": true,
+    "rows": 4,
+    "sha256": "79596060027039b1bbeb07dbda0a01c19d27ac57b586b5a1ab1b99406355c215"
+  }
+]

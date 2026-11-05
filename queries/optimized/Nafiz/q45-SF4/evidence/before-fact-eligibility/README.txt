@@ -1,0 +1,1 @@
+Earlier completed screening/benchmark/fixtures, preserved separately. The new final batch includes early fact-key eligibility and compares all versions under its own unchanged-statistics snapshot. No earlier timings are mixed into the new final table.

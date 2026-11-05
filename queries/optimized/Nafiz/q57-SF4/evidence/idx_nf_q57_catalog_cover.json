@@ -1,0 +1,6 @@
+{
+  "table": "catalog_sales",
+  "columns": "cs_sold_date_sk,cs_item_sk,cs_call_center_sk,cs_sales_price",
+  "bytes": 255197184,
+  "build_seconds": 15.172679515999334
+}

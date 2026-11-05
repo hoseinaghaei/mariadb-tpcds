@@ -1,0 +1,68 @@
+[
+  {
+    "label": "original",
+    "rows": 137,
+    "match": true,
+    "comparison": "complete row multiset, including hierarchy level and rank"
+  },
+  {
+    "label": "bounds",
+    "rows": 137,
+    "match": true,
+    "comparison": "complete row multiset, including hierarchy level and rank"
+  },
+  {
+    "label": "leaf_levels",
+    "rows": 137,
+    "match": true,
+    "comparison": "complete row multiset, including hierarchy level and rank"
+  },
+  {
+    "label": "bounded_leaf",
+    "rows": 137,
+    "match": true,
+    "comparison": "complete row multiset, including hierarchy level and rank"
+  },
+  {
+    "label": "index_only",
+    "rows": 137,
+    "match": true,
+    "comparison": "complete row multiset, including hierarchy level and rank"
+  },
+  {
+    "label": "leaf_cover",
+    "rows": 137,
+    "match": true,
+    "comparison": "complete row multiset, including hierarchy level and rank"
+  },
+  {
+    "label": "bounded_cover",
+    "rows": 137,
+    "match": true,
+    "comparison": "complete row multiset, including hierarchy level and rank"
+  },
+  {
+    "label": "late_item",
+    "rows": 137,
+    "match": true,
+    "comparison": "complete row multiset, including hierarchy level and rank"
+  },
+  {
+    "label": "late_item_cover",
+    "rows": 137,
+    "match": true,
+    "comparison": "complete row multiset, including hierarchy level and rank"
+  },
+  {
+    "label": "raw_levels",
+    "rows": 137,
+    "match": true,
+    "comparison": "complete row multiset, including hierarchy level and rank"
+  },
+  {
+    "label": "control_original_best_indexes",
+    "rows": 137,
+    "match": true,
+    "comparison": "complete row multiset, including hierarchy level and rank"
+  }
+]

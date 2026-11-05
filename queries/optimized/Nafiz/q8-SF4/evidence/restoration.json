@@ -1,0 +1,18 @@
+{
+  "secondary_indexes": 167,
+  "ignored_indexes": 0,
+  "removed_only_experiment_owned_indexes": [
+    [
+      "customer",
+      "idx_nf_q8_pref_addr"
+    ],
+    [
+      "customer",
+      "idx_nf_q8_addr_pref"
+    ],
+    [
+      "customer_address",
+      "idx_nf_q8_zip_cover"
+    ]
+  ]
+}

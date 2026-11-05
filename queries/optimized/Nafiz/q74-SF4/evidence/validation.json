@@ -1,0 +1,9 @@
+{
+  "sf4_ordered_limit100_exact": true,
+  "rows": 100,
+  "full_ordered_exact": true,
+  "full_rows": 1228,
+  "fixture_unique_fast_and_duplicate_fallback_passed": true,
+  "historical_pivot_duplicate_id_rejected": true,
+  "output_sha256": "1e5a0a85ebc38ececfa11b3013d029e9ded454ab3e247e4f4cd7c2bfeb73e491"
+}

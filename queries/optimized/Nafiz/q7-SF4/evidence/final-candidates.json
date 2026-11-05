@@ -1,0 +1,37 @@
+{
+  "final_original": {
+    "sql": "select  i_item_id, \n        avg(ss_quantity) agg1,\n        avg(ss_list_price) agg2,\n        avg(ss_coupon_amt) agg3,\n        avg(ss_sales_price) agg4 \n from store_sales, customer_demographics, date_dim, item, promotion\n where ss_sold_date_sk = d_date_sk and\n       ss_item_sk = i_item_sk and\n       ss_cdemo_sk = cd_demo_sk and\n       ss_promo_sk = p_promo_sk and\n       cd_gender = 'F' and \n       cd_marital_status = 'S' and\n       cd_education_status = 'Unknown' and\n       (p_channel_email = 'N' or p_channel_event = 'N') and\n       d_year = 1998 \n group by i_item_id\n order by i_item_id\n limit 100;\n",
+    "active_extra_indexes": []
+  },
+  "final_range": {
+    "sql": "select  i_item_id, \n        avg(ss_quantity) agg1,\n        avg(ss_list_price) agg2,\n        avg(ss_coupon_amt) agg3,\n        avg(ss_sales_price) agg4 \n from store_sales, customer_demographics, date_dim, item, promotion\n where ss_sold_date_sk = d_date_sk and\n       ss_item_sk = i_item_sk and\n       ss_cdemo_sk = cd_demo_sk and\n       ss_promo_sk = p_promo_sk and\n       cd_gender = 'F' and \n       cd_marital_status = 'S' and\n       cd_education_status = 'Unknown' and\n       (p_channel_email = 'N' or p_channel_event = 'N') and\n       d_year = 1998 AND ss_sold_date_sk BETWEEN 2450815 AND 2451179 \n group by i_item_id\n order by i_item_id\n limit 100;\n",
+    "active_extra_indexes": []
+  },
+  "final_demo_cover": {
+    "sql": "select  i_item_id, \n        avg(ss_quantity) agg1,\n        avg(ss_list_price) agg2,\n        avg(ss_coupon_amt) agg3,\n        avg(ss_sales_price) agg4 \n from store_sales, customer_demographics, date_dim, item, promotion\n where ss_sold_date_sk = d_date_sk and\n       ss_item_sk = i_item_sk and\n       ss_cdemo_sk = cd_demo_sk and\n       ss_promo_sk = p_promo_sk and\n       cd_gender = 'F' and \n       cd_marital_status = 'S' and\n       cd_education_status = 'Unknown' and\n       (p_channel_email = 'N' or p_channel_event = 'N') and\n       d_year = 1998 \n group by i_item_id\n order by i_item_id\n limit 100;\n",
+    "active_extra_indexes": [
+      "idx_nf_q7_demo_cover"
+    ]
+  },
+  "final_ordered": {
+    "sql": "select STRAIGHT_JOIN  i_item_id, \n        avg(ss_quantity) agg1,\n        avg(ss_list_price) agg2,\n        avg(ss_coupon_amt) agg3,\n        avg(ss_sales_price) agg4 \n from item FORCE INDEX (idx_nf_q7_item_id), store_sales FORCE INDEX (idx_nf_q7_item_cover), customer_demographics, date_dim, promotion\n where ss_sold_date_sk = d_date_sk and\n       ss_item_sk = i_item_sk and\n       ss_cdemo_sk = cd_demo_sk and\n       ss_promo_sk = p_promo_sk and\n       cd_gender = 'F' and \n       cd_marital_status = 'S' and\n       cd_education_status = 'Unknown' and\n       (p_channel_email = 'N' or p_channel_event = 'N') and\n       d_year = 1998 \n group by i_item_id\n order by i_item_id\n limit 100;\n",
+    "active_extra_indexes": [
+      "idx_nf_q7_item_cover",
+      "idx_nf_q7_item_id"
+    ]
+  },
+  "final_ordered_range": {
+    "sql": "select STRAIGHT_JOIN  i_item_id, \n        avg(ss_quantity) agg1,\n        avg(ss_list_price) agg2,\n        avg(ss_coupon_amt) agg3,\n        avg(ss_sales_price) agg4 \n from item FORCE INDEX (idx_nf_q7_item_id), store_sales FORCE INDEX (idx_nf_q7_item_cover), customer_demographics, date_dim, promotion\n where ss_sold_date_sk = d_date_sk and\n       ss_item_sk = i_item_sk and\n       ss_cdemo_sk = cd_demo_sk and\n       ss_promo_sk = p_promo_sk and\n       cd_gender = 'F' and \n       cd_marital_status = 'S' and\n       cd_education_status = 'Unknown' and\n       (p_channel_email = 'N' or p_channel_event = 'N') and\n       d_year = 1998 AND ss_sold_date_sk BETWEEN 2450815 AND 2451179 \n group by i_item_id\n order by i_item_id\n limit 100;\n",
+    "active_extra_indexes": [
+      "idx_nf_q7_item_cover",
+      "idx_nf_q7_item_id"
+    ]
+  },
+  "control_original_item_profile": {
+    "sql": "select  i_item_id, \n        avg(ss_quantity) agg1,\n        avg(ss_list_price) agg2,\n        avg(ss_coupon_amt) agg3,\n        avg(ss_sales_price) agg4 \n from store_sales, customer_demographics, date_dim, item, promotion\n where ss_sold_date_sk = d_date_sk and\n       ss_item_sk = i_item_sk and\n       ss_cdemo_sk = cd_demo_sk and\n       ss_promo_sk = p_promo_sk and\n       cd_gender = 'F' and \n       cd_marital_status = 'S' and\n       cd_education_status = 'Unknown' and\n       (p_channel_email = 'N' or p_channel_event = 'N') and\n       d_year = 1998 \n group by i_item_id\n order by i_item_id\n limit 100;\n",
+    "active_extra_indexes": [
+      "idx_nf_q7_item_cover",
+      "idx_nf_q7_item_id"
+    ]
+  }
+}

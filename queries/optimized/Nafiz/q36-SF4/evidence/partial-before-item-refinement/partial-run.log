@@ -1,0 +1,984 @@
+Q24: build idx_nf_q24_zip (ca_zip) once, outside timing
+Q24: build idx_nf_q24_cust_store_cover (ss_customer_sk,ss_store_sk,ss_ext_sales_price) once, outside timing
+Q24: test original — Original. 
+Q24 original: warm-up
+  5.254687s, 8 rows, exact match
+Q24: test index_only — ZIP/customer covering. Test index access on unchanged original SQL.
+Q24 index_only: warm-up
+  0.028863s, 8 rows, exact match
+Q24: test zip_first — Store ZIP first. Begin with the market/ZIP/address/customer restrictions before fact lookup; retain all joins and both AVG thresholds.
+Q24 zip_first: warm-up
+  0.347161s, 8 rows, exact match
+Q24: test zip_cover — ZIP first + cover. Use ZIP lookup and covering customer/store sales lookup with the same join-order rewrite.
+Q24 zip_cover: warm-up
+  0.030753s, 8 rows, exact match
+Q24: test window_once — Single threshold materialization. Compute the all-colour grouped average with a window before either outer colour filter.
+Q24 window_once: warm-up
+  4.927545s, 8 rows, exact match
+Q24: test zip_window — ZIP first + window. Combine early ZIP filtering with one grouped CTE per result set.
+Q24 zip_window: warm-up
+  0.146060s, 8 rows, exact match
+Q24: test zip_window_cover — ZIP/window + cover. Combine both independently validated rewrites with optional covering indexes.
+Q24 zip_window_cover: warm-up
+  0.022529s, 8 rows, exact match
+Q24 original: round 1
+  5.082284s, 8 rows, exact match
+Q24 index_only: round 1
+  0.029147s, 8 rows, exact match
+Q24 zip_first: round 1
+  0.274138s, 8 rows, exact match
+Q24 zip_cover: round 1
+  0.030564s, 8 rows, exact match
+Q24 window_once: round 1
+  4.892714s, 8 rows, exact match
+Q24 zip_window: round 1
+  0.146394s, 8 rows, exact match
+Q24 zip_window_cover: round 1
+  0.023738s, 8 rows, exact match
+Q24 zip_window_cover: round 2
+  0.022824s, 8 rows, exact match
+Q24 zip_window: round 2
+  0.147500s, 8 rows, exact match
+Q24 window_once: round 2
+  4.955003s, 8 rows, exact match
+Q24 zip_cover: round 2
+  0.029679s, 8 rows, exact match
+Q24 zip_first: round 2
+  0.274891s, 8 rows, exact match
+Q24 index_only: round 2
+  0.029169s, 8 rows, exact match
+Q24 original: round 2
+  5.344716s, 8 rows, exact match
+Q24 original: round 3
+  5.067002s, 8 rows, exact match
+Q24 index_only: round 3
+  0.028183s, 8 rows, exact match
+Q24 zip_first: round 3
+  0.262129s, 8 rows, exact match
+Q24 zip_cover: round 3
+  0.028458s, 8 rows, exact match
+Q24 window_once: round 3
+  4.866038s, 8 rows, exact match
+Q24 zip_window: round 3
+  0.141607s, 8 rows, exact match
+Q24 zip_window_cover: round 3
+  0.021902s, 8 rows, exact match
+Q24 final_original: warm-up
+  5.112284s, 8 rows, exact match
+Q24 final_index_only: warm-up
+  0.028320s, 8 rows, exact match
+Q24 final_zip_first: warm-up
+  0.269669s, 8 rows, exact match
+Q24 final_zip_cover: warm-up
+  0.028399s, 8 rows, exact match
+Q24 final_window_once: warm-up
+  4.918640s, 8 rows, exact match
+Q24 final_zip_window: warm-up
+  0.141766s, 8 rows, exact match
+Q24 final_zip_window_cover: warm-up
+  0.022921s, 8 rows, exact match
+Q24 final_control_original_best_indexes: warm-up
+  0.027753s, 8 rows, exact match
+Q24 final_original: round 1
+  5.125823s, 8 rows, exact match
+Q24 final_index_only: round 1
+  0.028420s, 8 rows, exact match
+Q24 final_zip_first: round 1
+  0.267817s, 8 rows, exact match
+Q24 final_zip_cover: round 1
+  0.028556s, 8 rows, exact match
+Q24 final_window_once: round 1
+  4.856157s, 8 rows, exact match
+Q24 final_zip_window: round 1
+  0.141261s, 8 rows, exact match
+Q24 final_zip_window_cover: round 1
+  0.022315s, 8 rows, exact match
+Q24 final_control_original_best_indexes: round 1
+  0.028716s, 8 rows, exact match
+Q24 final_control_original_best_indexes: round 2
+  0.027991s, 8 rows, exact match
+Q24 final_zip_window_cover: round 2
+  0.023163s, 8 rows, exact match
+Q24 final_zip_window: round 2
+  0.142773s, 8 rows, exact match
+Q24 final_window_once: round 2
+  4.966078s, 8 rows, exact match
+Q24 final_zip_cover: round 2
+  0.028259s, 8 rows, exact match
+Q24 final_zip_first: round 2
+  0.263076s, 8 rows, exact match
+Q24 final_index_only: round 2
+  0.028088s, 8 rows, exact match
+Q24 final_original: round 2
+  4.972453s, 8 rows, exact match
+Q24 final_original: round 3
+  5.057888s, 8 rows, exact match
+Q24 final_index_only: round 3
+  0.027805s, 8 rows, exact match
+Q24 final_zip_first: round 3
+  0.265883s, 8 rows, exact match
+Q24 final_zip_cover: round 3
+  0.028348s, 8 rows, exact match
+Q24 final_window_once: round 3
+  5.013781s, 8 rows, exact match
+Q24 final_zip_window: round 3
+  0.149671s, 8 rows, exact match
+Q24 final_zip_window_cover: round 3
+  0.023735s, 8 rows, exact match
+Q24 final_control_original_best_indexes: round 3
+  0.034751s, 8 rows, exact match
+Q24 final_control_original_best_indexes: round 4
+  0.029219s, 8 rows, exact match
+Q24 final_zip_window_cover: round 4
+  0.023336s, 8 rows, exact match
+Q24 final_zip_window: round 4
+  0.149521s, 8 rows, exact match
+Q24 final_window_once: round 4
+  4.890526s, 8 rows, exact match
+Q24 final_zip_cover: round 4
+  0.027859s, 8 rows, exact match
+Q24 final_zip_first: round 4
+  0.258539s, 8 rows, exact match
+Q24 final_index_only: round 4
+  0.028607s, 8 rows, exact match
+Q24 final_original: round 4
+  5.006346s, 8 rows, exact match
+Q24 final_original: round 5
+  4.972696s, 8 rows, exact match
+Q24 final_index_only: round 5
+  0.028874s, 8 rows, exact match
+Q24 final_zip_first: round 5
+  0.265246s, 8 rows, exact match
+Q24 final_zip_cover: round 5
+  0.028065s, 8 rows, exact match
+Q24 final_window_once: round 5
+  4.906353s, 8 rows, exact match
+Q24 final_zip_window: round 5
+  0.141051s, 8 rows, exact match
+Q24 final_zip_window_cover: round 5
+  0.022223s, 8 rows, exact match
+Q24 final_control_original_best_indexes: round 5
+  0.028904s, 8 rows, exact match
+Q24 final_control_original_best_indexes: round 6
+  0.027806s, 8 rows, exact match
+Q24 final_zip_window_cover: round 6
+  0.022555s, 8 rows, exact match
+Q24 final_zip_window: round 6
+  0.143662s, 8 rows, exact match
+Q24 final_window_once: round 6
+  4.912896s, 8 rows, exact match
+Q24 final_zip_cover: round 6
+  0.028698s, 8 rows, exact match
+Q24 final_zip_first: round 6
+  0.266155s, 8 rows, exact match
+Q24 final_index_only: round 6
+  0.027738s, 8 rows, exact match
+Q24 final_original: round 6
+  5.016225s, 8 rows, exact match
+Q24 final_original: round 7
+  5.004771s, 8 rows, exact match
+Q24 final_index_only: round 7
+  0.029320s, 8 rows, exact match
+Q24 final_zip_first: round 7
+  0.276687s, 8 rows, exact match
+Q24 final_zip_cover: round 7
+  0.028623s, 8 rows, exact match
+Q24 final_window_once: round 7
+  4.989454s, 8 rows, exact match
+Q24 final_zip_window: round 7
+  0.139466s, 8 rows, exact match
+Q24 final_zip_window_cover: round 7
+  0.022463s, 8 rows, exact match
+Q24 final_control_original_best_indexes: round 7
+  0.027626s, 8 rows, exact match
+Q24: study complete, shared95 restored.
+Q34: build idx_nf_q34_hd_date_cover (ss_hdemo_sk,ss_sold_date_sk,ss_store_sk,ss_customer_sk) once, outside timing
+Q34: build idx_nf_q34_date_hd_cover (ss_sold_date_sk,ss_hdemo_sk,ss_store_sk,ss_customer_sk) once, outside timing
+Q34: test original — Original. 
+Rejected original: --------------
+EXPLAIN FORMAT=JSON select c_last_name
+       ,c_first_name
+       ,c_salutation
+       ,c_preferred_cust_flag
+       ,ss_ticket_number
+       ,cnt from
+   (select ss_ticket_number
+          ,ss_customer_sk
+          ,count(*) cnt
+    from store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover),date_dim,store,household_demographics
+    where store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover).ss_sold_date_sk = date_dim.d_date_sk
+    and store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover).ss_store_sk = store.s_store_sk  
+    and store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover).ss_hdemo_sk = household_demographics.hd_demo_sk
+    and (date_dim.d_dom between 1 and 3 or date_dim.d_dom between 25 and 28)
+    and (household_demographics.hd_buy_potential = '>10000' or
+         household_demographics.hd_buy_potential = 'Unknown')
+    and household_demographics.hd_vehicle_count > 0
+    and (case when household_demographics.hd_vehicle_count > 0 
+	then household_demographics.hd_dep_count/ household_demographics.hd_vehicle_count 
+	else null 
+	end)  > 1.2
+    and date_dim.d_year in (1998,1998+1,1998+2)
+    and store.s_county in ('Williamson County','Williamson County','Williamson County','Williamson County',
+                           'Williamson County','Williamson County','Williamson County','Williamson County')
+    group by ss_ticket_number,ss_customer_sk) dn,customer
+    where ss_customer_sk = c_customer_sk
+      and cnt between 15 and 20
+    order by c_last_name,c_first_name,c_salutation,c_preferred_cust_flag desc, ss_ticket_number
+--------------
+
+ERROR 1064 (42000) at line 2: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover).ss_sold_date...' at line 11
+
+Q34: test bounds — Date bounds + simplification. Retain date_dim and exact original ratio CASE; simplify duplicate county and buy-potential predicates.
+Rejected bounds: --------------
+EXPLAIN FORMAT=JSON select c_last_name
+       ,c_first_name
+       ,c_salutation
+       ,c_preferred_cust_flag
+       ,ss_ticket_number
+       ,cnt from
+   (select ss_ticket_number
+          ,ss_customer_sk
+          ,count(*) cnt
+    from store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover),date_dim,store,household_demographics
+    where store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover).ss_sold_date_sk = date_dim.d_date_sk
+    and store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover).ss_store_sk = store.s_store_sk  
+    and store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover).ss_hdemo_sk = household_demographics.hd_demo_sk
+    and (date_dim.d_dom between 1 and 3 or date_dim.d_dom between 25 and 28)
+    and household_demographics.hd_buy_potential IN ('>10000','Unknown')
+    and household_demographics.hd_vehicle_count > 0
+    and (case when household_demographics.hd_vehicle_count > 0 
+	then household_demographics.hd_dep_count/ household_demographics.hd_vehicle_count 
+	else null 
+	end)  > 1.2
+    and store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover).ss_sold_date_sk BETWEEN 2450815 AND 2451910
+    and date_dim.d_year in (1998,1998+1,1998+2)
+    and store.s_county='Williamson County'
+    group by ss_ticket_number,ss_customer_sk) dn,customer
+    where ss_customer_sk = c_customer_sk
+      and cnt between 15 and 20
+    order by c_last_name,c_first_name,c_salutation,c_preferred_cust_flag desc, ss_ticket_number
+--------------
+
+ERROR 1064 (42000) at line 2: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover).ss_sold_date...' at line 11
+
+Q34: test no_split — Materialize ticket groups once. Test disabling split materialization for this statement only, avoiding a possible per-customer derived execution.
+Rejected no_split: --------------
+SET STATEMENT optimizer_switch='split_materialized=off' FOR EXPLAIN FORMAT=JSON select c_last_name
+       ,c_first_name
+       ,c_salutation
+       ,c_preferred_cust_flag
+       ,ss_ticket_number
+       ,cnt from
+   (select ss_ticket_number
+          ,ss_customer_sk
+          ,count(*) cnt
+    from store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover),date_dim,store,household_demographics
+    where store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover).ss_sold_date_sk = date_dim.d_date_sk
+    and store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover).ss_store_sk = store.s_store_sk  
+    and store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover).ss_hdemo_sk = household_demographics.hd_demo_sk
+    and (date_dim.d_dom between 1 and 3 or date_dim.d_dom between 25 and 28)
+    and household_demographics.hd_buy_potential IN ('>10000','Unknown')
+    and household_demographics.hd_vehicle_count > 0
+    and (case when household_demographics.hd_vehicle_count > 0 
+	then household_demographics.hd_dep_count/ household_demographics.hd_vehicle_count 
+	else null 
+	end)  > 1.2
+    and store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover).ss_sold_date_sk BETWEEN 2450815 AND 2451910
+    and date_dim.d_year in (1998,1998+1,1998+2)
+    and store.s_county='Williamson County'
+    group by ss_ticket_number,ss_customer_sk) dn,customer
+    where ss_customer_sk = c_customer_sk
+      and cnt between 15 and 20
+    order by c_last_name,c_first_name,c_salutation,c_preferred_cust_flag desc, ss_ticket_number
+--------------
+
+ERROR 1064 (42000) at line 2: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover).ss_sold_date...' at line 11
+
+Q34: test date_first — Date-first ticket groups. Drive from the qualifying days rather than scanning all sales.
+Rejected date_first: --------------
+EXPLAIN FORMAT=JSON select c_last_name
+       ,c_first_name
+       ,c_salutation
+       ,c_preferred_cust_flag
+       ,ss_ticket_number
+       ,cnt from
+   (select ss_ticket_number
+          ,ss_customer_sk
+          ,count(*) cnt
+    FROM date_dim STRAIGHT_JOIN store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover) ON ss_sold_date_sk=d_date_sk STRAIGHT_JOIN household_demographics ON ss_hdemo_sk=hd_demo_sk STRAIGHT_JOIN store ON ss_store_sk=s_store_sk
+    where store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover).ss_sold_date_sk = date_dim.d_date_sk
+    and store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover).ss_store_sk = store.s_store_sk  
+    and store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover).ss_hdemo_sk = household_demographics.hd_demo_sk
+    and (date_dim.d_dom between 1 and 3 or date_dim.d_dom between 25 and 28)
+    and household_demographics.hd_buy_potential IN ('>10000','Unknown')
+    and household_demographics.hd_vehicle_count > 0
+    and (case when household_demographics.hd_vehicle_count > 0 
+	then household_demographics.hd_dep_count/ household_demographics.hd_vehicle_count 
+	else null 
+	end)  > 1.2
+    and store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover).ss_sold_date_sk BETWEEN 2450815 AND 2451910
+    and date_dim.d_year in (1998,1998+1,1998+2)
+    and store.s_county='Williamson County'
+    group by ss_ticket_number,ss_customer_sk) dn,customer
+    where ss_customer_sk = c_customer_sk
+      and cnt between 15 and 20
+    order by c_last_name,c_first_name,c_salutation,c_preferred_cust_flag desc, ss_ticket_number
+--------------
+
+ERROR 1064 (42000) at line 2: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover).ss_sold_date...' at line 11
+
+Q34: test hd_first — Household-first groups. Filter the 1040 qualifying household profiles before sales access.
+Rejected hd_first: --------------
+EXPLAIN FORMAT=JSON select c_last_name
+       ,c_first_name
+       ,c_salutation
+       ,c_preferred_cust_flag
+       ,ss_ticket_number
+       ,cnt from
+   (select ss_ticket_number
+          ,ss_customer_sk
+          ,count(*) cnt
+    FROM household_demographics STRAIGHT_JOIN store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover) ON ss_hdemo_sk=hd_demo_sk STRAIGHT_JOIN date_dim ON ss_sold_date_sk=d_date_sk STRAIGHT_JOIN store ON ss_store_sk=s_store_sk
+    where store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover).ss_sold_date_sk = date_dim.d_date_sk
+    and store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover).ss_store_sk = store.s_store_sk  
+    and store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover).ss_hdemo_sk = household_demographics.hd_demo_sk
+    and (date_dim.d_dom between 1 and 3 or date_dim.d_dom between 25 and 28)
+    and household_demographics.hd_buy_potential IN ('>10000','Unknown')
+    and household_demographics.hd_vehicle_count > 0
+    and (case when household_demographics.hd_vehicle_count > 0 
+	then household_demographics.hd_dep_count/ household_demographics.hd_vehicle_count 
+	else null 
+	end)  > 1.2
+    and store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover).ss_sold_date_sk BETWEEN 2450815 AND 2451910
+    and date_dim.d_year in (1998,1998+1,1998+2)
+    and store.s_county='Williamson County'
+    group by ss_ticket_number,ss_customer_sk) dn,customer
+    where ss_customer_sk = c_customer_sk
+      and cnt between 15 and 20
+    order by c_last_name,c_first_name,c_salutation,c_preferred_cust_flag desc, ss_ticket_number
+--------------
+
+ERROR 1064 (42000) at line 2: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'IGNORE INDEX (idx_nf_q34_hd_date_cover,idx_nf_q34_date_hd_cover).ss_sold_date...' at line 11
+
+Q34: test hd_index — Household covering. 
+Rejected hd_index: --------------
+EXPLAIN FORMAT=JSON select c_last_name
+       ,c_first_name
+       ,c_salutation
+       ,c_preferred_cust_flag
+       ,ss_ticket_number
+       ,cnt from
+   (select ss_ticket_number
+          ,ss_customer_sk
+          ,count(*) cnt
+    from store_sales IGNORE INDEX (idx_nf_q34_date_hd_cover),date_dim,store,household_demographics
+    where store_sales IGNORE INDEX (idx_nf_q34_date_hd_cover).ss_sold_date_sk = date_dim.d_date_sk
+    and store_sales IGNORE INDEX (idx_nf_q34_date_hd_cover).ss_store_sk = store.s_store_sk  
+    and store_sales IGNORE INDEX (idx_nf_q34_date_hd_cover).ss_hdemo_sk = household_demographics.hd_demo_sk
+    and (date_dim.d_dom between 1 and 3 or date_dim.d_dom between 25 and 28)
+    and (household_demographics.hd_buy_potential = '>10000' or
+         household_demographics.hd_buy_potential = 'Unknown')
+    and household_demographics.hd_vehicle_count > 0
+    and (case when household_demographics.hd_vehicle_count > 0 
+	then household_demographics.hd_dep_count/ household_demographics.hd_vehicle_count 
+	else null 
+	end)  > 1.2
+    and date_dim.d_year in (1998,1998+1,1998+2)
+    and store.s_county in ('Williamson County','Williamson County','Williamson County','Williamson County',
+                           'Williamson County','Williamson County','Williamson County','Williamson County')
+    group by ss_ticket_number,ss_customer_sk) dn,customer
+    where ss_customer_sk = c_customer_sk
+      and cnt between 15 and 20
+    order by c_last_name,c_first_name,c_salutation,c_preferred_cust_flag desc, ss_ticket_number
+--------------
+
+ERROR 1064 (42000) at line 2: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'IGNORE INDEX (idx_nf_q34_date_hd_cover).ss_sold_date_sk = date_dim.d_date_sk
+...' at line 11
+
+Q34: test date_index — Date covering. 
+Rejected date_index: --------------
+EXPLAIN FORMAT=JSON select c_last_name
+       ,c_first_name
+       ,c_salutation
+       ,c_preferred_cust_flag
+       ,ss_ticket_number
+       ,cnt from
+   (select ss_ticket_number
+          ,ss_customer_sk
+          ,count(*) cnt
+    from store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover),date_dim,store,household_demographics
+    where store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover).ss_sold_date_sk = date_dim.d_date_sk
+    and store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover).ss_store_sk = store.s_store_sk  
+    and store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover).ss_hdemo_sk = household_demographics.hd_demo_sk
+    and (date_dim.d_dom between 1 and 3 or date_dim.d_dom between 25 and 28)
+    and (household_demographics.hd_buy_potential = '>10000' or
+         household_demographics.hd_buy_potential = 'Unknown')
+    and household_demographics.hd_vehicle_count > 0
+    and (case when household_demographics.hd_vehicle_count > 0 
+	then household_demographics.hd_dep_count/ household_demographics.hd_vehicle_count 
+	else null 
+	end)  > 1.2
+    and date_dim.d_year in (1998,1998+1,1998+2)
+    and store.s_county in ('Williamson County','Williamson County','Williamson County','Williamson County',
+                           'Williamson County','Williamson County','Williamson County','Williamson County')
+    group by ss_ticket_number,ss_customer_sk) dn,customer
+    where ss_customer_sk = c_customer_sk
+      and cnt between 15 and 20
+    order by c_last_name,c_first_name,c_salutation,c_preferred_cust_flag desc, ss_ticket_number
+--------------
+
+ERROR 1064 (42000) at line 2: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'IGNORE INDEX (idx_nf_q34_hd_date_cover).ss_sold_date_sk = date_dim.d_date_sk
+...' at line 11
+
+Q34: test hd_cover — Household first + cover. 
+Rejected hd_cover: --------------
+EXPLAIN FORMAT=JSON select c_last_name
+       ,c_first_name
+       ,c_salutation
+       ,c_preferred_cust_flag
+       ,ss_ticket_number
+       ,cnt from
+   (select ss_ticket_number
+          ,ss_customer_sk
+          ,count(*) cnt
+    FROM household_demographics STRAIGHT_JOIN store_sales IGNORE INDEX (idx_nf_q34_date_hd_cover) ON ss_hdemo_sk=hd_demo_sk STRAIGHT_JOIN date_dim ON ss_sold_date_sk=d_date_sk STRAIGHT_JOIN store ON ss_store_sk=s_store_sk
+    where store_sales IGNORE INDEX (idx_nf_q34_date_hd_cover).ss_sold_date_sk = date_dim.d_date_sk
+    and store_sales IGNORE INDEX (idx_nf_q34_date_hd_cover).ss_store_sk = store.s_store_sk  
+    and store_sales IGNORE INDEX (idx_nf_q34_date_hd_cover).ss_hdemo_sk = household_demographics.hd_demo_sk
+    and (date_dim.d_dom between 1 and 3 or date_dim.d_dom between 25 and 28)
+    and household_demographics.hd_buy_potential IN ('>10000','Unknown')
+    and household_demographics.hd_vehicle_count > 0
+    and (case when household_demographics.hd_vehicle_count > 0 
+	then household_demographics.hd_dep_count/ household_demographics.hd_vehicle_count 
+	else null 
+	end)  > 1.2
+    and store_sales IGNORE INDEX (idx_nf_q34_date_hd_cover).ss_sold_date_sk BETWEEN 2450815 AND 2451910
+    and date_dim.d_year in (1998,1998+1,1998+2)
+    and store.s_county='Williamson County'
+    group by ss_ticket_number,ss_customer_sk) dn,customer
+    where ss_customer_sk = c_customer_sk
+      and cnt between 15 and 20
+    order by c_last_name,c_first_name,c_salutation,c_preferred_cust_flag desc, ss_ticket_number
+--------------
+
+ERROR 1064 (42000) at line 2: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'IGNORE INDEX (idx_nf_q34_date_hd_cover).ss_sold_date_sk = date_dim.d_date_sk
+...' at line 11
+
+Q34: test date_cover — Date first + cover. 
+Rejected date_cover: --------------
+EXPLAIN FORMAT=JSON select c_last_name
+       ,c_first_name
+       ,c_salutation
+       ,c_preferred_cust_flag
+       ,ss_ticket_number
+       ,cnt from
+   (select ss_ticket_number
+          ,ss_customer_sk
+          ,count(*) cnt
+    FROM date_dim STRAIGHT_JOIN store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover) ON ss_sold_date_sk=d_date_sk STRAIGHT_JOIN household_demographics ON ss_hdemo_sk=hd_demo_sk STRAIGHT_JOIN store ON ss_store_sk=s_store_sk
+    where store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover).ss_sold_date_sk = date_dim.d_date_sk
+    and store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover).ss_store_sk = store.s_store_sk  
+    and store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover).ss_hdemo_sk = household_demographics.hd_demo_sk
+    and (date_dim.d_dom between 1 and 3 or date_dim.d_dom between 25 and 28)
+    and household_demographics.hd_buy_potential IN ('>10000','Unknown')
+    and household_demographics.hd_vehicle_count > 0
+    and (case when household_demographics.hd_vehicle_count > 0 
+	then household_demographics.hd_dep_count/ household_demographics.hd_vehicle_count 
+	else null 
+	end)  > 1.2
+    and store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover).ss_sold_date_sk BETWEEN 2450815 AND 2451910
+    and date_dim.d_year in (1998,1998+1,1998+2)
+    and store.s_county='Williamson County'
+    group by ss_ticket_number,ss_customer_sk) dn,customer
+    where ss_customer_sk = c_customer_sk
+      and cnt between 15 and 20
+    order by c_last_name,c_first_name,c_salutation,c_preferred_cust_flag desc, ss_ticket_number
+--------------
+
+ERROR 1064 (42000) at line 2: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'IGNORE INDEX (idx_nf_q34_hd_date_cover).ss_sold_date_sk = date_dim.d_date_sk
+...' at line 11
+
+Q34: test bounded_date_cover — Bounds + date cover. 
+Rejected bounded_date_cover: --------------
+EXPLAIN FORMAT=JSON select c_last_name
+       ,c_first_name
+       ,c_salutation
+       ,c_preferred_cust_flag
+       ,ss_ticket_number
+       ,cnt from
+   (select ss_ticket_number
+          ,ss_customer_sk
+          ,count(*) cnt
+    from store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover),date_dim,store,household_demographics
+    where store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover).ss_sold_date_sk = date_dim.d_date_sk
+    and store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover).ss_store_sk = store.s_store_sk  
+    and store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover).ss_hdemo_sk = household_demographics.hd_demo_sk
+    and (date_dim.d_dom between 1 and 3 or date_dim.d_dom between 25 and 28)
+    and household_demographics.hd_buy_potential IN ('>10000','Unknown')
+    and household_demographics.hd_vehicle_count > 0
+    and (case when household_demographics.hd_vehicle_count > 0 
+	then household_demographics.hd_dep_count/ household_demographics.hd_vehicle_count 
+	else null 
+	end)  > 1.2
+    and store_sales IGNORE INDEX (idx_nf_q34_hd_date_cover).ss_sold_date_sk BETWEEN 2450815 AND 2451910
+    and date_dim.d_year in (1998,1998+1,1998+2)
+    and store.s_county='Williamson County'
+    group by ss_ticket_number,ss_customer_sk) dn,customer
+    where ss_customer_sk = c_customer_sk
+      and cnt between 15 and 20
+    order by c_last_name,c_first_name,c_salutation,c_preferred_cust_flag desc, ss_ticket_number
+--------------
+
+ERROR 1064 (42000) at line 2: You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'IGNORE INDEX (idx_nf_q34_hd_date_cover).ss_sold_date_sk = date_dim.d_date_sk
+...' at line 11
+
+Traceback (most recent call last):
+  File "/setup/next4-sf4.py", line 111, in <module>
+    assert any(c['label']=='original' for c in valid)
+           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
+Q34: build idx_nf_q34_hd_date_cover (ss_hdemo_sk,ss_sold_date_sk,ss_store_sk,ss_customer_sk) once, outside timing
+Q34: build idx_nf_q34_date_hd_cover (ss_sold_date_sk,ss_hdemo_sk,ss_store_sk,ss_customer_sk) once, outside timing
+Q34: test original — Original. 
+Q34 original: warm-up
+  6.838665s, 1872 rows, exact match
+Q34: test bounds — Date bounds + simplification. Retain date_dim and exact original ratio CASE; simplify duplicate county and buy-potential predicates.
+Q34 bounds: warm-up
+  5.169779s, 1872 rows, exact match
+Q34: test no_split — Materialize ticket groups once. Test disabling split materialization for this statement only, avoiding a possible per-customer derived execution.
+Q34 no_split: warm-up
+  5.087296s, 1872 rows, exact match
+Q34: test date_first — Date-first ticket groups. Drive from the qualifying days rather than scanning all sales.
+Q34 date_first: warm-up
+  2.342907s, 1872 rows, exact match
+Q34: test hd_first — Household-first groups. Filter the 1040 qualifying household profiles before sales access.
+Q34 hd_first: warm-up
+  2.277876s, 1872 rows, exact match
+Q34: test hd_index — Household covering. 
+Q34 hd_index: warm-up
+  0.331186s, 1872 rows, exact match
+Q34: test date_index — Date covering. 
+Q34 date_index: warm-up
+  1.611294s, 1872 rows, exact match
+Q34: test hd_cover — Household first + cover. 
+Q34 hd_cover: warm-up
+  0.301193s, 1872 rows, exact match
+Q34: test date_cover — Date first + cover. 
+Q34 date_cover: warm-up
+  0.366488s, 1872 rows, exact match
+Q34: test bounded_date_cover — Bounds + date cover. 
+Q34 bounded_date_cover: warm-up
+  1.133535s, 1872 rows, exact match
+Q34 original: round 1
+  6.951026s, 1872 rows, exact match
+Q34 bounds: round 1
+  5.049769s, 1872 rows, exact match
+Q34 no_split: round 1
+  5.065487s, 1872 rows, exact match
+Q34 date_first: round 1
+  2.227030s, 1872 rows, exact match
+Q34 hd_first: round 1
+  2.065010s, 1872 rows, exact match
+Q34 hd_index: round 1
+  0.340461s, 1872 rows, exact match
+Q34 date_index: round 1
+  1.619445s, 1872 rows, exact match
+Q34 hd_cover: round 1
+  0.312229s, 1872 rows, exact match
+Q34 date_cover: round 1
+  0.369863s, 1872 rows, exact match
+Q34 bounded_date_cover: round 1
+  1.136361s, 1872 rows, exact match
+Q34 bounded_date_cover: round 2
+  1.125666s, 1872 rows, exact match
+Q34 date_cover: round 2
+  0.360279s, 1872 rows, exact match
+Q34 hd_cover: round 2
+  0.291374s, 1872 rows, exact match
+Q34 date_index: round 2
+  1.591580s, 1872 rows, exact match
+Q34 hd_index: round 2
+  0.349188s, 1872 rows, exact match
+Q34 hd_first: round 2
+  2.056821s, 1872 rows, exact match
+Q34 date_first: round 2
+  2.190202s, 1872 rows, exact match
+Q34 no_split: round 2
+  5.029130s, 1872 rows, exact match
+Q34 bounds: round 2
+  5.060392s, 1872 rows, exact match
+Q34 original: round 2
+  6.863864s, 1872 rows, exact match
+Q34 original: round 3
+  6.833632s, 1872 rows, exact match
+Q34 bounds: round 3
+  5.053188s, 1872 rows, exact match
+Q34 no_split: round 3
+  5.025680s, 1872 rows, exact match
+Q34 date_first: round 3
+  2.159446s, 1872 rows, exact match
+Q34 hd_first: round 3
+  2.115504s, 1872 rows, exact match
+Q34 hd_index: round 3
+  0.341323s, 1872 rows, exact match
+Q34 date_index: round 3
+  1.608319s, 1872 rows, exact match
+Q34 hd_cover: round 3
+  0.295092s, 1872 rows, exact match
+Q34 date_cover: round 3
+  0.368098s, 1872 rows, exact match
+Q34 bounded_date_cover: round 3
+  1.158897s, 1872 rows, exact match
+Q34 final_original: warm-up
+  6.845934s, 1872 rows, exact match
+Q34 final_bounds: warm-up
+  5.038752s, 1872 rows, exact match
+Q34 final_no_split: warm-up
+  5.085788s, 1872 rows, exact match
+Q34 final_date_first: warm-up
+  2.211580s, 1872 rows, exact match
+Q34 final_hd_first: warm-up
+  2.106716s, 1872 rows, exact match
+Q34 final_hd_index: warm-up
+  0.335197s, 1872 rows, exact match
+Q34 final_date_index: warm-up
+  1.582517s, 1872 rows, exact match
+Q34 final_hd_cover: warm-up
+  0.293380s, 1872 rows, exact match
+Q34 final_date_cover: warm-up
+  0.361530s, 1872 rows, exact match
+Q34 final_bounded_date_cover: warm-up
+  1.169764s, 1872 rows, exact match
+Q34 final_control_original_best_indexes: warm-up
+  0.337675s, 1872 rows, exact match
+Q34 final_original: round 1
+  6.813122s, 1872 rows, exact match
+Q34 final_bounds: round 1
+  5.059333s, 1872 rows, exact match
+Q34 final_no_split: round 1
+  5.134499s, 1872 rows, exact match
+Q34 final_date_first: round 1
+  2.204309s, 1872 rows, exact match
+Q34 final_hd_first: round 1
+  2.218265s, 1872 rows, exact match
+Q34 final_hd_index: round 1
+  0.346361s, 1872 rows, exact match
+Q34 final_date_index: round 1
+  1.621692s, 1872 rows, exact match
+Q34 final_hd_cover: round 1
+  0.299834s, 1872 rows, exact match
+Q34 final_date_cover: round 1
+  0.363264s, 1872 rows, exact match
+Q34 final_bounded_date_cover: round 1
+  1.173591s, 1872 rows, exact match
+Q34 final_control_original_best_indexes: round 1
+  0.342730s, 1872 rows, exact match
+Q34 final_control_original_best_indexes: round 2
+  0.336289s, 1872 rows, exact match
+Q34 final_bounded_date_cover: round 2
+  1.135516s, 1872 rows, exact match
+Q34 final_date_cover: round 2
+  0.360163s, 1872 rows, exact match
+Q34 final_hd_cover: round 2
+  0.296483s, 1872 rows, exact match
+Q34 final_date_index: round 2
+  1.592028s, 1872 rows, exact match
+Q34 final_hd_index: round 2
+  0.343895s, 1872 rows, exact match
+Q34 final_hd_first: round 2
+  2.189998s, 1872 rows, exact match
+Q34 final_date_first: round 2
+  2.153137s, 1872 rows, exact match
+Q34 final_no_split: round 2
+  5.117326s, 1872 rows, exact match
+Q34 final_bounds: round 2
+  5.126744s, 1872 rows, exact match
+Q34 final_original: round 2
+  7.052778s, 1872 rows, exact match
+Q34 final_original: round 3
+  6.928481s, 1872 rows, exact match
+Q34 final_bounds: round 3
+  5.228358s, 1872 rows, exact match
+Q34 final_no_split: round 3
+  5.145371s, 1872 rows, exact match
+Q34 final_date_first: round 3
+  2.320333s, 1872 rows, exact match
+Q34 final_hd_first: round 3
+  2.203873s, 1872 rows, exact match
+Q34 final_hd_index: round 3
+  0.337235s, 1872 rows, exact match
+Q34 final_date_index: round 3
+  1.598926s, 1872 rows, exact match
+Q34 final_hd_cover: round 3
+  0.304948s, 1872 rows, exact match
+Q34 final_date_cover: round 3
+  0.366012s, 1872 rows, exact match
+Q34 final_bounded_date_cover: round 3
+  1.154894s, 1872 rows, exact match
+Q34 final_control_original_best_indexes: round 3
+  0.337328s, 1872 rows, exact match
+Q34 final_control_original_best_indexes: round 4
+  0.337668s, 1872 rows, exact match
+Q34 final_bounded_date_cover: round 4
+  1.138115s, 1872 rows, exact match
+Q34 final_date_cover: round 4
+  0.370425s, 1872 rows, exact match
+Q34 final_hd_cover: round 4
+  0.299066s, 1872 rows, exact match
+Q34 final_date_index: round 4
+  1.621385s, 1872 rows, exact match
+Q34 final_hd_index: round 4
+  0.346403s, 1872 rows, exact match
+Q34 final_hd_first: round 4
+  2.242065s, 1872 rows, exact match
+Q34 final_date_first: round 4
+  2.272770s, 1872 rows, exact match
+Q34 final_no_split: round 4
+  5.260247s, 1872 rows, exact match
+Q34 final_bounds: round 4
+  5.205797s, 1872 rows, exact match
+Q34 final_original: round 4
+  7.034438s, 1872 rows, exact match
+Q34 final_original: round 5
+  6.836191s, 1872 rows, exact match
+Q34 final_bounds: round 5
+  5.080265s, 1872 rows, exact match
+Q34 final_no_split: round 5
+  5.008048s, 1872 rows, exact match
+Q34 final_date_first: round 5
+  2.271367s, 1872 rows, exact match
+Q34 final_hd_first: round 5
+  2.056619s, 1872 rows, exact match
+Q34 final_hd_index: round 5
+  0.331536s, 1872 rows, exact match
+Q34 final_date_index: round 5
+  1.587050s, 1872 rows, exact match
+Q34 final_hd_cover: round 5
+  0.304829s, 1872 rows, exact match
+Q34 final_date_cover: round 5
+  0.372947s, 1872 rows, exact match
+Q34 final_bounded_date_cover: round 5
+  1.143882s, 1872 rows, exact match
+Q34 final_control_original_best_indexes: round 5
+  0.331984s, 1872 rows, exact match
+Q34 final_control_original_best_indexes: round 6
+  0.332378s, 1872 rows, exact match
+Q34 final_bounded_date_cover: round 6
+  1.145034s, 1872 rows, exact match
+Q34 final_date_cover: round 6
+  0.369518s, 1872 rows, exact match
+Q34 final_hd_cover: round 6
+  0.304420s, 1872 rows, exact match
+Q34 final_date_index: round 6
+  1.620843s, 1872 rows, exact match
+Q34 final_hd_index: round 6
+  0.337429s, 1872 rows, exact match
+Q34 final_hd_first: round 6
+  2.044392s, 1872 rows, exact match
+Q34 final_date_first: round 6
+  2.221325s, 1872 rows, exact match
+Q34 final_no_split: round 6
+  5.076730s, 1872 rows, exact match
+Q34 final_bounds: round 6
+  5.081949s, 1872 rows, exact match
+Q34 final_original: round 6
+  6.837074s, 1872 rows, exact match
+Q34 final_original: round 7
+  6.824606s, 1872 rows, exact match
+Q34 final_bounds: round 7
+  5.037432s, 1872 rows, exact match
+Q34 final_no_split: round 7
+  5.063871s, 1872 rows, exact match
+Q34 final_date_first: round 7
+  2.279743s, 1872 rows, exact match
+Q34 final_hd_first: round 7
+  2.115301s, 1872 rows, exact match
+Q34 final_hd_index: round 7
+  0.332595s, 1872 rows, exact match
+Q34 final_date_index: round 7
+  1.581130s, 1872 rows, exact match
+Q34 final_hd_cover: round 7
+  0.305267s, 1872 rows, exact match
+Q34 final_date_cover: round 7
+  0.364939s, 1872 rows, exact match
+Q34 final_bounded_date_cover: round 7
+  1.123931s, 1872 rows, exact match
+Q34 final_control_original_best_indexes: round 7
+  0.329923s, 1872 rows, exact match
+Q34: study complete, shared95 restored.
+Q36: build idx_nf_q36_date_cover (ss_sold_date_sk,ss_item_sk,ss_store_sk,ss_net_profit,ss_ext_sales_price) once, outside timing
+Q36: test original — Original. 
+Q36 original: warm-up
+  11.636471s, 100 rows, exact match
+Q36: test bounds — Verified year bounds. Keep the corrected explicit hierarchy and date existence join.
+Q36 bounds: warm-up
+  11.497122s, 100 rows, exact match
+Q36: test leaf_levels — Single leaf aggregation. Read facts once, then expand the small leaf result into three explicit hierarchy levels; retain genuine NULL identities.
+Q36 leaf_levels: warm-up
+  4.919750s, 100 rows, exact match
+Q36: test bounded_leaf — Bounded leaf aggregation. Add verified date bounds to the single-pass hierarchy.
+Q36 bounded_leaf: warm-up
+  5.105856s, 100 rows, exact match
+Q36: test index_only — Profit/price covering. 
+Q36 index_only: warm-up
+  9.119121s, 100 rows, exact match
+Q36: test leaf_cover — Leaf levels + cover. 
+Q36 leaf_cover: warm-up
+  4.107815s, 100 rows, exact match
+Q36: test bounded_cover — Bounded leaf + cover. 
+Q36 bounded_cover: warm-up
+  4.184690s, 100 rows, exact match
+Q36: test raw_levels — Raw level expansion. Test one fact scan with three raw grouping-level rows per fact rather than preaggregating leaves.
+Q36 raw_levels: warm-up
+  9.517879s, 100 rows, exact match
+Q36 original: round 1
+  11.560204s, 100 rows, exact match
+Q36 bounds: round 1
+  11.220306s, 100 rows, exact match
+Q36 leaf_levels: round 1
+  4.868844s, 100 rows, exact match
+Q36 bounded_leaf: round 1
+  5.146583s, 100 rows, exact match
+Q36 index_only: round 1
+  9.091709s, 100 rows, exact match
+Q36 leaf_cover: round 1
+  4.022471s, 100 rows, exact match
+Q36 bounded_cover: round 1
+  4.230867s, 100 rows, exact match
+Q36 raw_levels: round 1
+  9.535002s, 100 rows, exact match
+Q36 raw_levels: round 2
+  9.607665s, 100 rows, exact match
+Q36 bounded_cover: round 2
+  4.135167s, 100 rows, exact match
+Q36 leaf_cover: round 2
+  4.146868s, 100 rows, exact match
+Q36 index_only: round 2
+  8.908281s, 100 rows, exact match
+Q36 bounded_leaf: round 2
+  5.189125s, 100 rows, exact match
+Q36 leaf_levels: round 2
+  4.851360s, 100 rows, exact match
+Q36 bounds: round 2
+  11.215523s, 100 rows, exact match
+Q36 original: round 2
+  11.721304s, 100 rows, exact match
+Q36 original: round 3
+  11.824082s, 100 rows, exact match
+Q36 bounds: round 3
+  11.294000s, 100 rows, exact match
+Q36 leaf_levels: round 3
+  5.037084s, 100 rows, exact match
+Q36 bounded_leaf: round 3
+  5.148242s, 100 rows, exact match
+Q36 index_only: round 3
+  8.931254s, 100 rows, exact match
+Q36 leaf_cover: round 3
+  4.095718s, 100 rows, exact match
+Q36 bounded_cover: round 3
+  4.233985s, 100 rows, exact match
+Q36 raw_levels: round 3
+  9.546686s, 100 rows, exact match
+Q36 final_original: warm-up
+  11.680321s, 100 rows, exact match
+Q36 final_bounds: warm-up
+  11.171779s, 100 rows, exact match
+Q36 final_leaf_levels: warm-up
+  4.890783s, 100 rows, exact match
+Q36 final_bounded_leaf: warm-up
+  5.138483s, 100 rows, exact match
+Q36 final_index_only: warm-up
+  8.864595s, 100 rows, exact match
+Q36 final_leaf_cover: warm-up
+  4.018344s, 100 rows, exact match
+Q36 final_bounded_cover: warm-up
+  4.184716s, 100 rows, exact match
+Q36 final_raw_levels: warm-up
+  9.517987s, 100 rows, exact match
+Q36 final_control_original_best_indexes: warm-up
+  8.778029s, 100 rows, exact match
+Q36 final_original: round 1
+  11.548271s, 100 rows, exact match
+Q36 final_bounds: round 1
+  11.235397s, 100 rows, exact match
+Q36 final_leaf_levels: round 1
+  4.867148s, 100 rows, exact match
+Q36 final_bounded_leaf: round 1
+  5.116212s, 100 rows, exact match
+Q36 final_index_only: round 1
+  8.819084s, 100 rows, exact match
+Q36 final_leaf_cover: round 1
+  4.039382s, 100 rows, exact match
+Q36 final_bounded_cover: round 1
+  4.178041s, 100 rows, exact match
+Q36 final_raw_levels: round 1
+  9.463255s, 100 rows, exact match
+Q36 final_control_original_best_indexes: round 1
+  8.793170s, 100 rows, exact match
+Q36 final_control_original_best_indexes: round 2
+  8.922622s, 100 rows, exact match
+Q36 final_raw_levels: round 2
+  9.452699s, 100 rows, exact match
+Q36 final_bounded_cover: round 2
+  4.315038s, 100 rows, exact match
+Q36 final_leaf_cover: round 2
+  4.055870s, 100 rows, exact match
+Q36 final_index_only: round 2
+  8.811675s, 100 rows, exact match
+Q36 final_bounded_leaf: round 2
+  5.210444s, 100 rows, exact match
+Q36 final_leaf_levels: round 2
+  4.862543s, 100 rows, exact match
+Q36 final_bounds: round 2
+  11.226588s, 100 rows, exact match
+Q36 final_original: round 2
+  11.571913s, 100 rows, exact match
+Q36 final_original: round 3
+  11.559611s, 100 rows, exact match
+Q36 final_bounds: round 3
+  11.259461s, 100 rows, exact match
+Q36 final_leaf_levels: round 3
+  4.892903s, 100 rows, exact match
+Q36 final_bounded_leaf: round 3
+  5.182094s, 100 rows, exact match
+Q36 final_index_only: round 3
+  8.807822s, 100 rows, exact match
+Q36 final_leaf_cover: round 3
+  4.156016s, 100 rows, exact match
+Q36 final_bounded_cover: round 3
+  4.196379s, 100 rows, exact match
+Q36 final_raw_levels: round 3
+  9.530857s, 100 rows, exact match
+Q36 final_control_original_best_indexes: round 3
+  8.908980s, 100 rows, exact match
+Q36 final_control_original_best_indexes: round 4
+  8.876385s, 100 rows, exact match
+Q36 final_raw_levels: round 4
+  9.564589s, 100 rows, exact match
+Q36 final_bounded_cover: round 4
+  4.125419s, 100 rows, exact match
+Q36 final_leaf_cover: round 4
+  4.145188s, 100 rows, exact match
+Q36 final_index_only: round 4
+  8.914434s, 100 rows, exact match
+Q36 final_bounded_leaf: round 4
+  5.092205s, 100 rows, exact match
+Q36 final_leaf_levels: round 4
+  4.871134s, 100 rows, exact match
+Q36 final_bounds: round 4
+  11.219029s, 100 rows, exact match
+Q36 final_original: round 4
+  11.496946s, 100 rows, exact match
+Q36 final_original: round 5
+Traceback (most recent call last):
+  File "/setup/next4-sf4.py", line 139, in <module>
+    control=dict(label='control_original_best_indexes',method='Original with provisional BEST indexes',reason='Separate SQL rewriting from index availability',sql=baseline['sql'],indexes=fastest['indexes'])
+                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/setup/next4-sf4.py", line 55, in measure
+    t=time.perf_counter();b=sql(s);secs=time.perf_counter()-t
+                            ~~~^^^
+  File "/setup/next4-sf4.py", line 38, in sql
+    if r.returncode:raise RuntimeError(r.stderr.decode(errors='replace'))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: ERROR 1969 (70100) at line 5: Query was interrupted: execution time limit 180.0 sec exceeded
+

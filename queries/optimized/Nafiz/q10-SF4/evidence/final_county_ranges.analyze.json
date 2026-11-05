@@ -1,0 +1,372 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.707451936
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 14.58481551,
+    "r_loops": 1,
+    "r_total_time_ms": 22.08130947,
+    "filesort": {
+      "sort_key": "customer_demographics.cd_gender, customer_demographics.cd_marital_status, customer_demographics.cd_education_status, customer_demographics.cd_purchase_estimate, customer_demographics.cd_credit_rating, customer_demographics.cd_dep_count, customer_demographics.cd_dep_employed_count, customer_demographics.cd_dep_college_count",
+      "r_loops": 1,
+      "r_total_time_ms": 0.015875222,
+      "r_limit": 100,
+      "r_used_priority_queue": true,
+      "r_output_rows": 44,
+      "r_sort_mode": "sort_key,rowid",
+      "temporary_table": {
+        "nested_loop": [
+          {
+            "table": {
+              "table_name": "ca",
+              "access_type": "range",
+              "possible_keys": ["PRIMARY", "idx_nf_q10_county"],
+              "key": "idx_nf_q10_county",
+              "key_length": "123",
+              "used_key_parts": ["ca_county"],
+              "loops": 1,
+              "r_loops": 1,
+              "rows": 1211,
+              "r_rows": 1211,
+              "cost": 0.194100255,
+              "r_table_time_ms": 0.091392791,
+              "r_other_time_ms": 1.425464163,
+              "r_engine_stats": {
+                "pages_accessed": 36
+              },
+              "filtered": 100,
+              "r_total_filtered": 100,
+              "attached_condition": "ca.ca_county in ('Madison County','Wallowa County','Calhoun County','Broadwater County','McCone County')",
+              "r_filtered": 100,
+              "using_index": true
+            }
+          },
+          {
+            "block-nl-join": {
+              "table": {
+                "table_name": "c",
+                "access_type": "ref",
+                "possible_keys": [
+                  "idx_c_addr",
+                  "idx_c_current_addr_sk",
+                  "idx_c_current_cdemo_sk"
+                ],
+                "key": "idx_c_addr",
+                "key_length": "9",
+                "used_key_parts": ["c_current_addr_sk"],
+                "ref": ["tpcds.ca.ca_address_sk"],
+                "loops": 1211,
+                "r_loops": 1,
+                "rows": 2,
+                "r_rows": 2464,
+                "cost": 6.6627704,
+                "r_table_time_ms": 3.065514094,
+                "r_other_time_ms": 0.064205604,
+                "r_engine_stats": {
+                  "pages_accessed": 9842
+                },
+                "filtered": 100,
+                "r_total_filtered": 100,
+                "r_filtered": 100
+              },
+              "buffer_type": "flat",
+              "buffer_size": "250KiB",
+              "join_type": "BKAH",
+              "mrr_type": "Rowid-ordered scan",
+              "attached_condition": "<in_optimizer>(c.c_customer_sk,<exists>(subquery#2)) and (<in_optimizer>(c.c_customer_sk,<exists>(subquery#3)) or <in_optimizer>(c.c_customer_sk,<exists>(subquery#4))) and c.c_current_cdemo_sk is not null",
+              "r_loops": 1211,
+              "r_filtered": 1.785714286,
+              "r_unpack_time_ms": 0.163111994,
+              "r_other_time_ms": 0.147917487,
+              "r_effective_rows": 2.034682081
+            }
+          },
+          {
+            "table": {
+              "table_name": "customer_demographics",
+              "access_type": "eq_ref",
+              "possible_keys": ["PRIMARY", "idx_cd_demo_sk_marital_status"],
+              "key": "PRIMARY",
+              "key_length": "8",
+              "used_key_parts": ["cd_demo_sk"],
+              "ref": ["tpcds.c.c_current_cdemo_sk"],
+              "loops": 2422,
+              "r_loops": 44,
+              "rows": 1,
+              "r_rows": 1,
+              "cost": 6.13453848,
+              "r_table_time_ms": 0.119074601,
+              "r_other_time_ms": 0.057930995,
+              "r_engine_stats": {
+                "pages_accessed": 132
+              },
+              "filtered": 100,
+              "r_total_filtered": 100,
+              "r_filtered": 100
+            }
+          }
+        ],
+        "subqueries": [
+          {
+            "query_block": {
+              "select_id": 4,
+              "cost": 0.011288386,
+              "r_loops": 342,
+              "r_total_time_ms": 1.496591002,
+              "nested_loop": [
+                {
+                  "table": {
+                    "table_name": "catalog_sales",
+                    "access_type": "ref",
+                    "possible_keys": [
+                      "idx_cs_date_addr_item_price",
+                      "idx_cs_date_cover",
+                      "idx_cs_date_cust",
+                      "idx_cs_date_customer",
+                      "idx_cs_q66",
+                      "idx_cs_sold_date_ext_price",
+                      "idx_cs_cust_date",
+                      "idx_cs_cust_date_price",
+                      "idx_cs_price_date_cust",
+                      "idx_cs_ship_customer_sk",
+                      "idx_cs_sold_date_sk"
+                    ],
+                    "key": "idx_cs_cust_date",
+                    "key_length": "9",
+                    "used_key_parts": ["cs_ship_customer_sk"],
+                    "ref": ["func"],
+                    "loops": 1,
+                    "r_loops": 342,
+                    "rows": 25,
+                    "r_rows": 22.49415205,
+                    "cost": 0.006132245,
+                    "r_table_time_ms": 1.179859102,
+                    "r_other_time_ms": 0.166254342,
+                    "r_engine_stats": {
+                      "pages_accessed": 1110
+                    },
+                    "filtered": 8.142860413,
+                    "r_total_filtered": 0.441960224,
+                    "attached_condition": "catalog_sales.cs_sold_date_sk between 2452001 and 2452122 and catalog_sales.cs_sold_date_sk is not null",
+                    "r_filtered": 0.441960224,
+                    "using_index": true
+                  }
+                },
+                {
+                  "table": {
+                    "table_name": "date_dim",
+                    "access_type": "eq_ref",
+                    "possible_keys": [
+                      "PRIMARY",
+                      "idx_date_dim_d_date",
+                      "idx_date_dim_d_date_year",
+                      "idx_date_dim_d_month_seq",
+                      "idx_date_year_moy",
+                      "idx_date_year_sk_day",
+                      "idx_dd_month_seq",
+                      "idx_dd_week_seq",
+                      "inx_date_dim_year",
+                      "idx_date_month_date_sk",
+                      "idx_date_year_sk",
+                      "idx_date_ym"
+                    ],
+                    "key": "PRIMARY",
+                    "key_length": "8",
+                    "used_key_parts": ["d_date_sk"],
+                    "ref": ["tpcds.catalog_sales.cs_sold_date_sk"],
+                    "loops": 2.03571507,
+                    "r_loops": 34,
+                    "rows": 1,
+                    "r_rows": 1,
+                    "cost": 0.005156141,
+                    "r_table_time_ms": 0.01634654,
+                    "r_other_time_ms": 0.0039215,
+                    "r_engine_stats": {
+                      "pages_accessed": 85
+                    },
+                    "filtered": 0.168315336,
+                    "r_total_filtered": 100,
+                    "attached_condition": "date_dim.d_year = 2001 and date_dim.d_moy between 4 and 7",
+                    "r_filtered": 100
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "query_block": {
+              "select_id": 3,
+              "cost": 0.008847972,
+              "r_loops": 353,
+              "r_total_time_ms": 1.119607347,
+              "nested_loop": [
+                {
+                  "table": {
+                    "table_name": "web_sales",
+                    "access_type": "ref",
+                    "possible_keys": [
+                      "idx_ws_date_addr_item_price",
+                      "idx_ws_date_cust",
+                      "idx_ws_date_item_cust",
+                      "idx_ws_date_item_price",
+                      "idx_ws_q66",
+                      "idx_ws_sold_date_ext_price",
+                      "idx_ws_bill_customer_sk",
+                      "idx_ws_cust_date",
+                      "idx_ws_date_item_paid",
+                      "idx_ws_sold_date_sk"
+                    ],
+                    "key": "idx_ws_cust_date",
+                    "key_length": "9",
+                    "used_key_parts": ["ws_bill_customer_sk"],
+                    "ref": ["func"],
+                    "loops": 1,
+                    "r_loops": 353,
+                    "rows": 18,
+                    "r_rows": 11.4815864,
+                    "cost": 0.00510545,
+                    "r_table_time_ms": 0.907802874,
+                    "r_other_time_ms": 0.097562006,
+                    "r_engine_stats": {
+                      "pages_accessed": 1158
+                    },
+                    "filtered": 8.208883286,
+                    "r_total_filtered": 0.271403898,
+                    "attached_condition": "web_sales.ws_sold_date_sk between 2452001 and 2452122 and web_sales.ws_sold_date_sk is not null",
+                    "r_filtered": 0.271403898,
+                    "using_index": true
+                  }
+                },
+                {
+                  "table": {
+                    "table_name": "date_dim",
+                    "access_type": "eq_ref",
+                    "possible_keys": [
+                      "PRIMARY",
+                      "idx_date_dim_d_date",
+                      "idx_date_dim_d_date_year",
+                      "idx_date_dim_d_month_seq",
+                      "idx_date_year_moy",
+                      "idx_date_year_sk_day",
+                      "idx_dd_month_seq",
+                      "idx_dd_week_seq",
+                      "inx_date_dim_year",
+                      "idx_date_month_date_sk",
+                      "idx_date_year_sk",
+                      "idx_date_ym"
+                    ],
+                    "key": "PRIMARY",
+                    "key_length": "8",
+                    "used_key_parts": ["d_date_sk"],
+                    "ref": ["tpcds.web_sales.ws_sold_date_sk"],
+                    "loops": 1.477599051,
+                    "r_loops": 11,
+                    "rows": 1,
+                    "r_rows": 1,
+                    "cost": 0.003742522,
+                    "r_table_time_ms": 0.006108343,
+                    "r_other_time_ms": 0.001344733,
+                    "r_engine_stats": {
+                      "pages_accessed": 39
+                    },
+                    "filtered": 0.168315336,
+                    "r_total_filtered": 100,
+                    "attached_condition": "date_dim.d_year = 2001 and date_dim.d_moy between 4 and 7",
+                    "r_filtered": 100
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "query_block": {
+              "select_id": 2,
+              "cost": 0.018858097,
+              "r_loops": 2464,
+              "r_total_time_ms": 13.98667526,
+              "nested_loop": [
+                {
+                  "table": {
+                    "table_name": "store_sales",
+                    "access_type": "ref",
+                    "possible_keys": [
+                      "idx_ss_date_addr_item_price",
+                      "idx_ss_date_cust",
+                      "idx_ss_date_item_store_cover",
+                      "idx_ss_q78",
+                      "idx_ss_sold_date_sk",
+                      "idx_ss_cust_date",
+                      "idx_ss_customer_sk",
+                      "idx_ss_date_store_price",
+                      "idx_ss_date_store_profit",
+                      "idx_ss_q61",
+                      "idx_ss_sold_date_sk_store_sales_price"
+                    ],
+                    "key": "idx_ss_cust_date",
+                    "key_length": "9",
+                    "used_key_parts": ["ss_customer_sk"],
+                    "ref": ["func"],
+                    "loops": 1,
+                    "r_loops": 2464,
+                    "rows": 48,
+                    "r_rows": 43.36647727,
+                    "cost": 0.009506,
+                    "r_table_time_ms": 11.04588566,
+                    "r_other_time_ms": 2.160955832,
+                    "r_engine_stats": {
+                      "pages_accessed": 7627
+                    },
+                    "filtered": 7.692367077,
+                    "r_total_filtered": 0.330354218,
+                    "attached_condition": "store_sales.ss_sold_date_sk between 2452001 and 2452122 and store_sales.ss_sold_date_sk is not null",
+                    "r_filtered": 0.330354218,
+                    "using_index": true
+                  }
+                },
+                {
+                  "table": {
+                    "table_name": "date_dim",
+                    "access_type": "eq_ref",
+                    "possible_keys": [
+                      "PRIMARY",
+                      "idx_date_dim_d_date",
+                      "idx_date_dim_d_date_year",
+                      "idx_date_dim_d_month_seq",
+                      "idx_date_year_moy",
+                      "idx_date_year_sk_day",
+                      "idx_dd_month_seq",
+                      "idx_dd_week_seq",
+                      "inx_date_dim_year",
+                      "idx_date_month_date_sk",
+                      "idx_date_year_sk",
+                      "idx_date_ym"
+                    ],
+                    "key": "PRIMARY",
+                    "key_length": "8",
+                    "used_key_parts": ["d_date_sk"],
+                    "ref": ["tpcds.store_sales.ss_sold_date_sk"],
+                    "loops": 3.69233628,
+                    "r_loops": 353,
+                    "rows": 1,
+                    "r_rows": 1,
+                    "cost": 0.009352097,
+                    "r_table_time_ms": 0.165848766,
+                    "r_other_time_ms": 0.032646817,
+                    "r_engine_stats": {
+                      "pages_accessed": 723
+                    },
+                    "filtered": 0.168315336,
+                    "r_total_filtered": 100,
+                    "attached_condition": "date_dim.d_year = 2001 and date_dim.d_moy between 4 and 7",
+                    "r_filtered": 100
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  }
+}

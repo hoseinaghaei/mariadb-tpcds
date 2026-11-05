@@ -1,0 +1,290 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.482194916
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 6.853669913,
+    "r_loops": 1,
+    "r_total_time_ms": 3904.699043,
+    "nested_loop": [
+      {
+        "read_sorted_file": {
+          "r_rows": 100,
+          "filesort": {
+            "sort_key": "scored.sum_sales - scored.avg_monthly_sales, scored.psum",
+            "r_loops": 1,
+            "r_total_time_ms": 17.86294328,
+            "r_limit": 100,
+            "r_used_priority_queue": true,
+            "r_output_rows": 101,
+            "r_sort_mode": "sort_key,rowid",
+            "table": {
+              "table_name": "<derived4>",
+              "access_type": "ALL",
+              "loops": 1,
+              "r_loops": 1,
+              "rows": 153155,
+              "r_rows": 69395,
+              "cost": 6.853669913,
+              "r_table_time_ms": 12.45671742,
+              "r_other_time_ms": 38.68075446,
+              "filtered": 100,
+              "r_total_filtered": 76.99978385,
+              "attached_condition": "scored.d_year = 2000 and scored.has_prev = 1 and scored.has_next = 1 and scored.avg_monthly_sales > 0 and case when scored.avg_monthly_sales > 0 then abs(scored.sum_sales - scored.avg_monthly_sales) / scored.avg_monthly_sales else NULL end > 0.1",
+              "r_filtered": 76.99978385,
+              "materialized": {
+                "query_block": {
+                  "select_id": 4,
+                  "cost": 6.853669913,
+                  "r_loops": 1,
+                  "r_total_time_ms": 3886.791579,
+                  "window_functions_computation": {
+                    "sorts": [
+                      {
+                        "filesort": {
+                          "sort_key": "monthly.i_category, monthly.i_brand, monthly.cc_name, monthly.d_year, monthly.d_moy",
+                          "r_loops": 1,
+                          "r_total_time_ms": 34.23303757,
+                          "r_used_priority_queue": false,
+                          "r_output_rows": 69395,
+                          "r_buffer_size": "42MiB",
+                          "r_sort_mode": "packed_sort_key,rowid"
+                        }
+                      }
+                    ],
+                    "temporary_table": {
+                      "nested_loop": [
+                        {
+                          "table": {
+                            "table_name": "<derived3>",
+                            "access_type": "ALL",
+                            "loops": 1,
+                            "r_loops": 1,
+                            "rows": 153155,
+                            "r_rows": 69395,
+                            "cost": 6.853669913,
+                            "r_table_time_ms": 18.55813435,
+                            "r_other_time_ms": 65.8656988,
+                            "filtered": 100,
+                            "r_total_filtered": 100,
+                            "r_filtered": 100,
+                            "materialized": {
+                              "query_block": {
+                                "select_id": 3,
+                                "cost": 2233.770226,
+                                "r_loops": 1,
+                                "r_total_time_ms": 3637.494967,
+                                "filesort": {
+                                  "sort_key": "item.i_category, item.i_brand, call_center.cc_name, fact_month.d_year, fact_month.d_moy",
+                                  "r_loops": 1,
+                                  "r_total_time_ms": 47.63575927,
+                                  "r_used_priority_queue": false,
+                                  "r_output_rows": 69395,
+                                  "r_buffer_size": "42MiB",
+                                  "r_sort_mode": "packed_sort_key,rowid",
+                                  "temporary_table": {
+                                    "nested_loop": [
+                                      {
+                                        "table": {
+                                          "table_name": "call_center",
+                                          "access_type": "ALL",
+                                          "possible_keys": ["PRIMARY"],
+                                          "loops": 1,
+                                          "r_loops": 1,
+                                          "rows": 12,
+                                          "r_rows": 12,
+                                          "cost": 0.01363,
+                                          "r_table_time_ms": 0.033677454,
+                                          "r_other_time_ms": 0.014967023,
+                                          "r_engine_stats": {
+                                            "pages_accessed": 1
+                                          },
+                                          "filtered": 100,
+                                          "r_total_filtered": 100,
+                                          "attached_condition": "call_center.cc_name is not null",
+                                          "r_filtered": 100
+                                        }
+                                      },
+                                      {
+                                        "table": {
+                                          "table_name": "<derived2>",
+                                          "access_type": "ref",
+                                          "possible_keys": ["key1"],
+                                          "key": "key1",
+                                          "key_length": "9",
+                                          "used_key_parts": ["cs_call_center_sk"],
+                                          "ref": [
+                                            "tpcds.call_center.cc_call_center_sk"
+                                          ],
+                                          "loops": 12,
+                                          "r_loops": 12,
+                                          "rows": 12762,
+                                          "r_rows": 76835.91667,
+                                          "cost": 2095.350956,
+                                          "r_table_time_ms": 93.02958203,
+                                          "r_other_time_ms": 983.8758092,
+                                          "filtered": 100,
+                                          "r_total_filtered": 100,
+                                          "r_filtered": 100,
+                                          "materialized": {
+                                            "query_block": {
+                                              "select_id": 2,
+                                              "cost": 0.176292309,
+                                              "r_loops": 1,
+                                              "r_total_time_ms": 2225.25337,
+                                              "filesort": {
+                                                "sort_key": "catalog_sales.cs_item_sk, catalog_sales.cs_call_center_sk, date_dim.d_year, date_dim.d_moy",
+                                                "r_loops": 1,
+                                                "r_total_time_ms": 129.4378569,
+                                                "r_used_priority_queue": false,
+                                                "r_output_rows": 925518,
+                                                "r_buffer_size": "45MiB",
+                                                "r_sort_mode": "sort_key,rowid",
+                                                "temporary_table": {
+                                                  "nested_loop": [
+                                                    {
+                                                      "table": {
+                                                        "table_name": "date_dim",
+                                                        "access_type": "range",
+                                                        "possible_keys": [
+                                                          "PRIMARY",
+                                                          "idx_date_dim_d_date_year",
+                                                          "idx_date_dim_d_month_seq",
+                                                          "idx_date_year_moy",
+                                                          "idx_date_year_sk_day",
+                                                          "inx_date_dim_year",
+                                                          "idx_date_year_sk",
+                                                          "idx_date_ym"
+                                                        ],
+                                                        "key": "idx_date_year_moy",
+                                                        "key_length": "26",
+                                                        "used_key_parts": [
+                                                          "d_year",
+                                                          "d_moy",
+                                                          "d_date_sk"
+                                                        ],
+                                                        "loops": 1,
+                                                        "r_loops": 1,
+                                                        "rows": 428,
+                                                        "r_rows": 428,
+                                                        "cost": 0.07096766,
+                                                        "r_table_time_ms": 0.035300108,
+                                                        "r_other_time_ms": 358.3238018,
+                                                        "r_engine_stats": {
+                                                          "pages_accessed": 45
+                                                        },
+                                                        "filtered": 100,
+                                                        "r_total_filtered": 100,
+                                                        "attached_condition": "date_dim.d_date_sk between 2451514 and 2451941 and (date_dim.d_year = 2000 or date_dim.d_year = 1999 and date_dim.d_moy = 12 or date_dim.d_year = 2001 and date_dim.d_moy = 1)",
+                                                        "r_filtered": 100,
+                                                        "using_index": true
+                                                      }
+                                                    },
+                                                    {
+                                                      "block-nl-join": {
+                                                        "table": {
+                                                          "table_name": "catalog_sales",
+                                                          "access_type": "ref",
+                                                          "possible_keys": [
+                                                            "PRIMARY",
+                                                            "idx_cs_date_addr_item_price",
+                                                            "idx_cs_date_cover",
+                                                            "idx_cs_date_cust",
+                                                            "idx_cs_date_customer",
+                                                            "idx_cs_item_sk",
+                                                            "idx_cs_sold_date_ext_price",
+                                                            "idx_cs_call_center_sk",
+                                                            "idx_cs_sold_date_sk"
+                                                          ],
+                                                          "key": "idx_cs_sold_date_ext_price",
+                                                          "key_length": "9",
+                                                          "used_key_parts": [
+                                                            "cs_sold_date_sk"
+                                                          ],
+                                                          "ref": [
+                                                            "tpcds.date_dim.d_date_sk"
+                                                          ],
+                                                          "loops": 428,
+                                                          "r_loops": 1,
+                                                          "rows": 2982,
+                                                          "r_rows": 1396725,
+                                                          "cost": 1367.279128,
+                                                          "r_table_time_ms": 841.398991,
+                                                          "r_other_time_ms": 28.12968806,
+                                                          "r_engine_stats": {
+                                                            "pages_accessed": 4227289
+                                                          },
+                                                          "filtered": 100,
+                                                          "r_total_filtered": 100,
+                                                          "r_filtered": 100
+                                                        },
+                                                        "buffer_type": "flat",
+                                                        "buffer_size": "29MiB",
+                                                        "join_type": "BKAH",
+                                                        "mrr_type": "Rowid-ordered scan",
+                                                        "r_loops": 428,
+                                                        "r_filtered": 100,
+                                                        "r_unpack_time_ms": 36.22751332,
+                                                        "r_other_time_ms": 676.6402633,
+                                                        "r_effective_rows": 3263.376168
+                                                      }
+                                                    }
+                                                  ]
+                                                }
+                                              }
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "table": {
+                                          "table_name": "item",
+                                          "access_type": "eq_ref",
+                                          "possible_keys": [
+                                            "PRIMARY",
+                                            "idx_item_1",
+                                            "idx_item_2",
+                                            "idx_item_cat",
+                                            "idx_item_category_id"
+                                          ],
+                                          "key": "PRIMARY",
+                                          "key_length": "8",
+                                          "used_key_parts": ["i_item_sk"],
+                                          "ref": ["fact_month.cs_item_sk"],
+                                          "loops": 153155.52,
+                                          "r_loops": 922031,
+                                          "r_table_loops": 221709,
+                                          "rows": 1,
+                                          "r_rows": 1,
+                                          "cost": 138.4056393,
+                                          "r_table_time_ms": 136.822166,
+                                          "r_other_time_ms": 267.7499341,
+                                          "r_engine_stats": {
+                                            "pages_accessed": 451487
+                                          },
+                                          "filtered": 100,
+                                          "r_total_filtered": 99.60218257,
+                                          "attached_condition": "item.i_category is not null and item.i_brand is not null",
+                                          "r_filtered": 99.60218257
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

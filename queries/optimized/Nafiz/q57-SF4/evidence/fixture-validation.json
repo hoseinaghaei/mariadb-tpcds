@@ -1,0 +1,47 @@
+[
+  {
+    "label": "safe_window",
+    "exact_match": true,
+    "reason": "Matched original"
+  },
+  {
+    "label": "window_range",
+    "exact_match": true,
+    "reason": "Matched original"
+  },
+  {
+    "label": "date_first",
+    "exact_match": true,
+    "reason": "Matched original"
+  },
+  {
+    "label": "preaggregate_keys",
+    "exact_match": true,
+    "reason": "Matched original"
+  },
+  {
+    "label": "original_range",
+    "exact_match": true,
+    "reason": "Matched original"
+  },
+  {
+    "label": "historical_window",
+    "exact_match": false,
+    "reason": "Historical window discards existing neighbors with NULL sales and lacks NULL-key exclusion"
+  },
+  {
+    "label": "preaggregate_range",
+    "exact_match": true,
+    "reason": "Matched original"
+  },
+  {
+    "label": "aligned_window_frame",
+    "exact_match": true,
+    "reason": "Matched original"
+  },
+  {
+    "label": "preaggregate_frame",
+    "exact_match": true,
+    "reason": "Matched original"
+  }
+]

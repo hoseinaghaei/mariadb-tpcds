@@ -1,0 +1,6 @@
+{
+  "table": "customer",
+  "columns": "c_current_addr_sk,c_current_cdemo_sk",
+  "build_seconds": 0.28981534500053385,
+  "bytes": 9469952
+}

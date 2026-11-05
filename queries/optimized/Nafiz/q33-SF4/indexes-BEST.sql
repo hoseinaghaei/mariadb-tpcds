@@ -1,0 +1,3 @@
+-- Q33 BEST requires NO additional indexes.
+-- Use the agreed 167-index reference setup, all visible, with the 8 GiB buffer pool.
+-- Index experiments and costs are recorded in README.md and evidence/.

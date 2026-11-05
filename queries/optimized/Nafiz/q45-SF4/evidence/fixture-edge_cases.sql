@@ -1,0 +1,10 @@
+CREATE TEMPORARY TABLE nf_tmp_web_sales LIKE tpcds.web_sales;
+CREATE TEMPORARY TABLE nf_tmp_customer LIKE tpcds.customer;
+CREATE TEMPORARY TABLE nf_tmp_customer_address LIKE tpcds.customer_address;
+CREATE TEMPORARY TABLE nf_tmp_date_dim LIKE tpcds.date_dim;
+CREATE TEMPORARY TABLE nf_tmp_item LIKE tpcds.item;
+INSERT INTO nf_tmp_date_dim (d_date_sk,d_date_id,d_date,d_year,d_qoy) VALUES (2451911,'D1','2001-01-01',2001,1),(2452001,'D2','2001-04-01',2001,1),(2452002,'D3','2001-04-02',2001,2);
+INSERT INTO nf_tmp_item (i_item_sk,i_item_id) VALUES (2,'BUSINESS'),(3,'BUSINESS'),(100,'BUSINESS'),(101,'OTHER'),(102,'OTHER');
+INSERT INTO nf_tmp_customer_address (ca_address_sk,ca_address_id,ca_zip,ca_county) VALUES (1,'A1','85669','Alpha'),(2,'A2','99999','Beta'),(3,'A3',NULL,'NullZIP'),(4,'A4','85669-1234','Suffix'),(5,'A5','12345','Other'),(6,'A6','86197',NULL);
+INSERT INTO nf_tmp_customer (c_customer_sk,c_customer_id,c_current_addr_sk) VALUES (1,'C1',1),(2,'C2',2),(3,'C3',3),(4,'C4',4),(5,'C5',5),(6,'C6',99),(7,'C7',6);
+INSERT INTO nf_tmp_web_sales (ws_item_sk,ws_order_number,ws_bill_customer_sk,ws_sold_date_sk,ws_sales_price) VALUES (100,1,1,2451911,10),(101,2,1,2451911,20),(100,3,2,2451911,30),(100,4,3,2451911,40),(101,5,4,2452001,50),(101,6,5,2451911,1000),(101,7,3,2451911,1000),(100,8,2,2452002,1000),(100,9,2,2451912,1000),(999,10,1,2451911,1000),(100,11,99,2451911,1000),(100,12,6,2451911,1000),(102,13,1,2451911,NULL),(100,14,2,2452001,5),(101,15,7,2451911,NULL);

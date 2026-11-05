@@ -1,0 +1,665 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.489198936
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 316864.249,
+    "r_loops": 1,
+    "r_total_time_ms": 15037.01658,
+    "nested_loop": [
+      {
+        "read_sorted_file": {
+          "r_rows": 10131,
+          "filesort": {
+            "sort_key": "t_s_secyear.customer_first_name, t_s_secyear.customer_id, t_s_secyear.customer_last_name",
+            "r_loops": 1,
+            "r_total_time_ms": 52.46813063,
+            "r_used_priority_queue": false,
+            "r_output_rows": 131543,
+            "r_buffer_size": "36MiB",
+            "r_sort_mode": "packed_sort_key,rowid",
+            "table": {
+              "table_name": "<derived4>",
+              "access_type": "ALL",
+              "loops": 1,
+              "r_loops": 1,
+              "rows": 2232600,
+              "r_rows": 131543,
+              "cost": 99.77283796,
+              "r_table_time_ms": 15.06652081,
+              "r_other_time_ms": 95.36664465,
+              "filtered": 100,
+              "r_total_filtered": 100,
+              "attached_condition": "t_s_secyear.`year` = 2000 and t_s_secyear.sale_type = 's'",
+              "r_filtered": 100,
+              "materialized": {
+                "query_block": {
+                  "union_result": {
+                    "query_specifications": [
+                      {
+                        "query_block": {
+                          "select_id": 4,
+                          "cost": 4364.849417,
+                          "r_loops": 1,
+                          "r_total_time_ms": 6610.284369,
+                          "filesort": {
+                            "sort_key": "customer.c_customer_id, customer.c_first_name, customer.c_last_name",
+                            "r_loops": 1,
+                            "r_total_time_ms": 39.29251018,
+                            "r_used_priority_queue": false,
+                            "r_output_rows": 131543,
+                            "r_buffer_size": "36MiB",
+                            "r_sort_mode": "packed_sort_key,rowid",
+                            "temporary_table": {
+                              "nested_loop": [
+                                {
+                                  "table": {
+                                    "table_name": "date_dim",
+                                    "access_type": "ref",
+                                    "possible_keys": [
+                                      "PRIMARY",
+                                      "idx_date_dim_d_date_year",
+                                      "idx_date_dim_d_month_seq",
+                                      "idx_date_year_moy",
+                                      "idx_date_year_sk_day",
+                                      "inx_date_dim_year",
+                                      "idx_date_year_sk",
+                                      "idx_date_ym"
+                                    ],
+                                    "key": "idx_date_year_moy",
+                                    "key_length": "9",
+                                    "used_key_parts": ["d_year"],
+                                    "ref": ["const"],
+                                    "loops": 1,
+                                    "r_loops": 1,
+                                    "rows": 366,
+                                    "r_rows": 366,
+                                    "cost": 0.05615183,
+                                    "r_table_time_ms": 0.03169966,
+                                    "r_other_time_ms": 663.1343638,
+                                    "r_engine_stats": {
+                                      "pages_accessed": 12
+                                    },
+                                    "filtered": 100,
+                                    "r_total_filtered": 100,
+                                    "attached_condition": "date_dim.d_year = 2000",
+                                    "r_filtered": 100,
+                                    "using_index": true
+                                  }
+                                },
+                                {
+                                  "block-nl-join": {
+                                    "table": {
+                                      "table_name": "store_sales",
+                                      "access_type": "ref",
+                                      "possible_keys": [
+                                        "idx_ss_date_addr_item_price",
+                                        "idx_ss_date_cust",
+                                        "idx_ss_date_item_store_cover",
+                                        "idx_ss_q78",
+                                        "idx_ss_sold_date_sk",
+                                        "idx_ss_cust_date",
+                                        "idx_ss_customer_sk",
+                                        "idx_ss_date_store_price",
+                                        "idx_ss_date_store_profit",
+                                        "idx_ss_sold_date_sk_store_sales_price"
+                                      ],
+                                      "key": "idx_ss_date_store_price",
+                                      "key_length": "9",
+                                      "used_key_parts": ["ss_sold_date_sk"],
+                                      "ref": ["tpcds.date_dim.d_date_sk"],
+                                      "loops": 366,
+                                      "r_loops": 1,
+                                      "rows": 6100,
+                                      "r_rows": 2217600,
+                                      "cost": 2364.873164,
+                                      "r_table_time_ms": 1358.313032,
+                                      "r_other_time_ms": 48.1350204,
+                                      "r_engine_stats": {
+                                        "pages_accessed": 6688354
+                                      },
+                                      "filtered": 100,
+                                      "r_total_filtered": 100,
+                                      "r_filtered": 100
+                                    },
+                                    "buffer_type": "flat",
+                                    "buffer_size": "51MiB",
+                                    "join_type": "BKAH",
+                                    "mrr_type": "Rowid-ordered scan",
+                                    "attached_condition": "store_sales.ss_customer_sk is not null",
+                                    "r_loops": 366,
+                                    "r_filtered": 97.66553932,
+                                    "r_unpack_time_ms": 59.10661113,
+                                    "r_other_time_ms": 64.09800116,
+                                    "r_effective_rows": 6059.016393
+                                  }
+                                },
+                                {
+                                  "table": {
+                                    "table_name": "customer",
+                                    "access_type": "eq_ref",
+                                    "possible_keys": ["PRIMARY"],
+                                    "key": "PRIMARY",
+                                    "key_length": "8",
+                                    "used_key_parts": ["c_customer_sk"],
+                                    "ref": ["tpcds.store_sales.ss_customer_sk"],
+                                    "loops": 2232600,
+                                    "r_loops": 2165831,
+                                    "r_table_loops": 2165818,
+                                    "rows": 1,
+                                    "r_rows": 1,
+                                    "cost": 1999.920101,
+                                    "r_table_time_ms": 1976.589358,
+                                    "r_other_time_ms": 2346.325023,
+                                    "r_engine_stats": {
+                                      "pages_accessed": 6530354
+                                    },
+                                    "filtered": 100,
+                                    "r_total_filtered": 100,
+                                    "r_filtered": 100
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "query_block": {
+                          "select_id": 5,
+                          "operation": "UNION",
+                          "table": {
+                            "message": "Impossible HAVING"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "table": {
+          "table_name": "<derived2>",
+          "access_type": "ref",
+          "possible_keys": ["key0"],
+          "key": "key0",
+          "key_length": "64",
+          "used_key_parts": ["customer_id"],
+          "ref": ["t_s_secyear.customer_id"],
+          "loops": 2232600,
+          "r_loops": 10131,
+          "rows": 10,
+          "r_rows": 0.564504985,
+          "cost": 2853.731646,
+          "r_table_time_ms": 143.351423,
+          "r_other_time_ms": 45.28305761,
+          "filtered": 100,
+          "r_total_filtered": 100,
+          "attached_condition": "t_s_firstyear.`year` = 1999 and t_s_firstyear.sale_type = 's' and t_s_firstyear.year_total > 0",
+          "r_filtered": 100,
+          "materialized": {
+            "query_block": {
+              "union_result": {
+                "query_specifications": [
+                  {
+                    "query_block": {
+                      "select_id": 2,
+                      "cost": 4353.315671,
+                      "r_loops": 1,
+                      "r_total_time_ms": 6599.401556,
+                      "having_condition": "year_total > 0",
+                      "filesort": {
+                        "sort_key": "customer.c_customer_id, customer.c_first_name, customer.c_last_name",
+                        "r_loops": 1,
+                        "r_total_time_ms": 41.04942387,
+                        "r_used_priority_queue": false,
+                        "r_output_rows": 130610,
+                        "r_buffer_size": "36MiB",
+                        "r_sort_mode": "packed_sort_key,rowid",
+                        "temporary_table": {
+                          "nested_loop": [
+                            {
+                              "table": {
+                                "table_name": "date_dim",
+                                "access_type": "ref",
+                                "possible_keys": [
+                                  "PRIMARY",
+                                  "idx_date_dim_d_date_year",
+                                  "idx_date_dim_d_month_seq",
+                                  "idx_date_year_moy",
+                                  "idx_date_year_sk_day",
+                                  "inx_date_dim_year",
+                                  "idx_date_year_sk",
+                                  "idx_date_ym"
+                                ],
+                                "key": "idx_date_year_moy",
+                                "key_length": "9",
+                                "used_key_parts": ["d_year"],
+                                "ref": ["const"],
+                                "loops": 1,
+                                "r_loops": 1,
+                                "rows": 365,
+                                "r_rows": 365,
+                                "cost": 0.056005145,
+                                "r_table_time_ms": 0.040408771,
+                                "r_other_time_ms": 640.0942768,
+                                "r_engine_stats": {
+                                  "pages_accessed": 17
+                                },
+                                "filtered": 100,
+                                "r_total_filtered": 100,
+                                "r_filtered": 100,
+                                "using_index": true
+                              }
+                            },
+                            {
+                              "block-nl-join": {
+                                "table": {
+                                  "table_name": "store_sales",
+                                  "access_type": "ref",
+                                  "possible_keys": [
+                                    "idx_ss_date_addr_item_price",
+                                    "idx_ss_date_cust",
+                                    "idx_ss_date_item_store_cover",
+                                    "idx_ss_q78",
+                                    "idx_ss_sold_date_sk",
+                                    "idx_ss_cust_date",
+                                    "idx_ss_customer_sk",
+                                    "idx_ss_date_store_price",
+                                    "idx_ss_date_store_profit",
+                                    "idx_ss_sold_date_sk_store_sales_price"
+                                  ],
+                                  "key": "idx_ss_date_store_price",
+                                  "key_length": "9",
+                                  "used_key_parts": ["ss_sold_date_sk"],
+                                  "ref": ["tpcds.date_dim.d_date_sk"],
+                                  "loops": 365,
+                                  "r_loops": 1,
+                                  "rows": 6100,
+                                  "r_rows": 2193545,
+                                  "cost": 2358.795649,
+                                  "r_table_time_ms": 1390.84948,
+                                  "r_other_time_ms": 46.80323535,
+                                  "r_engine_stats": {
+                                    "pages_accessed": 6616463
+                                  },
+                                  "filtered": 100,
+                                  "r_total_filtered": 100,
+                                  "r_filtered": 100
+                                },
+                                "buffer_type": "flat",
+                                "buffer_size": "50MiB",
+                                "join_type": "BKAH",
+                                "mrr_type": "Rowid-ordered scan",
+                                "attached_condition": "store_sales.ss_customer_sk is not null",
+                                "r_loops": 365,
+                                "r_filtered": 97.65151843,
+                                "r_unpack_time_ms": 60.63873703,
+                                "r_other_time_ms": 65.51065349,
+                                "r_effective_rows": 6009.712329
+                              }
+                            },
+                            {
+                              "table": {
+                                "table_name": "customer",
+                                "access_type": "eq_ref",
+                                "possible_keys": ["PRIMARY"],
+                                "key": "PRIMARY",
+                                "key_length": "8",
+                                "used_key_parts": ["c_customer_sk"],
+                                "ref": ["tpcds.store_sales.ss_customer_sk"],
+                                "loops": 2226500,
+                                "r_loops": 2142030,
+                                "rows": 1,
+                                "r_rows": 1,
+                                "cost": 1994.464017,
+                                "r_table_time_ms": 1960.331882,
+                                "r_other_time_ms": 2325.216098,
+                                "r_engine_stats": {
+                                  "pages_accessed": 6459788
+                                },
+                                "filtered": 100,
+                                "r_total_filtered": 100,
+                                "r_filtered": 100
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "query_block": {
+                      "select_id": 3,
+                      "operation": "UNION",
+                      "table": {
+                        "message": "Impossible HAVING"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      {
+        "table": {
+          "table_name": "<derived6>",
+          "access_type": "ref",
+          "possible_keys": ["key0"],
+          "key": "key0",
+          "key_length": "64",
+          "used_key_parts": ["customer_id"],
+          "ref": ["t_s_secyear.customer_id"],
+          "loops": 22326000,
+          "r_loops": 5719,
+          "rows": 10,
+          "r_rows": 0.189893338,
+          "cost": 28537.31646,
+          "r_table_time_ms": 56.29451658,
+          "r_other_time_ms": 13.29001736,
+          "filtered": 100,
+          "r_total_filtered": 100,
+          "attached_condition": "t_w_firstyear.`year` = 1999 and t_w_firstyear.sale_type = 'w' and t_w_firstyear.year_total > 0",
+          "r_filtered": 100,
+          "materialized": {
+            "query_block": {
+              "union_result": {
+                "query_specifications": [
+                  {
+                    "query_block": {
+                      "select_id": 6,
+                      "table": {
+                        "message": "Impossible HAVING"
+                      }
+                    }
+                  },
+                  {
+                    "query_block": {
+                      "select_id": 7,
+                      "operation": "UNION",
+                      "cost": 568.346897,
+                      "r_loops": 1,
+                      "r_total_time_ms": 793.10665,
+                      "having_condition": "year_total > 0",
+                      "filesort": {
+                        "sort_key": "customer.c_customer_id, customer.c_first_name, customer.c_last_name",
+                        "r_loops": 1,
+                        "r_total_time_ms": 12.40094161,
+                        "r_used_priority_queue": false,
+                        "r_output_rows": 43304,
+                        "r_buffer_size": "12224KiB",
+                        "r_sort_mode": "packed_sort_key,rowid",
+                        "temporary_table": {
+                          "nested_loop": [
+                            {
+                              "table": {
+                                "table_name": "date_dim",
+                                "access_type": "ref",
+                                "possible_keys": [
+                                  "PRIMARY",
+                                  "idx_date_dim_d_date_year",
+                                  "idx_date_dim_d_month_seq",
+                                  "idx_date_year_moy",
+                                  "idx_date_year_sk_day",
+                                  "inx_date_dim_year",
+                                  "idx_date_year_sk",
+                                  "idx_date_ym"
+                                ],
+                                "key": "idx_date_year_moy",
+                                "key_length": "9",
+                                "used_key_parts": ["d_year"],
+                                "ref": ["const"],
+                                "loops": 1,
+                                "r_loops": 1,
+                                "rows": 365,
+                                "r_rows": 365,
+                                "cost": 0.056005145,
+                                "r_table_time_ms": 0.102346486,
+                                "r_other_time_ms": 0.052963206,
+                                "r_engine_stats": {
+                                  "pages_accessed": 17
+                                },
+                                "filtered": 100,
+                                "r_total_filtered": 100,
+                                "r_filtered": 100,
+                                "using_index": true
+                              }
+                            },
+                            {
+                              "table": {
+                                "table_name": "web_sales",
+                                "access_type": "ref",
+                                "possible_keys": [
+                                  "idx_ws_date_addr_item_price",
+                                  "idx_ws_date_cust",
+                                  "idx_ws_date_item_cust",
+                                  "idx_ws_date_item_price",
+                                  "idx_ws_sold_date_ext_price",
+                                  "idx_ws_bill_customer_sk",
+                                  "idx_ws_cust_date",
+                                  "idx_ws_date_item_paid",
+                                  "idx_ws_sold_date_sk"
+                                ],
+                                "key": "idx_ws_date_item_cust",
+                                "key_length": "9",
+                                "used_key_parts": ["ws_sold_date_sk"],
+                                "ref": ["tpcds.date_dim.d_date_sk"],
+                                "loops": 365,
+                                "r_loops": 365,
+                                "rows": 1482,
+                                "r_rows": 1573.726027,
+                                "cost": 81.46810585,
+                                "r_table_time_ms": 50.21408074,
+                                "r_other_time_ms": 19.86566795,
+                                "r_engine_stats": {
+                                  "pages_accessed": 1844
+                                },
+                                "filtered": 100,
+                                "r_total_filtered": 99.98694312,
+                                "attached_condition": "web_sales.ws_bill_customer_sk is not null",
+                                "r_filtered": 99.98694312,
+                                "using_index": true
+                              }
+                            },
+                            {
+                              "table": {
+                                "table_name": "customer",
+                                "access_type": "eq_ref",
+                                "possible_keys": ["PRIMARY"],
+                                "key": "PRIMARY",
+                                "key_length": "8",
+                                "used_key_parts": ["c_customer_sk"],
+                                "ref": ["tpcds.web_sales.ws_bill_customer_sk"],
+                                "loops": 540930,
+                                "r_loops": 574335,
+                                "r_table_loops": 570292,
+                                "rows": 1,
+                                "r_rows": 1,
+                                "cost": 486.822786,
+                                "r_table_time_ms": 300.2584804,
+                                "r_other_time_ms": 389.0971669,
+                                "r_engine_stats": {
+                                  "pages_accessed": 1720155
+                                },
+                                "filtered": 100,
+                                "r_total_filtered": 100,
+                                "r_filtered": 100
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      {
+        "table": {
+          "table_name": "<derived8>",
+          "access_type": "ref",
+          "possible_keys": ["key0"],
+          "key": "key0",
+          "key_length": "64",
+          "used_key_parts": ["customer_id"],
+          "ref": ["t_s_secyear.customer_id"],
+          "loops": 223260000,
+          "r_loops": 1086,
+          "rows": 10,
+          "r_rows": 0.173112339,
+          "cost": 285373.428,
+          "r_table_time_ms": 25.86591756,
+          "r_other_time_ms": 13.02987451,
+          "filtered": 100,
+          "r_total_filtered": 53.19148936,
+          "attached_condition": "t_w_secyear.`year` = 2000 and t_w_secyear.sale_type = 'w' and case when t_w_firstyear.year_total > 0 then t_w_secyear.year_total / t_w_firstyear.year_total else NULL end > case when t_s_firstyear.year_total > 0 then t_s_secyear.year_total / t_s_firstyear.year_total else NULL end",
+          "r_filtered": 53.19148936,
+          "materialized": {
+            "query_block": {
+              "union_result": {
+                "query_specifications": [
+                  {
+                    "query_block": {
+                      "select_id": 8,
+                      "table": {
+                        "message": "Impossible HAVING"
+                      }
+                    }
+                  },
+                  {
+                    "query_block": {
+                      "select_id": 9,
+                      "operation": "UNION",
+                      "cost": 569.8958041,
+                      "r_loops": 1,
+                      "r_total_time_ms": 792.4296748,
+                      "filesort": {
+                        "sort_key": "customer.c_customer_id, customer.c_first_name, customer.c_last_name",
+                        "r_loops": 1,
+                        "r_total_time_ms": 11.1368054,
+                        "r_used_priority_queue": false,
+                        "r_output_rows": 43514,
+                        "r_buffer_size": "12283KiB",
+                        "r_sort_mode": "packed_sort_key,rowid",
+                        "temporary_table": {
+                          "nested_loop": [
+                            {
+                              "table": {
+                                "table_name": "date_dim",
+                                "access_type": "ref",
+                                "possible_keys": [
+                                  "PRIMARY",
+                                  "idx_date_dim_d_date_year",
+                                  "idx_date_dim_d_month_seq",
+                                  "idx_date_year_moy",
+                                  "idx_date_year_sk_day",
+                                  "inx_date_dim_year",
+                                  "idx_date_year_sk",
+                                  "idx_date_ym"
+                                ],
+                                "key": "idx_date_year_moy",
+                                "key_length": "9",
+                                "used_key_parts": ["d_year"],
+                                "ref": ["const"],
+                                "loops": 1,
+                                "r_loops": 1,
+                                "rows": 366,
+                                "r_rows": 366,
+                                "cost": 0.05615183,
+                                "r_table_time_ms": 0.087726255,
+                                "r_other_time_ms": 0.12327437,
+                                "r_engine_stats": {
+                                  "pages_accessed": 12
+                                },
+                                "filtered": 100,
+                                "r_total_filtered": 100,
+                                "attached_condition": "date_dim.d_year = 2000",
+                                "r_filtered": 100,
+                                "using_index": true
+                              }
+                            },
+                            {
+                              "table": {
+                                "table_name": "web_sales",
+                                "access_type": "ref",
+                                "possible_keys": [
+                                  "idx_ws_date_addr_item_price",
+                                  "idx_ws_date_cust",
+                                  "idx_ws_date_item_cust",
+                                  "idx_ws_date_item_price",
+                                  "idx_ws_sold_date_ext_price",
+                                  "idx_ws_bill_customer_sk",
+                                  "idx_ws_cust_date",
+                                  "idx_ws_date_item_paid",
+                                  "idx_ws_sold_date_sk"
+                                ],
+                                "key": "idx_ws_date_item_cust",
+                                "key_length": "9",
+                                "used_key_parts": ["ws_sold_date_sk"],
+                                "ref": ["tpcds.date_dim.d_date_sk"],
+                                "loops": 366,
+                                "r_loops": 366,
+                                "rows": 1482,
+                                "r_rows": 1581.527322,
+                                "cost": 81.69130614,
+                                "r_table_time_ms": 50.17552803,
+                                "r_other_time_ms": 19.92549952,
+                                "r_engine_stats": {
+                                  "pages_accessed": 1852
+                                },
+                                "filtered": 100,
+                                "r_total_filtered": 99.98462439,
+                                "attached_condition": "web_sales.ws_bill_customer_sk is not null",
+                                "r_filtered": 99.98462439,
+                                "using_index": true
+                              }
+                            },
+                            {
+                              "table": {
+                                "table_name": "customer",
+                                "access_type": "eq_ref",
+                                "possible_keys": ["PRIMARY"],
+                                "key": "PRIMARY",
+                                "key_length": "8",
+                                "used_key_parts": ["c_customer_sk"],
+                                "ref": ["tpcds.web_sales.ws_bill_customer_sk"],
+                                "loops": 542412,
+                                "r_loops": 578750,
+                                "r_table_loops": 574530,
+                                "rows": 1,
+                                "r_rows": 1,
+                                "cost": 488.1483461,
+                                "r_table_time_ms": 301.5799045,
+                                "r_other_time_ms": 388.7448601,
+                                "r_engine_stats": {
+                                  "pages_accessed": 1732022
+                                },
+                                "filtered": 100,
+                                "r_total_filtered": 100,
+                                "r_filtered": 100
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

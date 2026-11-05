@@ -1,0 +1,1802 @@
+[
+  {
+    "label": "original",
+    "profile": "reference167",
+    "warmup": true,
+    "seconds": 0.39118102800057386,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "original",
+    "profile": "reference167",
+    "warmup": false,
+    "seconds": 0.21465370200166944,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "original",
+    "profile": "reference167",
+    "warmup": false,
+    "seconds": 0.21062763000009,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "original",
+    "profile": "reference167",
+    "warmup": false,
+    "seconds": 0.21489844300231198,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "county_index",
+    "profile": "county_index",
+    "warmup": true,
+    "seconds": 0.21921810500134598,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "county_index",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.06580794600085937,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "county_index",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.06499822800105903,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "county_index",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.0686939799998072,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "county_cover",
+    "profile": "county_cover",
+    "warmup": true,
+    "seconds": 0.061336836999544175,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "county_cover",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.06184543600102188,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "county_cover",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.060052838001865894,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "county_cover",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.06035569499726989,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "reference167__date_ranges",
+    "profile": "reference167",
+    "warmup": true,
+    "seconds": 0.2733725130019593,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "8f3cdf820e51edad8dbddc5748c5cd6e64e7d5fe8c04bcf975904ee0329746b0"
+  },
+  {
+    "label": "reference167__county_first",
+    "profile": "reference167",
+    "warmup": true,
+    "seconds": 0.12486689099750947,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "6cd9033ee451884cde8e05016f3cb879f52f5d731e5dca65e9cca6a0c1f06d36"
+  },
+  {
+    "label": "reference167__county_ranges",
+    "profile": "reference167",
+    "warmup": true,
+    "seconds": 0.12621600100101205,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "reference167__previous_nodate",
+    "profile": "reference167",
+    "warmup": true,
+    "seconds": 0.20413310600270052,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "c34f106f7d7429ed5dfd3c711b5f1aa40a0718b915aed6487b6827501f88ad64"
+  },
+  {
+    "label": "reference167__correlated",
+    "profile": "reference167",
+    "warmup": true,
+    "seconds": 5.022440699998697,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "e98e97288be6b3ffe797d6ca83241f7adff01f72fa4d6d56d68a2ba39359353b"
+  },
+  {
+    "label": "reference167__correlated_ranges",
+    "profile": "reference167",
+    "warmup": true,
+    "seconds": 1.1981539619991963,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "1792b41d45ccb30f68be2a61bac6bdcf0d5afdee3da2587a1c44fe5b6bf2ddae"
+  },
+  {
+    "label": "reference167__swap_web_catalog",
+    "profile": "reference167",
+    "warmup": true,
+    "seconds": 0.23043055300149717,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "4537cc9047f470c5e6cadf116dd8426dae4c5cf75aff490a09ac5943fe6a92d2"
+  },
+  {
+    "label": "reference167__date_ranges",
+    "profile": "reference167",
+    "warmup": false,
+    "seconds": 0.2272053140004573,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "8f3cdf820e51edad8dbddc5748c5cd6e64e7d5fe8c04bcf975904ee0329746b0"
+  },
+  {
+    "label": "reference167__county_first",
+    "profile": "reference167",
+    "warmup": false,
+    "seconds": 0.12798150399976294,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "6cd9033ee451884cde8e05016f3cb879f52f5d731e5dca65e9cca6a0c1f06d36"
+  },
+  {
+    "label": "reference167__county_ranges",
+    "profile": "reference167",
+    "warmup": false,
+    "seconds": 0.12832816199806985,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "reference167__previous_nodate",
+    "profile": "reference167",
+    "warmup": false,
+    "seconds": 0.20218866299910587,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "c34f106f7d7429ed5dfd3c711b5f1aa40a0718b915aed6487b6827501f88ad64"
+  },
+  {
+    "label": "reference167__correlated",
+    "profile": "reference167",
+    "warmup": false,
+    "seconds": 1.8635669899995264,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "e98e97288be6b3ffe797d6ca83241f7adff01f72fa4d6d56d68a2ba39359353b"
+  },
+  {
+    "label": "reference167__correlated_ranges",
+    "profile": "reference167",
+    "warmup": false,
+    "seconds": 1.1224461580022762,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "1792b41d45ccb30f68be2a61bac6bdcf0d5afdee3da2587a1c44fe5b6bf2ddae"
+  },
+  {
+    "label": "reference167__swap_web_catalog",
+    "profile": "reference167",
+    "warmup": false,
+    "seconds": 0.2148564209965116,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "4537cc9047f470c5e6cadf116dd8426dae4c5cf75aff490a09ac5943fe6a92d2"
+  },
+  {
+    "label": "reference167__swap_web_catalog",
+    "profile": "reference167",
+    "warmup": false,
+    "seconds": 0.20664290900094784,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "4537cc9047f470c5e6cadf116dd8426dae4c5cf75aff490a09ac5943fe6a92d2"
+  },
+  {
+    "label": "reference167__correlated_ranges",
+    "profile": "reference167",
+    "warmup": false,
+    "seconds": 1.1572462980002456,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "1792b41d45ccb30f68be2a61bac6bdcf0d5afdee3da2587a1c44fe5b6bf2ddae"
+  },
+  {
+    "label": "reference167__correlated",
+    "profile": "reference167",
+    "warmup": false,
+    "seconds": 1.8697873349992733,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "e98e97288be6b3ffe797d6ca83241f7adff01f72fa4d6d56d68a2ba39359353b"
+  },
+  {
+    "label": "reference167__previous_nodate",
+    "profile": "reference167",
+    "warmup": false,
+    "seconds": 0.20723822799845948,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "c34f106f7d7429ed5dfd3c711b5f1aa40a0718b915aed6487b6827501f88ad64"
+  },
+  {
+    "label": "reference167__county_ranges",
+    "profile": "reference167",
+    "warmup": false,
+    "seconds": 0.12535639699854073,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "reference167__county_first",
+    "profile": "reference167",
+    "warmup": false,
+    "seconds": 0.1261136949979118,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "6cd9033ee451884cde8e05016f3cb879f52f5d731e5dca65e9cca6a0c1f06d36"
+  },
+  {
+    "label": "reference167__date_ranges",
+    "profile": "reference167",
+    "warmup": false,
+    "seconds": 0.20979456100030802,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "8f3cdf820e51edad8dbddc5748c5cd6e64e7d5fe8c04bcf975904ee0329746b0"
+  },
+  {
+    "label": "reference167__date_ranges",
+    "profile": "reference167",
+    "warmup": false,
+    "seconds": 0.2072228310025821,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "8f3cdf820e51edad8dbddc5748c5cd6e64e7d5fe8c04bcf975904ee0329746b0"
+  },
+  {
+    "label": "reference167__county_first",
+    "profile": "reference167",
+    "warmup": false,
+    "seconds": 0.1245816510017903,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "6cd9033ee451884cde8e05016f3cb879f52f5d731e5dca65e9cca6a0c1f06d36"
+  },
+  {
+    "label": "reference167__county_ranges",
+    "profile": "reference167",
+    "warmup": false,
+    "seconds": 0.126140824999311,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "reference167__previous_nodate",
+    "profile": "reference167",
+    "warmup": false,
+    "seconds": 0.1977890340021986,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "c34f106f7d7429ed5dfd3c711b5f1aa40a0718b915aed6487b6827501f88ad64"
+  },
+  {
+    "label": "reference167__correlated",
+    "profile": "reference167",
+    "warmup": false,
+    "seconds": 1.8857745450004586,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "e98e97288be6b3ffe797d6ca83241f7adff01f72fa4d6d56d68a2ba39359353b"
+  },
+  {
+    "label": "reference167__correlated_ranges",
+    "profile": "reference167",
+    "warmup": false,
+    "seconds": 1.138410751002084,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "1792b41d45ccb30f68be2a61bac6bdcf0d5afdee3da2587a1c44fe5b6bf2ddae"
+  },
+  {
+    "label": "reference167__swap_web_catalog",
+    "profile": "reference167",
+    "warmup": false,
+    "seconds": 0.2158812410016253,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "4537cc9047f470c5e6cadf116dd8426dae4c5cf75aff490a09ac5943fe6a92d2"
+  },
+  {
+    "label": "county_index__date_ranges",
+    "profile": "county_index",
+    "warmup": true,
+    "seconds": 0.03761204900001758,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "8f3cdf820e51edad8dbddc5748c5cd6e64e7d5fe8c04bcf975904ee0329746b0"
+  },
+  {
+    "label": "county_index__county_first",
+    "profile": "county_index",
+    "warmup": true,
+    "seconds": 0.11290259200177388,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "6cd9033ee451884cde8e05016f3cb879f52f5d731e5dca65e9cca6a0c1f06d36"
+  },
+  {
+    "label": "county_index__county_ranges",
+    "profile": "county_index",
+    "warmup": true,
+    "seconds": 0.03224219599724165,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "county_index__previous_nodate",
+    "profile": "county_index",
+    "warmup": true,
+    "seconds": 0.030065055001614382,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "c34f106f7d7429ed5dfd3c711b5f1aa40a0718b915aed6487b6827501f88ad64"
+  },
+  {
+    "label": "county_index__correlated",
+    "profile": "county_index",
+    "warmup": true,
+    "seconds": 0.03993922399968142,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "e98e97288be6b3ffe797d6ca83241f7adff01f72fa4d6d56d68a2ba39359353b"
+  },
+  {
+    "label": "county_index__correlated_ranges",
+    "profile": "county_index",
+    "warmup": true,
+    "seconds": 0.03430363799998304,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "1792b41d45ccb30f68be2a61bac6bdcf0d5afdee3da2587a1c44fe5b6bf2ddae"
+  },
+  {
+    "label": "county_index__swap_web_catalog",
+    "profile": "county_index",
+    "warmup": true,
+    "seconds": 0.06353529799889657,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "4537cc9047f470c5e6cadf116dd8426dae4c5cf75aff490a09ac5943fe6a92d2"
+  },
+  {
+    "label": "county_index__date_ranges",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.034037116001854884,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "8f3cdf820e51edad8dbddc5748c5cd6e64e7d5fe8c04bcf975904ee0329746b0"
+  },
+  {
+    "label": "county_index__county_first",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.11576045499896281,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "6cd9033ee451884cde8e05016f3cb879f52f5d731e5dca65e9cca6a0c1f06d36"
+  },
+  {
+    "label": "county_index__county_ranges",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03513630699671921,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "county_index__previous_nodate",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.032588541998848086,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "c34f106f7d7429ed5dfd3c711b5f1aa40a0718b915aed6487b6827501f88ad64"
+  },
+  {
+    "label": "county_index__correlated",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.041374843996891286,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "e98e97288be6b3ffe797d6ca83241f7adff01f72fa4d6d56d68a2ba39359353b"
+  },
+  {
+    "label": "county_index__correlated_ranges",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03300008799851639,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "1792b41d45ccb30f68be2a61bac6bdcf0d5afdee3da2587a1c44fe5b6bf2ddae"
+  },
+  {
+    "label": "county_index__swap_web_catalog",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.06383674500102643,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "4537cc9047f470c5e6cadf116dd8426dae4c5cf75aff490a09ac5943fe6a92d2"
+  },
+  {
+    "label": "county_index__swap_web_catalog",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.06384458100001211,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "4537cc9047f470c5e6cadf116dd8426dae4c5cf75aff490a09ac5943fe6a92d2"
+  },
+  {
+    "label": "county_index__correlated_ranges",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03328881799825467,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "1792b41d45ccb30f68be2a61bac6bdcf0d5afdee3da2587a1c44fe5b6bf2ddae"
+  },
+  {
+    "label": "county_index__correlated",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.04163858299943968,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "e98e97288be6b3ffe797d6ca83241f7adff01f72fa4d6d56d68a2ba39359353b"
+  },
+  {
+    "label": "county_index__previous_nodate",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03289648700229009,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "c34f106f7d7429ed5dfd3c711b5f1aa40a0718b915aed6487b6827501f88ad64"
+  },
+  {
+    "label": "county_index__county_ranges",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03315353599828086,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "county_index__county_first",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.11578220999945188,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "6cd9033ee451884cde8e05016f3cb879f52f5d731e5dca65e9cca6a0c1f06d36"
+  },
+  {
+    "label": "county_index__date_ranges",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.0348375430003216,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "8f3cdf820e51edad8dbddc5748c5cd6e64e7d5fe8c04bcf975904ee0329746b0"
+  },
+  {
+    "label": "county_index__date_ranges",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03442392199940514,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "8f3cdf820e51edad8dbddc5748c5cd6e64e7d5fe8c04bcf975904ee0329746b0"
+  },
+  {
+    "label": "county_index__county_first",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.11441488600030425,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "6cd9033ee451884cde8e05016f3cb879f52f5d731e5dca65e9cca6a0c1f06d36"
+  },
+  {
+    "label": "county_index__county_ranges",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03210209999815561,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "county_index__previous_nodate",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03009697900051833,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "c34f106f7d7429ed5dfd3c711b5f1aa40a0718b915aed6487b6827501f88ad64"
+  },
+  {
+    "label": "county_index__correlated",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.04015196599721094,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "e98e97288be6b3ffe797d6ca83241f7adff01f72fa4d6d56d68a2ba39359353b"
+  },
+  {
+    "label": "county_index__correlated_ranges",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.033579315000679344,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "1792b41d45ccb30f68be2a61bac6bdcf0d5afdee3da2587a1c44fe5b6bf2ddae"
+  },
+  {
+    "label": "county_index__swap_web_catalog",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.06418835099975695,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "4537cc9047f470c5e6cadf116dd8426dae4c5cf75aff490a09ac5943fe6a92d2"
+  },
+  {
+    "label": "county_cover__date_ranges",
+    "profile": "county_cover",
+    "warmup": true,
+    "seconds": 0.03420726200056379,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "8f3cdf820e51edad8dbddc5748c5cd6e64e7d5fe8c04bcf975904ee0329746b0"
+  },
+  {
+    "label": "county_cover__county_first",
+    "profile": "county_cover",
+    "warmup": true,
+    "seconds": 0.11141456200130051,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "6cd9033ee451884cde8e05016f3cb879f52f5d731e5dca65e9cca6a0c1f06d36"
+  },
+  {
+    "label": "county_cover__county_ranges",
+    "profile": "county_cover",
+    "warmup": true,
+    "seconds": 0.03149547000066377,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "county_cover__previous_nodate",
+    "profile": "county_cover",
+    "warmup": true,
+    "seconds": 0.03093034199991962,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "c34f106f7d7429ed5dfd3c711b5f1aa40a0718b915aed6487b6827501f88ad64"
+  },
+  {
+    "label": "county_cover__correlated",
+    "profile": "county_cover",
+    "warmup": true,
+    "seconds": 0.03846904099918902,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "e98e97288be6b3ffe797d6ca83241f7adff01f72fa4d6d56d68a2ba39359353b"
+  },
+  {
+    "label": "county_cover__correlated_ranges",
+    "profile": "county_cover",
+    "warmup": true,
+    "seconds": 0.030901926002115943,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "1792b41d45ccb30f68be2a61bac6bdcf0d5afdee3da2587a1c44fe5b6bf2ddae"
+  },
+  {
+    "label": "county_cover__swap_web_catalog",
+    "profile": "county_cover",
+    "warmup": true,
+    "seconds": 0.060884905000420986,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "4537cc9047f470c5e6cadf116dd8426dae4c5cf75aff490a09ac5943fe6a92d2"
+  },
+  {
+    "label": "county_cover__date_ranges",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.033280231000389904,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "8f3cdf820e51edad8dbddc5748c5cd6e64e7d5fe8c04bcf975904ee0329746b0"
+  },
+  {
+    "label": "county_cover__county_first",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.110798549001629,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "6cd9033ee451884cde8e05016f3cb879f52f5d731e5dca65e9cca6a0c1f06d36"
+  },
+  {
+    "label": "county_cover__county_ranges",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.031399610998050775,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "county_cover__previous_nodate",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.029848925998521736,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "c34f106f7d7429ed5dfd3c711b5f1aa40a0718b915aed6487b6827501f88ad64"
+  },
+  {
+    "label": "county_cover__correlated",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.03843901700020069,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "e98e97288be6b3ffe797d6ca83241f7adff01f72fa4d6d56d68a2ba39359353b"
+  },
+  {
+    "label": "county_cover__correlated_ranges",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.029708764999668347,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "1792b41d45ccb30f68be2a61bac6bdcf0d5afdee3da2587a1c44fe5b6bf2ddae"
+  },
+  {
+    "label": "county_cover__swap_web_catalog",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.06501190000199131,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "4537cc9047f470c5e6cadf116dd8426dae4c5cf75aff490a09ac5943fe6a92d2"
+  },
+  {
+    "label": "county_cover__swap_web_catalog",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.062272923001728486,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "4537cc9047f470c5e6cadf116dd8426dae4c5cf75aff490a09ac5943fe6a92d2"
+  },
+  {
+    "label": "county_cover__correlated_ranges",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.031943024001520826,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "1792b41d45ccb30f68be2a61bac6bdcf0d5afdee3da2587a1c44fe5b6bf2ddae"
+  },
+  {
+    "label": "county_cover__correlated",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.038367576999007724,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "e98e97288be6b3ffe797d6ca83241f7adff01f72fa4d6d56d68a2ba39359353b"
+  },
+  {
+    "label": "county_cover__previous_nodate",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.030495121001877123,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "c34f106f7d7429ed5dfd3c711b5f1aa40a0718b915aed6487b6827501f88ad64"
+  },
+  {
+    "label": "county_cover__county_ranges",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.03201376599827199,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "county_cover__county_first",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.11437497799852281,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "6cd9033ee451884cde8e05016f3cb879f52f5d731e5dca65e9cca6a0c1f06d36"
+  },
+  {
+    "label": "county_cover__date_ranges",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.035049456000706414,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "8f3cdf820e51edad8dbddc5748c5cd6e64e7d5fe8c04bcf975904ee0329746b0"
+  },
+  {
+    "label": "county_cover__date_ranges",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.0337130129992147,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "8f3cdf820e51edad8dbddc5748c5cd6e64e7d5fe8c04bcf975904ee0329746b0"
+  },
+  {
+    "label": "county_cover__county_first",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.11222010699930252,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "6cd9033ee451884cde8e05016f3cb879f52f5d731e5dca65e9cca6a0c1f06d36"
+  },
+  {
+    "label": "county_cover__county_ranges",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.03184904599766014,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "county_cover__previous_nodate",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.030939517000661,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "c34f106f7d7429ed5dfd3c711b5f1aa40a0718b915aed6487b6827501f88ad64"
+  },
+  {
+    "label": "county_cover__correlated",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.041744866997760255,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "e98e97288be6b3ffe797d6ca83241f7adff01f72fa4d6d56d68a2ba39359353b"
+  },
+  {
+    "label": "county_cover__correlated_ranges",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.032820006999827456,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "1792b41d45ccb30f68be2a61bac6bdcf0d5afdee3da2587a1c44fe5b6bf2ddae"
+  },
+  {
+    "label": "county_cover__swap_web_catalog",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.06264670599921374,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "4537cc9047f470c5e6cadf116dd8426dae4c5cf75aff490a09ac5943fe6a92d2"
+  },
+  {
+    "label": "county_index__union_exists",
+    "profile": "county_index",
+    "warmup": true,
+    "seconds": 0.04208216199913295,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d803da06148e7c370464c2852a82c9debf12d66a096dc68c69eaaf1c1d8a7b57"
+  },
+  {
+    "label": "county_index__union_no_order",
+    "profile": "county_index",
+    "warmup": true,
+    "seconds": 0.042981334001524374,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "cf1cd10402ec03b27e643ca06ddc0f9d5505154e635fcd1788ae64045897d8e8"
+  },
+  {
+    "label": "county_index__union_correlated",
+    "profile": "county_index",
+    "warmup": true,
+    "seconds": 0.032826358001329936,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "71e0ac6f5fb67d0352b3f325a0e644d98e6c3ff214cec33d890fd782e0b705dd"
+  },
+  {
+    "label": "county_index__county_range",
+    "profile": "county_index",
+    "warmup": true,
+    "seconds": 0.03456570100024692,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "county_index__union_exists",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03530731399951037,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d803da06148e7c370464c2852a82c9debf12d66a096dc68c69eaaf1c1d8a7b57"
+  },
+  {
+    "label": "county_index__union_no_order",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03540582799905678,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "cf1cd10402ec03b27e643ca06ddc0f9d5505154e635fcd1788ae64045897d8e8"
+  },
+  {
+    "label": "county_index__union_correlated",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03285972400044557,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "71e0ac6f5fb67d0352b3f325a0e644d98e6c3ff214cec33d890fd782e0b705dd"
+  },
+  {
+    "label": "county_index__county_range",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.031650446999265114,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "county_index__county_range",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03198356299981242,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "county_index__union_correlated",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03256530900034704,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "71e0ac6f5fb67d0352b3f325a0e644d98e6c3ff214cec33d890fd782e0b705dd"
+  },
+  {
+    "label": "county_index__union_no_order",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.035975173999759136,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "cf1cd10402ec03b27e643ca06ddc0f9d5505154e635fcd1788ae64045897d8e8"
+  },
+  {
+    "label": "county_index__union_exists",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.031727140998555114,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d803da06148e7c370464c2852a82c9debf12d66a096dc68c69eaaf1c1d8a7b57"
+  },
+  {
+    "label": "county_index__union_exists",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.032290303002810106,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d803da06148e7c370464c2852a82c9debf12d66a096dc68c69eaaf1c1d8a7b57"
+  },
+  {
+    "label": "county_index__union_no_order",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03563166599997203,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "cf1cd10402ec03b27e643ca06ddc0f9d5505154e635fcd1788ae64045897d8e8"
+  },
+  {
+    "label": "county_index__union_correlated",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.033687241997540696,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "71e0ac6f5fb67d0352b3f325a0e644d98e6c3ff214cec33d890fd782e0b705dd"
+  },
+  {
+    "label": "county_index__county_range",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03330118500161916,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "county_index__county_range",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03328498699920601,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "county_index__union_correlated",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03306843699829187,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "71e0ac6f5fb67d0352b3f325a0e644d98e6c3ff214cec33d890fd782e0b705dd"
+  },
+  {
+    "label": "county_index__union_no_order",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03548288899764884,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "cf1cd10402ec03b27e643ca06ddc0f9d5505154e635fcd1788ae64045897d8e8"
+  },
+  {
+    "label": "county_index__union_exists",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03272296899740468,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d803da06148e7c370464c2852a82c9debf12d66a096dc68c69eaaf1c1d8a7b57"
+  },
+  {
+    "label": "county_index__union_exists",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.032079659002192784,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d803da06148e7c370464c2852a82c9debf12d66a096dc68c69eaaf1c1d8a7b57"
+  },
+  {
+    "label": "county_index__union_no_order",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03470115299933241,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "cf1cd10402ec03b27e643ca06ddc0f9d5505154e635fcd1788ae64045897d8e8"
+  },
+  {
+    "label": "county_index__union_correlated",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03261264899992966,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "71e0ac6f5fb67d0352b3f325a0e644d98e6c3ff214cec33d890fd782e0b705dd"
+  },
+  {
+    "label": "county_index__county_range",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03267985599813983,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "county_cover__union_exists",
+    "profile": "county_cover",
+    "warmup": true,
+    "seconds": 0.03002923100211774,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d803da06148e7c370464c2852a82c9debf12d66a096dc68c69eaaf1c1d8a7b57"
+  },
+  {
+    "label": "county_cover__union_no_order",
+    "profile": "county_cover",
+    "warmup": true,
+    "seconds": 0.03429135400074301,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "cf1cd10402ec03b27e643ca06ddc0f9d5505154e635fcd1788ae64045897d8e8"
+  },
+  {
+    "label": "county_cover__union_correlated",
+    "profile": "county_cover",
+    "warmup": true,
+    "seconds": 0.030498557000100845,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "71e0ac6f5fb67d0352b3f325a0e644d98e6c3ff214cec33d890fd782e0b705dd"
+  },
+  {
+    "label": "county_cover__county_range",
+    "profile": "county_cover",
+    "warmup": true,
+    "seconds": 0.030515383998135803,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "county_cover__union_exists",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.030546967002010206,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d803da06148e7c370464c2852a82c9debf12d66a096dc68c69eaaf1c1d8a7b57"
+  },
+  {
+    "label": "county_cover__union_no_order",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.034380925997538725,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "cf1cd10402ec03b27e643ca06ddc0f9d5505154e635fcd1788ae64045897d8e8"
+  },
+  {
+    "label": "county_cover__union_correlated",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.030063967002206482,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "71e0ac6f5fb67d0352b3f325a0e644d98e6c3ff214cec33d890fd782e0b705dd"
+  },
+  {
+    "label": "county_cover__county_range",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.030382218999875477,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "county_cover__county_range",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.030252447999373544,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "county_cover__union_correlated",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.029397155998594826,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "71e0ac6f5fb67d0352b3f325a0e644d98e6c3ff214cec33d890fd782e0b705dd"
+  },
+  {
+    "label": "county_cover__union_no_order",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.03542712999842479,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "cf1cd10402ec03b27e643ca06ddc0f9d5505154e635fcd1788ae64045897d8e8"
+  },
+  {
+    "label": "county_cover__union_exists",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.038621753999905195,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d803da06148e7c370464c2852a82c9debf12d66a096dc68c69eaaf1c1d8a7b57"
+  },
+  {
+    "label": "county_cover__union_exists",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.03326531399943633,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d803da06148e7c370464c2852a82c9debf12d66a096dc68c69eaaf1c1d8a7b57"
+  },
+  {
+    "label": "county_cover__union_no_order",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.035594886998296715,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "cf1cd10402ec03b27e643ca06ddc0f9d5505154e635fcd1788ae64045897d8e8"
+  },
+  {
+    "label": "county_cover__union_correlated",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.03036757300287718,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "71e0ac6f5fb67d0352b3f325a0e644d98e6c3ff214cec33d890fd782e0b705dd"
+  },
+  {
+    "label": "county_cover__county_range",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.03033710299860104,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "county_cover__county_range",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.029955175003124168,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "county_cover__union_correlated",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.030700568000611383,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "71e0ac6f5fb67d0352b3f325a0e644d98e6c3ff214cec33d890fd782e0b705dd"
+  },
+  {
+    "label": "county_cover__union_no_order",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.03348523599925102,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "cf1cd10402ec03b27e643ca06ddc0f9d5505154e635fcd1788ae64045897d8e8"
+  },
+  {
+    "label": "county_cover__union_exists",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.030448811001406284,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d803da06148e7c370464c2852a82c9debf12d66a096dc68c69eaaf1c1d8a7b57"
+  },
+  {
+    "label": "county_cover__union_exists",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.03143658199769561,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d803da06148e7c370464c2852a82c9debf12d66a096dc68c69eaaf1c1d8a7b57"
+  },
+  {
+    "label": "county_cover__union_no_order",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.03399124099814799,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "cf1cd10402ec03b27e643ca06ddc0f9d5505154e635fcd1788ae64045897d8e8"
+  },
+  {
+    "label": "county_cover__union_correlated",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.030950132000725716,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "71e0ac6f5fb67d0352b3f325a0e644d98e6c3ff214cec33d890fd782e0b705dd"
+  },
+  {
+    "label": "county_cover__county_range",
+    "profile": "county_cover",
+    "warmup": false,
+    "seconds": 0.030342317000759067,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "county_range",
+    "profile": "county_index",
+    "warmup": true,
+    "seconds": 0.04788660700069158,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "channel_first",
+    "profile": "county_index",
+    "warmup": true,
+    "seconds": 0.05084712300231331,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "175ec0a68b8164b105f5c33246394036bf3e2facbbf400a66e647149fb132675"
+  },
+  {
+    "label": "channel_first_no_bka",
+    "profile": "county_index",
+    "warmup": true,
+    "seconds": 0.03735953999785124,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "7bcbf5535b8f41d818da164df7f7fba058bf34ebcdd1bc16eef6733f583bb7fd"
+  },
+  {
+    "label": "county_range",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.033762925002520205,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "channel_first",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03578028199990513,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "175ec0a68b8164b105f5c33246394036bf3e2facbbf400a66e647149fb132675"
+  },
+  {
+    "label": "channel_first_no_bka",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03975853200245183,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "7bcbf5535b8f41d818da164df7f7fba058bf34ebcdd1bc16eef6733f583bb7fd"
+  },
+  {
+    "label": "channel_first_no_bka",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.04145775100187166,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "7bcbf5535b8f41d818da164df7f7fba058bf34ebcdd1bc16eef6733f583bb7fd"
+  },
+  {
+    "label": "channel_first",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03459312800259795,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "175ec0a68b8164b105f5c33246394036bf3e2facbbf400a66e647149fb132675"
+  },
+  {
+    "label": "county_range",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03199704999860842,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "county_range",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.033077485000831075,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "channel_first",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03407700699972338,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "175ec0a68b8164b105f5c33246394036bf3e2facbbf400a66e647149fb132675"
+  },
+  {
+    "label": "channel_first_no_bka",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03744282800107612,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "7bcbf5535b8f41d818da164df7f7fba058bf34ebcdd1bc16eef6733f583bb7fd"
+  },
+  {
+    "label": "channel_first_no_bka",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03745817699746112,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "7bcbf5535b8f41d818da164df7f7fba058bf34ebcdd1bc16eef6733f583bb7fd"
+  },
+  {
+    "label": "channel_first",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.035854784000548534,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "175ec0a68b8164b105f5c33246394036bf3e2facbbf400a66e647149fb132675"
+  },
+  {
+    "label": "county_range",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03489699400233803,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "county_range",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03595617300015874,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "channel_first",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.035220222001953516,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "175ec0a68b8164b105f5c33246394036bf3e2facbbf400a66e647149fb132675"
+  },
+  {
+    "label": "channel_first_no_bka",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03623609900023439,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "7bcbf5535b8f41d818da164df7f7fba058bf34ebcdd1bc16eef6733f583bb7fd"
+  },
+  {
+    "label": "channel_first_no_bka",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.036006071997690015,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "7bcbf5535b8f41d818da164df7f7fba058bf34ebcdd1bc16eef6733f583bb7fd"
+  },
+  {
+    "label": "channel_first",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.034187178000138374,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "175ec0a68b8164b105f5c33246394036bf3e2facbbf400a66e647149fb132675"
+  },
+  {
+    "label": "county_range",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.033418025999708334,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "county_range",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03297477199885179,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "channel_first",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.035749553000641754,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "175ec0a68b8164b105f5c33246394036bf3e2facbbf400a66e647149fb132675"
+  },
+  {
+    "label": "channel_first_no_bka",
+    "profile": "county_index",
+    "warmup": false,
+    "seconds": 0.03652440600126283,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "7bcbf5535b8f41d818da164df7f7fba058bf34ebcdd1bc16eef6733f583bb7fd"
+  },
+  {
+    "label": "final_original",
+    "profile": "reference167+",
+    "warmup": true,
+    "seconds": 0.22564805900037754,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "final_county_first",
+    "profile": "reference167+",
+    "warmup": true,
+    "seconds": 0.12706746900221333,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "6cd9033ee451884cde8e05016f3cb879f52f5d731e5dca65e9cca6a0c1f06d36"
+  },
+  {
+    "label": "final_county_index",
+    "profile": "reference167+idx_nf_q10_county",
+    "warmup": true,
+    "seconds": 0.068162747000315,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "final_county_ranges",
+    "profile": "reference167+idx_nf_q10_county",
+    "warmup": true,
+    "seconds": 0.033824054000433534,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "final_original",
+    "profile": "reference167+",
+    "warmup": false,
+    "seconds": 0.21517012600088492,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "final_county_first",
+    "profile": "reference167+",
+    "warmup": false,
+    "seconds": 0.12579696299872012,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "6cd9033ee451884cde8e05016f3cb879f52f5d731e5dca65e9cca6a0c1f06d36"
+  },
+  {
+    "label": "final_county_index",
+    "profile": "reference167+idx_nf_q10_county",
+    "warmup": false,
+    "seconds": 0.06635216599897831,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "final_county_ranges",
+    "profile": "reference167+idx_nf_q10_county",
+    "warmup": false,
+    "seconds": 0.03382448599950294,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "final_county_ranges",
+    "profile": "reference167+idx_nf_q10_county",
+    "warmup": false,
+    "seconds": 0.03346366100231535,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "final_county_index",
+    "profile": "reference167+idx_nf_q10_county",
+    "warmup": false,
+    "seconds": 0.06510027100011939,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "final_county_first",
+    "profile": "reference167+",
+    "warmup": false,
+    "seconds": 0.12703744700047537,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "6cd9033ee451884cde8e05016f3cb879f52f5d731e5dca65e9cca6a0c1f06d36"
+  },
+  {
+    "label": "final_original",
+    "profile": "reference167+",
+    "warmup": false,
+    "seconds": 0.21339927499866462,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "final_original",
+    "profile": "reference167+",
+    "warmup": false,
+    "seconds": 0.2110740669995721,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "final_county_first",
+    "profile": "reference167+",
+    "warmup": false,
+    "seconds": 0.12439809500210686,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "6cd9033ee451884cde8e05016f3cb879f52f5d731e5dca65e9cca6a0c1f06d36"
+  },
+  {
+    "label": "final_county_index",
+    "profile": "reference167+idx_nf_q10_county",
+    "warmup": false,
+    "seconds": 0.0646720609984186,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "final_county_ranges",
+    "profile": "reference167+idx_nf_q10_county",
+    "warmup": false,
+    "seconds": 0.033429200997488806,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "final_county_ranges",
+    "profile": "reference167+idx_nf_q10_county",
+    "warmup": false,
+    "seconds": 0.03293308899810654,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "final_county_index",
+    "profile": "reference167+idx_nf_q10_county",
+    "warmup": false,
+    "seconds": 0.06699075900178286,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "final_county_first",
+    "profile": "reference167+",
+    "warmup": false,
+    "seconds": 0.12439049499880639,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "6cd9033ee451884cde8e05016f3cb879f52f5d731e5dca65e9cca6a0c1f06d36"
+  },
+  {
+    "label": "final_original",
+    "profile": "reference167+",
+    "warmup": false,
+    "seconds": 0.21315748500273912,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "final_original",
+    "profile": "reference167+",
+    "warmup": false,
+    "seconds": 0.21813849300087895,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "final_county_first",
+    "profile": "reference167+",
+    "warmup": false,
+    "seconds": 0.13025048900090042,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "6cd9033ee451884cde8e05016f3cb879f52f5d731e5dca65e9cca6a0c1f06d36"
+  },
+  {
+    "label": "final_county_index",
+    "profile": "reference167+idx_nf_q10_county",
+    "warmup": false,
+    "seconds": 0.06574822000038694,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "final_county_ranges",
+    "profile": "reference167+idx_nf_q10_county",
+    "warmup": false,
+    "seconds": 0.032873889002075884,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "final_county_ranges",
+    "profile": "reference167+idx_nf_q10_county",
+    "warmup": false,
+    "seconds": 0.03377302099761437,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  },
+  {
+    "label": "final_county_index",
+    "profile": "reference167+idx_nf_q10_county",
+    "warmup": false,
+    "seconds": 0.06442812399836839,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "final_county_first",
+    "profile": "reference167+",
+    "warmup": false,
+    "seconds": 0.12677360599991516,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "6cd9033ee451884cde8e05016f3cb879f52f5d731e5dca65e9cca6a0c1f06d36"
+  },
+  {
+    "label": "final_original",
+    "profile": "reference167+",
+    "warmup": false,
+    "seconds": 0.20750383400081773,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "final_original",
+    "profile": "reference167+",
+    "warmup": false,
+    "seconds": 0.21262767599910148,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "final_county_first",
+    "profile": "reference167+",
+    "warmup": false,
+    "seconds": 0.1240717799992126,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "6cd9033ee451884cde8e05016f3cb879f52f5d731e5dca65e9cca6a0c1f06d36"
+  },
+  {
+    "label": "final_county_index",
+    "profile": "reference167+idx_nf_q10_county",
+    "warmup": false,
+    "seconds": 0.06547362000128487,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "426ba0c089a77107e4c098c8af9345fada874de9b56bff2c72393c281e062b91"
+  },
+  {
+    "label": "final_county_ranges",
+    "profile": "reference167+idx_nf_q10_county",
+    "warmup": false,
+    "seconds": 0.034501185997214634,
+    "rows": 44,
+    "output_sha256": "0a313102322cce7d74cc8caac5cc4090253152e973a93085a8b71992f81c72cb",
+    "sql_sha256": "d07734ef0858b4ca75484ee9209f73cdaa9b0a27e81928660ea7bdb3589c51fe"
+  }
+]

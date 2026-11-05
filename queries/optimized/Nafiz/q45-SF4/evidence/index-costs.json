@@ -1,0 +1,26 @@
+[
+  {
+    "name": "idx_nf_q45_date_cover",
+    "table": "web_sales",
+    "columns": "ws_sold_date_sk,ws_bill_customer_sk,ws_item_sk,ws_sales_price",
+    "build_seconds": 3.914805708998756
+  },
+  {
+    "name": "idx_nf_q45_customer_cover",
+    "table": "web_sales",
+    "columns": "ws_bill_customer_sk,ws_sold_date_sk,ws_item_sk,ws_sales_price",
+    "build_seconds": 3.0965971459954744
+  },
+  {
+    "name": "idx_nf_q45_item_cover",
+    "table": "web_sales",
+    "columns": "ws_item_sk,ws_sold_date_sk,ws_bill_customer_sk,ws_sales_price",
+    "build_seconds": 2.8252692419991945
+  },
+  {
+    "name": "idx_nf_q45_zip",
+    "table": "customer_address",
+    "columns": "ca_zip",
+    "build_seconds": 0.11031054300110554
+  }
+]

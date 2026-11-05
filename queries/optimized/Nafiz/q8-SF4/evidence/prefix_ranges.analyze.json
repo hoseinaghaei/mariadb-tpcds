@@ -1,0 +1,229 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 1.239699368
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 4161267.519,
+    "r_loops": 1,
+    "r_total_time_ms": 3.90294702,
+    "filesort": {
+      "sort_key": "store.s_store_name",
+      "r_loops": 1,
+      "r_total_time_ms": 0.001138814,
+      "r_limit": 100,
+      "r_used_priority_queue": true,
+      "r_output_rows": 0,
+      "r_sort_mode": "sort_key,rowid",
+      "temporary_table": {
+        "nested_loop": [
+          {
+            "table": {
+              "table_name": "<derived2>",
+              "access_type": "ALL",
+              "loops": 1,
+              "r_loops": 1,
+              "rows": 1146,
+              "r_rows": 7,
+              "cost": 0.061208552,
+              "r_table_time_ms": 0.006138953,
+              "r_other_time_ms": 0.021662165,
+              "filtered": 100,
+              "r_total_filtered": 100,
+              "r_filtered": 100,
+              "materialized": {
+                "query_block": {
+                  "select_id": 2,
+                  "cost": 3.052259376,
+                  "r_loops": 1,
+                  "r_total_time_ms": 3.848944481,
+                  "having_condition": "count(0) > 10",
+                  "filesort": {
+                    "sort_key": "a.ca_zip",
+                    "r_loops": 1,
+                    "r_total_time_ms": 0.004605693,
+                    "r_used_priority_queue": false,
+                    "r_output_rows": 7,
+                    "r_buffer_size": "632",
+                    "r_sort_mode": "sort_key,rowid",
+                    "duplicate_removal": {
+                      "temporary_table": {
+                        "nested_loop": [
+                          {
+                            "table": {
+                              "table_name": "a",
+                              "access_type": "range",
+                              "possible_keys": ["PRIMARY", "idx_nf_q8_zip_cover"],
+                              "key": "idx_nf_q8_zip_cover",
+                              "key_length": "41",
+                              "used_key_parts": ["ca_zip"],
+                              "loops": 1,
+                              "r_loops": 1,
+                              "rows": 1146,
+                              "r_rows": 766,
+                              "cost": 0.84535373,
+                              "r_table_time_ms": 0.338095622,
+                              "r_other_time_ms": 2.515668957,
+                              "r_engine_stats": {
+                                "pages_accessed": 1604
+                              },
+                              "filtered": 100,
+                              "r_total_filtered": 100,
+                              "attached_condition": "(a.ca_zip like '10337%' or a.ca_zip like '10810%' or a.ca_zip like '10994%' or a.ca_zip like '11215%' or a.ca_zip like '11244%' or a.ca_zip like '11266%' or a.ca_zip like '11347%' or a.ca_zip like '11828%' or a.ca_zip like '11922%' or a.ca_zip like '12205%' or a.ca_zip like '12311%' or a.ca_zip like '12313%' or a.ca_zip like '12345%' or a.ca_zip like '12369%' or a.ca_zip like '12428%' or a.ca_zip like '12439%' or a.ca_zip like '12548%' or a.ca_zip like '12858%' or a.ca_zip like '13340%' or a.ca_zip like '13364%' or a.ca_zip like '13825%' or a.ca_zip like '13903%' or a.ca_zip like '14268%' or a.ca_zip like '14456%' or a.ca_zip like '14510%' or a.ca_zip like '14940%' or a.ca_zip like '15247%' or a.ca_zip like '15383%' or a.ca_zip like '15437%' or a.ca_zip like '15488%' or a.ca_zip like '15515%' or a.ca_zip like '15589%' or a.ca_zip like '15680%' or a.ca_zip like '15827%' or a.ca_zip like '16118%' or a.ca_zip like '16572%' or a.ca_zip like '16700%' or a.ca_zip like '16712%' or a.ca_zip like '16776%' or a.ca_zip like '17134%' or a.ca_zip like '17169%' or a.ca_zip like '17681%' or a.ca_zip like '17822%' or a.ca_zip like '18069%' or a.ca_zip like '18337%' or a.ca_zip like '18680%' or a.ca_zip like '18719%' or a.ca_zip like '18918%' or a.ca_zip like '18983%' or a.ca_zip like '19191%' or a.ca_zip like '19424%' or a.ca_zip like '19512%' or a.ca_zip like '19763%' or a.ca_zip like '19786%' or a.ca_zip like '19853%' or a.ca_zip like '19902%' or a.ca_zip like '19914%' or a.ca_zip like '19995%' or a.ca_zip like '20062%' or a.ca_zip like '20176%' or a.ca_zip like '20240%' or a.ca_zip like '20702%' or a.ca_zip like '20730%' or a.ca_zip like '20931%' or a.ca_zip like '20965%' or a.ca_zip like '20981%' or a.ca_zip like '21446%' or a.ca_zip like '21676%' or a.ca_zip like '21747%' or a.ca_zip like '21916%' or a.ca_zip like '22224%' or a.ca_zip like '22340%' or a.ca_zip like '22363%' or a.ca_zip like '22678%' or a.ca_zip like '22768%' or a.ca_zip like '22778%' or a.ca_zip like '23432%' or a.ca_zip like '23586%' or a.ca_zip like '23753%' or a.ca_zip like '23938%' or a.ca_zip like '23967%' or a.ca_zip like '23978%' or a.ca_zip like '24039%' or a.ca_zip like '24207%' or a.ca_zip like '24372%' or a.ca_zip like '24502%' or a.ca_zip like '24540%' or a.ca_zip like '24581%' or a.ca_zip like '25131%' or a.ca_zip like '25311%' or a.ca_zip like '25312%' or a.ca_zip like '25470%' or a.ca_zip like '25740%' or a.ca_zip like '26056%' or a.ca_zip like '26189%' or a.ca_zip like '26738%' or a.ca_zip like '26759%' or a.ca_zip like '26787%' or a.ca_zip like '26866%' or a.ca_zip like '26976%' or a.ca_zip like '27314%' or a.ca_zip like '27580%' or a.ca_zip like '27785%' or a.ca_zip like '27808%' or a.ca_zip like '28447%' or a.ca_zip like '28844%' or a.ca_zip like '29198%' or a.ca_zip like '29216%' or a.ca_zip like '29771%' or a.ca_zip like '29932%' or a.ca_zip like '30091%' or a.ca_zip like '30446%' or a.ca_zip like '30474%' or a.ca_zip like '30550%' or a.ca_zip like '30753%' or a.ca_zip like '31254%' or a.ca_zip like '31293%' or a.ca_zip like '31667%' or a.ca_zip like '31677%' or a.ca_zip like '31685%' or a.ca_zip like '31837%' or a.ca_zip like '32329%' or a.ca_zip like '32352%' or a.ca_zip like '32357%' or a.ca_zip like '32758%' or a.ca_zip like '32934%' or a.ca_zip like '32945%' or a.ca_zip like '33355%' or a.ca_zip like '33780%' or a.ca_zip like '33898%' or a.ca_zip like '34043%' or a.ca_zip like '34453%' or a.ca_zip like '34530%' or a.ca_zip like '34633%' or a.ca_zip like '34641%' or a.ca_zip like '34647%' or a.ca_zip like '34704%' or a.ca_zip like '34910%' or a.ca_zip like '35172%' or a.ca_zip like '35194%' or a.ca_zip like '35267%' or a.ca_zip like '35441%' or a.ca_zip like '35674%' or a.ca_zip like '35853%' or a.ca_zip like '35992%' or a.ca_zip like '36156%' or a.ca_zip like '36287%' or a.ca_zip like '36295%' or a.ca_zip like '36350%' or a.ca_zip like '36425%' or a.ca_zip like '36572%' or a.ca_zip like '36618%' or a.ca_zip like '36873%' or a.ca_zip like '36971%' or a.ca_zip like '37132%' or a.ca_zip like '37479%' or a.ca_zip like '37583%' or a.ca_zip like '37890%' or a.ca_zip like '38132%' or a.ca_zip like '38313%' or a.ca_zip like '38347%' or a.ca_zip like '38690%' or a.ca_zip like '38754%' or a.ca_zip like '39015%' or a.ca_zip like '39383%' or a.ca_zip like '39833%' or a.ca_zip like '39975%' or a.ca_zip like '40133%' or a.ca_zip like '40356%' or a.ca_zip like '40489%' or a.ca_zip like '40568%' or a.ca_zip like '40675%' or a.ca_zip like '40799%' or a.ca_zip like '40895%' or a.ca_zip like '41070%' or a.ca_zip like '41258%' or a.ca_zip like '41316%' or a.ca_zip like '41808%' or a.ca_zip like '41989%' or a.ca_zip like '42140%' or a.ca_zip like '42478%' or a.ca_zip like '42812%' or a.ca_zip like '42836%' or a.ca_zip like '42845%' or a.ca_zip like '42919%' or a.ca_zip like '42963%' or a.ca_zip like '42968%' or a.ca_zip like '43338%' or a.ca_zip like '43344%' or a.ca_zip like '43460%' or a.ca_zip like '43553%' or a.ca_zip like '43759%' or a.ca_zip like '44390%' or a.ca_zip like '44442%' or a.ca_zip like '44727%' or a.ca_zip like '45000%' or a.ca_zip like '45390%' or a.ca_zip like '45473%' or a.ca_zip like '46454%' or a.ca_zip like '46575%' or a.ca_zip like '46582%' or a.ca_zip like '46924%' or a.ca_zip like '47256%' or a.ca_zip like '47294%' or a.ca_zip like '47939%' or a.ca_zip like '47944%' or a.ca_zip like '48115%' or a.ca_zip like '48174%' or a.ca_zip like '48242%' or a.ca_zip like '48410%' or a.ca_zip like '48937%' or a.ca_zip like '48949%' or a.ca_zip like '48988%' or a.ca_zip like '49056%' or a.ca_zip like '49057%' or a.ca_zip like '49103%' or a.ca_zip like '49152%' or a.ca_zip like '49303%' or a.ca_zip like '49410%' or a.ca_zip like '49418%' or a.ca_zip like '49625%' or a.ca_zip like '49871%' or a.ca_zip like '49975%' or a.ca_zip like '50076%' or a.ca_zip like '50732%' or a.ca_zip like '51162%' or a.ca_zip like '51182%' or a.ca_zip like '51237%' or a.ca_zip like '52206%' or a.ca_zip like '52671%' or a.ca_zip like '52706%' or a.ca_zip like '52724%' or a.ca_zip like '52739%' or a.ca_zip like '52795%' or a.ca_zip like '52954%' or a.ca_zip like '53119%' or a.ca_zip like '53540%' or a.ca_zip like '54006%' or a.ca_zip like '54960%' or a.ca_zip like '55113%' or a.ca_zip like '55346%' or a.ca_zip like '55443%' or a.ca_zip like '55493%' or a.ca_zip like '55522%' or a.ca_zip like '55792%' or a.ca_zip like '55855%' or a.ca_zip like '56114%' or a.ca_zip like '56414%' or a.ca_zip like '56591%' or a.ca_zip like '57003%' or a.ca_zip like '57366%' or a.ca_zip like '57613%' or a.ca_zip like '58017%' or a.ca_zip like '58217%' or a.ca_zip like '58305%' or a.ca_zip like '58377%' or a.ca_zip like '58512%' or a.ca_zip like '58571%' or a.ca_zip like '59136%' or a.ca_zip like '59286%' or a.ca_zip like '59407%' or a.ca_zip like '60133%' or a.ca_zip like '60407%' or a.ca_zip like '60899%' or a.ca_zip like '61066%' or a.ca_zip like '61688%' or a.ca_zip like '62035%' or a.ca_zip like '62481%' or a.ca_zip like '62606%' or a.ca_zip like '62675%' or a.ca_zip like '63023%' or a.ca_zip like '63663%' or a.ca_zip like '64800%' or a.ca_zip like '65219%' or a.ca_zip like '65334%' or a.ca_zip like '65352%' or a.ca_zip like '65457%' or a.ca_zip like '65563%' or a.ca_zip like '65726%' or a.ca_zip like '65956%' or a.ca_zip like '66079%' or a.ca_zip like '66404%' or a.ca_zip like '66485%' or a.ca_zip like '66637%' or a.ca_zip like '66697%' or a.ca_zip like '66908%' or a.ca_zip like '67454%' or a.ca_zip like '67625%' or a.ca_zip like '68298%' or a.ca_zip like '68308%' or a.ca_zip like '68596%' or a.ca_zip like '68759%' or a.ca_zip like '69114%' or a.ca_zip like '69802%' or a.ca_zip like '69803%' or a.ca_zip like '70203%' or a.ca_zip like '70303%' or a.ca_zip like '70482%' or a.ca_zip like '70713%' or a.ca_zip like '71003%' or a.ca_zip like '71174%' or a.ca_zip like '71364%' or a.ca_zip like '71719%' or a.ca_zip like '71953%' or a.ca_zip like '72142%' or a.ca_zip like '72428%' or a.ca_zip like '72477%' or a.ca_zip like '73916%' or a.ca_zip like '73943%' or a.ca_zip like '73966%' or a.ca_zip like '74110%' or a.ca_zip like '74634%' or a.ca_zip like '74754%' or a.ca_zip like '74883%' or a.ca_zip like '75025%' or a.ca_zip like '75232%' or a.ca_zip like '75269%' or a.ca_zip like '75358%' or a.ca_zip like '75941%' or a.ca_zip like '76170%' or a.ca_zip like '76381%' or a.ca_zip like '76423%' or a.ca_zip like '77331%' or a.ca_zip like '77449%' or a.ca_zip like '77747%' or a.ca_zip like '78565%' or a.ca_zip like '78740%' or a.ca_zip like '79028%' or a.ca_zip like '79244%' or a.ca_zip like '79462%' or a.ca_zip like '79835%' or a.ca_zip like '80214%' or a.ca_zip like '80245%' or a.ca_zip like '80348%' or a.ca_zip like '80579%' or a.ca_zip like '80609%' or a.ca_zip like '80838%' or a.ca_zip like '81012%' or a.ca_zip like '81086%' or a.ca_zip like '81149%' or a.ca_zip like '81164%' or a.ca_zip like '82568%' or a.ca_zip like '82575%' or a.ca_zip like '82732%' or a.ca_zip like '82763%' or a.ca_zip like '83055%' or a.ca_zip like '83451%' or a.ca_zip like '84008%' or a.ca_zip like '84175%' or a.ca_zip like '84195%' or a.ca_zip like '84448%' or a.ca_zip like '84635%' or a.ca_zip like '84883%' or a.ca_zip like '84970%' or a.ca_zip like '85148%' or a.ca_zip like '85441%' or a.ca_zip like '86028%' or a.ca_zip like '86266%' or a.ca_zip like '86443%' or a.ca_zip like '86492%' or a.ca_zip like '86853%' or a.ca_zip like '87291%' or a.ca_zip like '87349%' or a.ca_zip like '87590%' or a.ca_zip like '87616%' or a.ca_zip like '87822%' or a.ca_zip like '87827%' or a.ca_zip like '88415%' or a.ca_zip like '88905%' or a.ca_zip like '88993%' or a.ca_zip like '89456%' or a.ca_zip like '89747%' or a.ca_zip like '89977%' or a.ca_zip like '90149%' or a.ca_zip like '90253%' or a.ca_zip like '90952%' or a.ca_zip like '91060%' or a.ca_zip like '91138%' or a.ca_zip like '91735%' or a.ca_zip like '92377%' or a.ca_zip like '93332%' or a.ca_zip like '93857%' or a.ca_zip like '93951%' or a.ca_zip like '93971%' or a.ca_zip like '94149%' or a.ca_zip like '94152%' or a.ca_zip like '95202%' or a.ca_zip like '95390%' or a.ca_zip like '95469%' or a.ca_zip like '95854%' or a.ca_zip like '96022%' or a.ca_zip like '96657%' or a.ca_zip like '97445%' or a.ca_zip like '97537%' or a.ca_zip like '98402%' or a.ca_zip like '98581%' or a.ca_zip like '99259%' or a.ca_zip like '99458%' or a.ca_zip like '99460%' or a.ca_zip like '99710%') and substr(a.ca_zip,1,5) in ('67454','28844','95202','29771','61066','49303','35441','26759','87349','14268','43460','26866','18337','93332','49871','62035','13364','87291','35992','20931','16118','41808','73916','50732','12858','27314','84448','60899','24039','17822','40895','71953','87827','52671','70713','95390','36572','24581','42968','62481','92377','33898','98402','15383','42478','33355','75232','91735','34647','18983','23978','19424','12428','11244','25740','31254','52954','25470','19786','58377','11215','27580','47256','87590','31837','73943','72477','63023','99458','37890','20981','35172','49057','58217','66404','43553','27808','23753','93857','51162','35194','47294','32945','48949','11922','36287','55522','58512','61688','54006','65457','26738','74110','10810','59286','66485','37479','84195','22778','25311','16776','26189','15437','74634','62606','55346','83055','93971','14940','34453','52206','56591','29216','82575','57366','36350','83451','66697','94152','30474','25312','15680','75941','55493','93951','80579','68308','38754','56414','18680','80245','88993','38132','66079','40489','20062','22363','49418','23432','79835','51237','15488','65726','46924','43338','81012','23967','17134','49625','45473','68759','48115','84008','49103','52724','71174','79244','78565','17169','45000','71003','89977','36873','60407','22224','20176','57613','19902','80838','10994','85441','42812','19853','15827','65352','54960','29198','47944','20702','84883','59407','37583','18069','82568','68298','79462','32758','19512','48937','75025','86853','21446','95469','39975','31667','30753','31293','18719','79028','12345','27785','41070','75358','91138','71364','13825','21676','34641','70482','39383','81086','36295','63663','16572','97445','46582','88905','48242','47939','70303','84175','30446','36971','88415','72142','69803','62675','12548','81164','86028','34633','36425','52706','42845','42963','31685','15589','65563','44727','89456','67625','38313','32352','19191','38690','76170','23938','50076','80609','78740','77449','76381','35674','44442','53119','13903','90149','24372','58017','20965','23586','82763','30091','32357','58571','73966','24502','14456','34530','14510','80348','72428','91060','35267','43759','76423','90952','15515','12369','24207','56114','98581','53540','85148','77747','84635','65219','99710','26787','43344','46454','12313','22678','97537','35853','19995','86266','12205','10337','41258','84970','16712','48988','39833','32329','41989','48174','18918','90253','65334','96022','74883','49152','42140','52795','37132','80214','11828','52739','13340','39015','59136','26976','75269','55855','44390','45390','57003','60133','64800','22768','40356','38347','70203','33780','19763','15247','12439','16700','40675','42919','68596','41316','29932','74754','51182','26056','21747','49410','55113','40568','99259','99460','71719','36618','49975','30550','34910','49056','21916','66637','20730','87616','86492','65956','36156','40799','11347','96657','42836','25131','86443','58305','69114','32934','24540','48410','40133','77331','55792','66908','94149','31677','34704','95854','12311','89747','34043','22340','17681','69802','46575','55443','81149','11266','20240','19914','87822','82732','28447')",
+                              "r_filtered": 100,
+                              "using_index": true
+                            }
+                          },
+                          {
+                            "table": {
+                              "table_name": "c",
+                              "access_type": "ref",
+                              "possible_keys": [
+                                "idx_c_addr",
+                                "idx_c_current_addr_sk",
+                                "idx_nf_q8_addr_pref"
+                              ],
+                              "key": "idx_nf_q8_addr_pref",
+                              "key_length": "14",
+                              "used_key_parts": [
+                                "c_current_addr_sk",
+                                "c_preferred_cust_flag"
+                              ],
+                              "ref": ["tpcds.a.ca_address_sk", "const"],
+                              "loops": 1146,
+                              "r_loops": 766,
+                              "rows": 1,
+                              "r_rows": 0.898172324,
+                              "cost": 1.45630933,
+                              "r_table_time_ms": 0.807779235,
+                              "r_other_time_ms": 0.15288145,
+                              "r_engine_stats": {
+                                "pages_accessed": 1534
+                              },
+                              "filtered": 100,
+                              "r_total_filtered": 100,
+                              "attached_condition": "c.c_preferred_cust_flag = 'Y'",
+                              "r_filtered": 100,
+                              "using_index": true
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "block-nl-join": {
+              "table": {
+                "table_name": "store",
+                "access_type": "ALL",
+                "possible_keys": ["PRIMARY"],
+                "loops": 1146,
+                "r_loops": 1,
+                "rows": 42,
+                "r_rows": 42,
+                "cost": 4.558098748,
+                "r_table_time_ms": 0.010333504,
+                "r_other_time_ms": 0.005687462,
+                "r_engine_stats": {
+                  "pages_accessed": 1
+                },
+                "filtered": 100,
+                "r_total_filtered": 100,
+                "r_filtered": 100
+              },
+              "buffer_type": "flat",
+              "buffer_size": "25KiB",
+              "join_type": "BNL",
+              "attached_condition": "substr(store.s_zip,1,2) = substr(V1.ca_zip,1,2)",
+              "r_loops": 7,
+              "r_filtered": 0,
+              "r_unpack_time_ms": 0.004769176,
+              "r_other_time_ms": 0.012109901,
+              "r_effective_rows": 42
+            }
+          },
+          {
+            "block-nl-join": {
+              "table": {
+                "table_name": "date_dim",
+                "access_type": "ref",
+                "possible_keys": [
+                  "PRIMARY",
+                  "idx_date_dim_d_date_year",
+                  "idx_date_dim_d_month_seq",
+                  "idx_date_year_moy",
+                  "idx_date_year_sk_day",
+                  "inx_date_dim_year",
+                  "idx_date_year_sk",
+                  "idx_date_ym"
+                ],
+                "key": "idx_date_year_moy",
+                "key_length": "9",
+                "used_key_parts": ["d_year"],
+                "ref": ["const"],
+                "loops": 48132,
+                "r_loops": 0,
+                "rows": 366,
+                "r_rows": null,
+                "cost": 17541.14197,
+                "r_engine_stats": {
+                  "pages_accessed": 10
+                },
+                "filtered": 100,
+                "r_total_filtered": null,
+                "r_filtered": null
+              },
+              "buffer_type": "incremental",
+              "buffer_size": "64MiB",
+              "join_type": "BKAH",
+              "mrr_type": "Rowid-ordered scan",
+              "attached_condition": "date_dim.d_qoy = 2",
+              "r_loops": 0,
+              "r_filtered": null,
+              "r_unpack_time_ms": 0,
+              "r_other_time_ms": 0,
+              "r_effective_rows": null
+            }
+          },
+          {
+            "table": {
+              "table_name": "store_sales",
+              "access_type": "ref",
+              "possible_keys": [
+                "idx_ss_date_addr_item_price",
+                "idx_ss_date_cust",
+                "idx_ss_date_item_store_cover",
+                "idx_ss_q78",
+                "idx_ss_sold_date_sk",
+                "idx_ss_store_hdemo_time",
+                "idx_ss_date_store_price",
+                "idx_ss_date_store_profit",
+                "idx_ss_q61",
+                "idx_ss_sold_date_sk_store_sales_price",
+                "idx_ss_store_sk"
+              ],
+              "key": "idx_ss_date_store_profit",
+              "key_length": "18",
+              "used_key_parts": ["ss_sold_date_sk", "ss_store_sk"],
+              "ref": ["tpcds.date_dim.d_date_sk", "tpcds.store.s_store_sk"],
+              "loops": 17616312,
+              "r_loops": 0,
+              "rows": 278,
+              "r_rows": null,
+              "cost": 732961.8861,
+              "r_engine_stats": {},
+              "filtered": 97.48201752,
+              "r_total_filtered": null,
+              "r_filtered": null,
+              "using_index": true
+            }
+          }
+        ]
+      }
+    }
+  }
+}
