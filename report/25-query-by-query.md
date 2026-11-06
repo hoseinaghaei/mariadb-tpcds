@@ -586,6 +586,51 @@ Totals, and the growth between each step:
 
 The data grows 2x at each step, so a total growing faster than 2x means the suite is degrading superlinearly.
 
+### Rows per table, by scale factor
+
+Counted from the generated `.dat` files, so these are exact.
+
+| table | SF=1 | SF=2 | SF=4 | SF=8 | SF8/SF1 |
+|---|---:|---:|---:|---:|---:|
+| `inventory` | 11,745,000 | 16,966,305 | 36,019,566 | 85,610,088 | 7.3x |
+| `store_sales` | 2,879,152 | 5,758,626 | 11,516,885 | 23,037,107 | 8.0x |
+| `catalog_sales` | 1,441,837 | 2,882,546 | 5,763,962 | 11,523,213 | 8.0x |
+| `web_sales` | 720,378 | 1,440,693 | 2,879,766 | 5,758,532 | 8.0x |
+| `store_returns` | 288,501 | 576,978 | 1,151,722 | 2,305,073 | 8.0x |
+| `customer_demographics` | 1,920,800 | 1,920,800 | 1,920,800 | 1,920,800 | 1.0x |
+| `catalog_returns` | 144,138 | 288,565 | 577,358 | 1,152,039 | 8.0x |
+| `web_returns` | 72,216 | 144,527 | 287,978 | 575,401 | 8.0x |
+| `customer` | 100,000 | 144,000 | 233,000 | 411,000 | 4.1x |
+| `customer_address` | 50,000 | 72,000 | 116,000 | 205,000 | 4.1x |
+| `time_dim` | 86,400 | 86,400 | 86,400 | 86,400 | 1.0x |
+| `item` | 18,000 | 26,000 | 46,000 | 82,000 | 4.6x |
+| `date_dim` | 73,049 | 73,049 | 73,049 | 73,049 | 1.0x |
+| `catalog_page` | 11,718 | 11,718 | 11,718 | 11,718 | 1.0x |
+| `household_demographics` | 7,200 | 7,200 | 7,200 | 7,200 | 1.0x |
+| `promotion` | 300 | 322 | 366 | 455 | 1.5x |
+| `web_page` | 60 | 74 | 106 | 168 | 2.8x |
+| `store` | 12 | 22 | 42 | 82 | 6.8x |
+| `reason` | 75 | 75 | 75 | 75 | 1.0x |
+| `web_site` | 30 | 30 | 34 | 38 | 1.3x |
+| `call_center` | 6 | 8 | 12 | 20 | 3.3x |
+| `income_band` | 20 | 20 | 20 | 20 | 1.0x |
+| `ship_mode` | 20 | 20 | 20 | 20 | 1.0x |
+| `warehouse` | 5 | 5 | 6 | 8 | 1.6x |
+| `dbgen_version` | 1 | 1 | 1 | 1 | 1.0x |
+| **total** | **19,558,918** | **30,399,984** | **60,692,086** | **132,759,507** | **6.8x** |
+
+The scale factor is not a uniform multiplier. The fact tables track it
+closely — `store_sales` is 8.0x from SF=1 to SF=8 — while `inventory` grows
+7.3x and the dimensions barely move: `date_dim`, `time_dim`,
+`customer_demographics`, `household_demographics`, `income_band`, `reason`
+and `ship_mode` are **identical at every scale**, and `catalog_page` is
+fixed at 11,718. `customer` grows 4.1x and `item` 4.6x, both well under the
+data volume.
+
+That is why the per-query ratios in the table above vary so widely. A query
+whose cost is driven by a fact-table scan sees the full 8x; one dominated by
+a dimension join sees almost none of it.
+
 ### Against the previous configuration
 
 The measurement before this one ran the earlier query set against 95

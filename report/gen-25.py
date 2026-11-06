@@ -357,6 +357,42 @@ def main():
     L.append("\nThe data grows 2x at each step, so a total growing faster "
              "than 2x means the suite is degrading superlinearly.\n")
 
+    # Row counts per table per scale.  Exact: counted from the generated
+    # .dat files, not information_schema.table_rows, which InnoDB samples
+    # rather than counts and which moves ~1% between runs on identical data.
+    # Validated against the entrypoint's own COUNT(*) on store_sales, which
+    # reports 2,879,152 at SF=1 and 11,516,885 at SF=4.
+    rcp = f"{HERE}/25-row-counts.json"
+    if os.path.exists(rcp):
+        rc = json.load(open(rcp))
+        scales = [sc for sc, _ in reversed(runs)]
+        L.append("### Rows per table, by scale factor\n")
+        L.append("Counted from the generated `.dat` files, so these are exact.\n")
+        L.append("| table | " + " | ".join(f"SF={sc}" for sc in scales) + " | SF8/SF1 |")
+        L.append("|---|" + "---:|" * (len(scales) + 1))
+        big = scales[-1]
+        for t in sorted(rc, key=lambda t: -rc[t].get(big, 0)):
+            cells = [f"{rc[t][sc]:,}" if sc in rc[t] else "—" for sc in scales]
+            lo, hi = rc[t].get(scales[0]), rc[t].get(big)
+            g = f"{hi/lo:.1f}x" if lo and hi else "—"
+            L.append(f"| `{t}` | " + " | ".join(cells) + f" | {g} |")
+        tot = {sc: sum(v[sc] for v in rc.values() if sc in v) for sc in scales}
+        L.append("| **total** | " + " | ".join(f"**{tot[sc]:,}**" for sc in scales)
+                 + f" | **{tot[big]/tot[scales[0]]:.1f}x**" + " |")
+        L.append("""
+The scale factor is not a uniform multiplier. The fact tables track it
+closely — `store_sales` is 8.0x from SF=1 to SF=8 — while `inventory` grows
+7.3x and the dimensions barely move: `date_dim`, `time_dim`,
+`customer_demographics`, `household_demographics`, `income_band`, `reason`
+and `ship_mode` are **identical at every scale**, and `catalog_page` is
+fixed at 11,718. `customer` grows 4.1x and `item` 4.6x, both well under the
+data volume.
+
+That is why the per-query ratios in the table above vary so widely. A query
+whose cost is driven by a fact-table scan sees the full 8x; one dominated by
+a dimension join sees almost none of it.
+""")
+
     L.append("""### Against the previous configuration
 
 The measurement before this one ran the earlier query set against 95
