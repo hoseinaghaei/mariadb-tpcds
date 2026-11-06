@@ -15,8 +15,10 @@ import argparse, os, re, sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FILES = ("sql/05_indexes.sql", "sql/11_optimizer_indexes.sql",
-         "sql/14_contributed_indexes.sql")
-CREATE = re.compile(r'CREATE\s+(?:UNIQUE\s+)?INDEX\s+(\w+)\s+ON\s+(\w+)', re.I)
+         "sql/14_contributed_indexes.sql", "sql/15_candidate_indexes.sql")
+# IF NOT EXISTS must be tolerated: sql/15 is written with it, and without
+# this the emitter silently skipped all 23 candidate indexes.
+CREATE = re.compile(r'CREATE\s+(?:UNIQUE\s+)?INDEX\s+(?:IF\s+NOT\s+EXISTS\s+)?(\w+)\s+ON\s+(\w+)', re.I)
 
 
 def statements(text):
@@ -78,8 +80,15 @@ def main():
                 continue           # nine indexes are defined twice
             seen.add(key)
             listed.append(f"{key[0]}.{key[1]}")
-            out.append(re.sub(r'^CREATE\s+INDEX\s', 'CREATE INDEX IF NOT EXISTS ',
-                              st, count=1, flags=re.I) + ";")
+            # Only add IF NOT EXISTS when it is not already there: sql/15 is
+            # written with it, and prefixing blindly produced
+            # "CREATE INDEX IF NOT EXISTS IF NOT EXISTS ...", a syntax error
+            # that killed six of eight benchmark runs.
+            if re.match(r'(?i)^CREATE\s+(UNIQUE\s+)?INDEX\s+IF\s+NOT\s+EXISTS\b', st):
+                out.append(st + ";")
+            else:
+                out.append(re.sub(r'^CREATE\s+INDEX\s', 'CREATE INDEX IF NOT EXISTS ',
+                                  st, count=1, flags=re.I) + ";")
     if a.count:
         print(len(out))
     elif a.list:

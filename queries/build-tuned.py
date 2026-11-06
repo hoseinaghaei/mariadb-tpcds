@@ -42,8 +42,8 @@ PIPES = (5, 66, 80, 84)
 # several statements and each part has its own file (q14 is two halves).
 OPTIMIZED = {
     2:  "q2/query2_BEST.sql",
-    4:  "q4/query4_BEST.sql",
-    5:  "q5/query5_BEST.sql",
+    4:  "Aysha/q4/q4-Optimized.sql",
+    5:  "Aysha/q5/q5-OptimizedforDocker.sql",
     14: ["Aysha/q14/Query-14-A/q14_A_Optimized.sql",
          "Aysha/q14/Query-14-B/Q14-B-Optimized.sql"],
     21: "Aysha/q21/query21_optimized.sql",
@@ -63,14 +63,14 @@ OPTIMIZED = {
     97: "Aysha/q97/query97_BEST_no_temp_tables.sql",   # temp tables not permitted
     # Nafiz, merged 2026-10-25.  He also has q31 and q51, but riccio's are
     # already verified here; worth comparing the two later.
-    7:  "Nafiz/tier4/q7/query7_BEST.sql",
+    7:  "Nafiz/q7-SF4/query7_BEST.sql",
     8:  "Nafiz/tier4/q8/query8_BEST.sql",
     10: "Nafiz/tier4/q10/query10_BEST.sql",
-    33: "Nafiz/tier4/q33/query33_BEST.sql",
+    33: "Nafiz/q33-SF4/query33_BEST.sql",
     37: "Nafiz/tier4/q37/query37_BEST.sql",
-    11: "Nafiz/tier5/q11/query11_BEST.sql",
-    57: "Nafiz/tier5/q57/query57_BEST.sql",
-    74: "Nafiz/tier5/q74/query74_BEST.sql",
+    11: "Nafiz/q11-SF4/query11_BEST.sql",
+    57: "Nafiz/q57-SF4/query57_BEST.sql",
+    74: "Nafiz/q74-SF4/query74_BEST.sql",
     # Claude, from the structural scan of the unoptimized queries
     68: "q68-sf4/query68_v1_datefirst.sql",
     46: "q46-sf4/query46_v1_datefirst.sql",

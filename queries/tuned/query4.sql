@@ -1,63 +1,49 @@
 -- query4
--- source: queries/optimized/q4/query4_BEST.sql
+-- source: queries/optimized/Aysha/q4/q4-Optimized.sql
 -- split materialisation left ON: disabling it measured +14.6s (slower)
 
 SET SESSION sql_mode = CONCAT(@@sql_mode, ',IGNORE_SPACE,PIPES_AS_CONCAT');
 
-WITH s AS (
-    SELECT ss_customer_sk AS customer_sk,
-           SUM(CASE WHEN d_year = 2001 THEN
-               ((ss_ext_list_price-ss_ext_wholesale_cost-ss_ext_discount_amt)+ss_ext_sales_price)/2
-           END) AS y1,
-           SUM(CASE WHEN d_year = 2002 THEN
-               ((ss_ext_list_price-ss_ext_wholesale_cost-ss_ext_discount_amt)+ss_ext_sales_price)/2
-           END) AS y2
-    FROM store_sales
-    JOIN date_dim ON ss_sold_date_sk = d_date_sk
-    WHERE d_year IN (2001,2002)
-    GROUP BY ss_customer_sk
-    HAVING COUNT(DISTINCT d_year) = 2
+SET @start_2001 = (SELECT MIN(d_date_sk) FROM date_dim WHERE d_year = 2001);
+SET @start_2002 = (SELECT MIN(d_date_sk) FROM date_dim WHERE d_year = 2002);
+SET @end_2002   = (SELECT MAX(d_date_sk) FROM date_dim WHERE d_year = 2002);
+WITH w AS (
+    SELECT ws_bill_customer_sk AS customer_sk,
+           SUM(CASE WHEN ws_sold_date_sk <  @start_2002 THEN ((ws_ext_list_price - ws_ext_wholesale_cost - ws_ext_discount_amt) + ws_ext_sales_price) / 2 END) AS w_y1,
+           SUM(CASE WHEN ws_sold_date_sk >= @start_2002 THEN ((ws_ext_list_price - ws_ext_wholesale_cost - ws_ext_discount_amt) + ws_ext_sales_price) / 2 END) AS w_y2
+    FROM web_sales
+    WHERE ws_sold_date_sk BETWEEN @start_2001 AND @end_2002
+      AND ws_bill_customer_sk IS NOT NULL
+    GROUP BY ws_bill_customer_sk
+    HAVING w_y1 > 0 AND w_y2 IS NOT NULL
 ),
 c AS (
-    SELECT cs_bill_customer_sk AS customer_sk,
-           SUM(CASE WHEN d_year = 2001 THEN
-               ((cs_ext_list_price-cs_ext_wholesale_cost-cs_ext_discount_amt)+cs_ext_sales_price)/2
-           END) AS y1,
-           SUM(CASE WHEN d_year = 2002 THEN
-               ((cs_ext_list_price-cs_ext_wholesale_cost-cs_ext_discount_amt)+cs_ext_sales_price)/2
-           END) AS y2
-    FROM catalog_sales
-    JOIN date_dim ON cs_sold_date_sk = d_date_sk
-    WHERE d_year IN (2001,2002)
-    GROUP BY cs_bill_customer_sk
-    HAVING COUNT(DISTINCT d_year) = 2
+    SELECT cs.cs_bill_customer_sk AS customer_sk,
+           SUM(CASE WHEN cs.cs_sold_date_sk <  @start_2002 THEN ((cs.cs_ext_list_price - cs.cs_ext_wholesale_cost - cs.cs_ext_discount_amt) + cs.cs_ext_sales_price) / 2 END) AS c_y1,
+           SUM(CASE WHEN cs.cs_sold_date_sk >= @start_2002 THEN ((cs.cs_ext_list_price - cs.cs_ext_wholesale_cost - cs.cs_ext_discount_amt) + cs.cs_ext_sales_price) / 2 END) AS c_y2
+    FROM w
+    STRAIGHT_JOIN catalog_sales cs ON cs.cs_bill_customer_sk = w.customer_sk
+    WHERE cs.cs_sold_date_sk BETWEEN @start_2001 AND @end_2002
+    GROUP BY cs.cs_bill_customer_sk, w.w_y1, w.w_y2
+    HAVING c_y1 > 0 AND c_y2 IS NOT NULL
+       AND c_y2 * w.w_y1 > w.w_y2 * c_y1
 ),
-w AS (
-    SELECT ws_bill_customer_sk AS customer_sk,
-           SUM(CASE WHEN d_year = 2001 THEN
-               ((ws_ext_list_price-ws_ext_wholesale_cost-ws_ext_discount_amt)+ws_ext_sales_price)/2
-           END) AS y1,
-           SUM(CASE WHEN d_year = 2002 THEN
-               ((ws_ext_list_price-ws_ext_wholesale_cost-ws_ext_discount_amt)+ws_ext_sales_price)/2
-           END) AS y2
-    FROM web_sales
-    JOIN date_dim ON ws_sold_date_sk = d_date_sk
-    WHERE d_year IN (2001,2002)
-    GROUP BY ws_bill_customer_sk
-    HAVING COUNT(DISTINCT d_year) = 2
+s AS (
+    SELECT c.customer_sk
+    FROM c
+    STRAIGHT_JOIN store_sales ss ON ss.ss_customer_sk = c.customer_sk
+    WHERE ss.ss_sold_date_sk BETWEEN @start_2001 AND @end_2002
+    GROUP BY c.customer_sk, c.c_y1, c.c_y2
+    HAVING SUM(CASE WHEN ss.ss_sold_date_sk <  @start_2002 THEN ((ss.ss_ext_list_price - ss.ss_ext_wholesale_cost - ss.ss_ext_discount_amt) + ss.ss_ext_sales_price) / 2 END) > 0
+       AND SUM(CASE WHEN ss.ss_sold_date_sk >= @start_2002 THEN ((ss.ss_ext_list_price - ss.ss_ext_wholesale_cost - ss.ss_ext_discount_amt) + ss.ss_ext_sales_price) / 2 END) IS NOT NULL
+       AND c.c_y2 * SUM(CASE WHEN ss.ss_sold_date_sk <  @start_2002 THEN ((ss.ss_ext_list_price - ss.ss_ext_wholesale_cost - ss.ss_ext_discount_amt) + ss.ss_ext_sales_price) / 2 END)
+         > SUM(CASE WHEN ss.ss_sold_date_sk >= @start_2002 THEN ((ss.ss_ext_list_price - ss.ss_ext_wholesale_cost - ss.ss_ext_discount_amt) + ss.ss_ext_sales_price) / 2 END) * c.c_y1
 )
-SELECT customer.c_customer_id AS customer_id,
-       customer.c_first_name AS customer_first_name,
-       customer.c_last_name AS customer_last_name,
-       customer.c_login AS customer_login
+SELECT cu.c_customer_id AS customer_id,
+       cu.c_first_name  AS customer_first_name,
+       cu.c_last_name   AS customer_last_name,
+       cu.c_login       AS customer_login
 FROM s
-JOIN c ON s.customer_sk = c.customer_sk
-JOIN w ON s.customer_sk = w.customer_sk
-JOIN customer ON customer.c_customer_sk = s.customer_sk
-WHERE s.y1 > 0 AND c.y1 > 0 AND w.y1 > 0
-  AND CASE WHEN c.y1 > 0 THEN c.y2/c.y1 ELSE NULL END
-      > CASE WHEN s.y1 > 0 THEN s.y2/s.y1 ELSE NULL END
-  AND CASE WHEN c.y1 > 0 THEN c.y2/c.y1 ELSE NULL END
-      > CASE WHEN w.y1 > 0 THEN w.y2/w.y1 ELSE NULL END
+JOIN customer cu ON cu.c_customer_sk = s.customer_sk
 ORDER BY customer_id, customer_first_name, customer_last_name, customer_login
 LIMIT 100;

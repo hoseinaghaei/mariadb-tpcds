@@ -357,6 +357,32 @@ def main():
     L.append("\nThe data grows 2x at each step, so a total growing faster "
              "than 2x means the suite is degrading superlinearly.\n")
 
+    L.append("""### Against the previous configuration
+
+The measurement before this one ran the earlier query set against 95
+indexes. This one runs seven newly adopted rewrites against 118 — the same
+95 plus the 23 those rewrites need. Both halves contribute, and the gain
+grows with scale:
+
+| | SF=1 | SF=2 | SF=4 | SF=8 |
+|---|---:|---:|---:|---:|
+| 95 indexes, previous queries | 139.8s | 291.2s | 741.2s | 2692.2s |
+| **118 indexes, 7 rewrites adopted** | **125.4s** | **241.9s** | **579.5s** | **1599.6s** |
+| | −10.3% | −16.9% | −21.8% | **−40.6%** |
+
+Measured per query at SF=4, the 23 indexes are worth about **−103s** on
+their own — they speed up queries nobody rewrote — and the seven rewrites
+about **−91s** on top of that. Attributing the whole gain to either half
+would be wrong.
+
+The indexes cost **4.63 GB** and 477s to build at SF=4.
+
+Three candidates were measured and **not** adopted. q46's returns 0 rows
+where the adopted query returns 101, so it is wrong rather than fast. q8's
+2.88x is on output that is identically *empty* at SF=4, which proves
+nothing. q10 measured 1.04x, inside noise.
+""")
+
     L.append(f"### The SF={big} / SF={small} ratio\n")
     rat = sorted(((a[q]['seconds'] / runs[-1][1][q]['seconds'], q) for q in qs
                   if runs[-1][1].get(q, {}).get('seconds')), reverse=True)

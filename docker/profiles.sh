@@ -11,17 +11,23 @@ tpcds_profile_defaults() {
       : "${TMP_TABLE_SIZE:=1536M}" "${MAX_HEAP_TABLE_SIZE:=1536M}"
       : "${ARIA_PAGECACHE_BUFFER_SIZE:=1G}" "${SORT_BUFFER_SIZE:=64M}"
       : "${JOIN_BUFFER_SIZE:=64M}" "${JOIN_BUFFER_SPACE_LIMIT:=256M}"
-      : "${STATEMENT_TIMEOUT:=3600}" ;;
+      : "${STATEMENT_TIMEOUT:=3600}"
+      # The measured recommendation: 118 indexes, the 189 defined minus the
+      # 71 no plan mentions at any scale.  SF=4 741.2s -> 579.5s against the
+      # previous set.  PRUNE_INDEXES=0 builds all 189: slower, ~6 GB larger.
+      : "${PRUNE_INDEXES:=1}" ;;
     smoke)
       : "${SCALE:=1}" "${BUFFER_POOL:=1G}" "${QUERYSET:=smoke}"
       : "${TMP_TABLE_SIZE:=32M}" "${MAX_HEAP_TABLE_SIZE:=32M}"
       : "${ARIA_PAGECACHE_BUFFER_SIZE:=64M}" "${SORT_BUFFER_SIZE:=4M}"
       : "${JOIN_BUFFER_SIZE:=4M}" "${JOIN_BUFFER_SPACE_LIMIT:=32M}"
-      : "${STATEMENT_TIMEOUT:=300}" ;;
+      : "${STATEMENT_TIMEOUT:=300}"
+      : "${PRUNE_INDEXES:=0}" ;;   # smoke skips secondary-index work
     *) echo "unknown profile '$PROFILE' (use quick, full or smoke)" >&2; return 1 ;;
   esac
   : "${PAGE_SIZE:=32}" "${SAMPLE_PAGES:=160}" "${TUNED:=tuned}" "${RNGSEED:=10}"
   : "${MARIADB_TAG:=13.0.2}" "${KEPT_INDEXES:=0}" "${PRUNE_INDEXES:=0}"
+
   : "${IGNORE_UNUSED:=0}" "${KEEP_ALIVE:=0}" "${SKIP_BENCH:=0}"
   : "${IGNORE_SQL:=ignore_unused_indexes.sql}"
 }

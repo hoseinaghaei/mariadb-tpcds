@@ -3,8 +3,8 @@
  "reported_scaling_campaign": {
   "evidence_level": "UNVERIFIED_TABLE_NOT_USED",
   "source": "report/25-query-by-query.md",
-  "source_sha256": "3e2a7302bf4e1b4297dd786d5f29e5616ea3dc8e1c9d6e70d76983d4d7bf5608",
-  "publication_commit": "965269b",
+  "source_sha256": "137361956512336f213ecd69664b3a3ff2dc816099db8d9419b12a61bbeb3a00",
+  "publication_commit": "912bfef",
   "execution_commit": null,
   "raw_run_artifacts_available": false,
   "query_count": 40,
@@ -12,223 +12,178 @@
   "buffer_pool_gib_reported": 8,
   "page_kib_reported": 32,
   "sample_pages_reported": 160,
-  "secondary_indexes_reported": 95,
+  "secondary_indexes_reported": 118,
   "repetitions_per_scale_reported": 2,
   "measurements": [
    {
     "scale": 1,
-    "seconds": 132.2
+    "seconds": 124.0
    },
    {
     "scale": 2,
-    "seconds": 278.5
+    "seconds": 234.3
    },
    {
     "scale": 4,
-    "seconds": 703.4
+    "seconds": 551.9
    },
    {
     "scale": 8,
-    "seconds": 2517.5
+    "seconds": 1517.0
    }
   ],
   "query_measurements": [
    {
-    "query": 67,
-    "seconds_by_scale": {
-     "1": 20.3,
-     "2": 35.6,
-     "4": 82.8,
-     "8": 262.1
-    }
-   },
-   {
-    "query": 70,
-    "seconds_by_scale": {
-     "1": 3.4,
-     "2": 8.0,
-     "4": 16.9,
-     "8": 239.8
-    }
-   },
-   {
     "query": 14,
     "seconds_by_scale": {
-     "1": 5.2,
-     "2": 12.0,
-     "4": 33.4,
-     "8": 236.3
+     "1": 8.8,
+     "2": 25.5,
+     "4": 76.5,
+     "8": 339.0
     }
    },
    {
-    "query": 74,
+    "query": 67,
     "seconds_by_scale": {
-     "1": 10.0,
-     "2": 18.3,
-     "4": 45.0,
-     "8": 213.4
+     "1": 18.2,
+     "2": 35.5,
+     "4": 81.0,
+     "8": 218.6
     }
    },
    {
     "query": 23,
     "seconds_by_scale": {
-     "1": 15.3,
-     "2": 32.9,
-     "4": 74.0,
-     "8": 204.2
-    }
-   },
-   {
-    "query": 4,
-    "seconds_by_scale": {
-     "1": 12.6,
-     "2": 30.8,
-     "4": 67.3,
-     "8": 190.7
-    }
-   },
-   {
-    "query": 11,
-    "seconds_by_scale": {
-     "1": 9.5,
-     "2": 20.5,
-     "4": 45.2,
-     "8": 144.0
-    }
-   },
-   {
-    "query": 51,
-    "seconds_by_scale": {
-     "1": 8.1,
-     "2": 19.7,
-     "4": 60.9,
-     "8": 130.2
+     "1": 16.2,
+     "2": 33.3,
+     "4": 78.5,
+     "8": 163.3
     }
    },
    {
     "query": 27,
     "seconds_by_scale": {
      "1": 2.4,
-     "2": 5.1,
-     "4": 10.2,
-     "8": 118.5
+     "2": 4.7,
+     "4": 15.8,
+     "8": 114.6
     }
    },
    {
-    "query": 46,
+    "query": 51,
     "seconds_by_scale": {
-     "1": 2.2,
-     "2": 5.4,
-     "4": 13.6,
-     "8": 96.5
+     "1": 8.3,
+     "2": 19.5,
+     "4": 52.5,
+     "8": 103.5
     }
    },
    {
     "query": 71,
     "seconds_by_scale": {
-     "1": 0.9,
-     "2": 1.7,
-     "4": 10.6,
-     "8": 90.4
+     "1": 1.1,
+     "2": 1.8,
+     "4": 16.4,
+     "8": 101.2
     }
    },
    {
     "query": 22,
     "seconds_by_scale": {
-     "1": 7.3,
-     "2": 11.9,
-     "4": 32.0,
-     "8": 80.6
+     "1": 29.6,
+     "2": 39.7,
+     "4": 27.3,
+     "8": 77.5
+    }
+   },
+   {
+    "query": 4,
+    "seconds_by_scale": {
+     "1": 3.7,
+     "2": 7.2,
+     "4": 27.8,
+     "8": 75.1
     }
    },
    {
     "query": 78,
     "seconds_by_scale": {
-     "1": 4.5,
-     "2": 12.2,
-     "4": 31.9,
-     "8": 60.0
-    }
-   },
-   {
-    "query": 57,
-    "seconds_by_scale": {
-     "1": 2.9,
-     "2": 5.8,
-     "4": 25.8,
-     "8": 53.1
+     "1": 4.7,
+     "2": 12.1,
+     "4": 29.2,
+     "8": 60.1
     }
    },
    {
     "query": 68,
     "seconds_by_scale": {
-     "1": 1.1,
-     "2": 2.2,
-     "4": 8.1,
-     "8": 51.8
-    }
-   },
-   {
-    "query": 77,
-    "seconds_by_scale": {
-     "1": 1.5,
-     "2": 3.2,
-     "4": 14.2,
-     "8": 48.2
-    }
-   },
-   {
-    "query": 47,
-    "seconds_by_scale": {
-     "1": 4.1,
-     "2": 9.0,
-     "4": 20.6,
-     "8": 47.3
-    }
-   },
-   {
-    "query": 7,
-    "seconds_by_scale": {
-     "1": 2.2,
-     "2": 5.7,
-     "4": 11.3,
-     "8": 43.9
-    }
-   },
-   {
-    "query": 5,
-    "seconds_by_scale": {
-     "1": 1.2,
-     "2": 7.1,
-     "4": 13.1,
-     "8": 41.3
+     "1": 1.3,
+     "2": 2.1,
+     "4": 11.2,
+     "8": 51.1
     }
    },
    {
     "query": 72,
     "seconds_by_scale": {
-     "1": 1.4,
-     "2": 3.1,
-     "4": 23.4,
-     "8": 34.1
+     "1": 2.7,
+     "2": 4.7,
+     "4": 19.5,
+     "8": 32.1
+    }
+   },
+   {
+    "query": 47,
+    "seconds_by_scale": {
+     "1": 4.0,
+     "2": 8.8,
+     "4": 22.6,
+     "8": 31.0
+    }
+   },
+   {
+    "query": 11,
+    "seconds_by_scale": {
+     "1": 2.0,
+     "2": 3.9,
+     "4": 10.3,
+     "8": 17.5
+    }
+   },
+   {
+    "query": 2,
+    "seconds_by_scale": {
+     "1": 4.3,
+     "2": 5.2,
+     "4": 10.4,
+     "8": 17.2
     }
    },
    {
     "query": 59,
     "seconds_by_scale": {
      "1": 2.0,
-     "2": 4.1,
-     "4": 10.5,
-     "8": 21.3
+     "2": 4.0,
+     "4": 8.8,
+     "8": 15.3
     }
    },
    {
-    "query": 2,
+    "query": 57,
     "seconds_by_scale": {
-     "1": 4.2,
-     "2": 5.6,
-     "4": 10.4,
-     "8": 18.3
+     "1": 1.9,
+     "2": 3.9,
+     "4": 8.0,
+     "8": 13.6
+    }
+   },
+   {
+    "query": 97,
+    "seconds_by_scale": {
+     "1": 1.2,
+     "2": 2.6,
+     "4": 6.2,
+     "8": 12.1
     }
    },
    {
@@ -236,80 +191,98 @@
     "seconds_by_scale": {
      "1": 1.7,
      "2": 3.3,
-     "4": 7.1,
-     "8": 16.1
+     "4": 8.1,
+     "8": 10.5
     }
    },
    {
-    "query": 97,
-    "seconds_by_scale": {
-     "1": 1.2,
-     "2": 2.7,
-     "4": 6.5,
-     "8": 11.6
-    }
-   },
-   {
-    "query": 8,
+    "query": 5,
     "seconds_by_scale": {
      "1": 0.5,
-     "2": 1.5,
-     "4": 2.6,
-     "8": 11.1
+     "2": 0.7,
+     "4": 2.3,
+     "8": 7.3
     }
    },
    {
     "query": 65,
     "seconds_by_scale": {
      "1": 0.4,
-     "2": 0.9,
-     "4": 3.2,
-     "8": 10.2
-    }
-   },
-   {
-    "query": 39,
-    "seconds_by_scale": {
-     "1": 0.8,
-     "2": 1.1,
-     "4": 2.6,
-     "8": 7.6
+     "2": 1.0,
+     "4": 2.8,
+     "8": 6.6
     }
    },
    {
     "query": 87,
     "seconds_by_scale": {
      "1": 0.5,
-     "2": 0.9,
-     "4": 3.6,
-     "8": 7.3
+     "2": 1.0,
+     "4": 4.0,
+     "8": 6.6
+    }
+   },
+   {
+    "query": 70,
+    "seconds_by_scale": {
+     "1": 0.8,
+     "2": 1.5,
+     "4": 3.3,
+     "8": 5.5
     }
    },
    {
     "query": 35,
     "seconds_by_scale": {
-     "1": 2.1,
-     "2": 2.9,
-     "4": 3.9,
-     "8": 5.5
+     "1": 2.0,
+     "2": 2.6,
+     "4": 5.6,
+     "8": 5.4
+    }
+   },
+   {
+    "query": 39,
+    "seconds_by_scale": {
+     "1": 0.6,
+     "2": 0.9,
+     "4": 3.4,
+     "8": 5.0
     }
    },
    {
     "query": 43,
     "seconds_by_scale": {
-     "1": 1.1,
-     "2": 2.0,
-     "4": 4.0,
-     "8": 5.5
+     "1": 1.2,
+     "2": 1.9,
+     "4": 4.5,
+     "8": 4.9
+    }
+   },
+   {
+    "query": 46,
+    "seconds_by_scale": {
+     "1": 0.6,
+     "2": 1.5,
+     "4": 3.6,
+     "8": 3.6
     }
    },
    {
     "query": 31,
     "seconds_by_scale": {
-     "1": 0.5,
-     "2": 1.0,
+     "1": 0.6,
+     "2": 1.1,
      "4": 2.4,
-     "8": 4.4
+     "8": 3.4
+    }
+   },
+   {
+    "query": 74,
+    "seconds_by_scale": {
+     "1": 0.9,
+     "2": 0.9,
+     "4": 2.3,
+     "8": 2.9
     }
    },
    {
@@ -317,8 +290,17 @@
     "seconds_by_scale": {
      "1": 0.3,
      "2": 0.6,
-     "4": 1.4,
-     "8": 2.8
+     "4": 1.2,
+     "8": 2.3
+    }
+   },
+   {
+    "query": 10,
+    "seconds_by_scale": {
+     "1": 0.3,
+     "2": 0.6,
+     "4": 1.5,
+     "8": 2.2
     }
    },
    {
@@ -326,26 +308,8 @@
     "seconds_by_scale": {
      "1": 0.0,
      "2": 0.0,
-     "4": 0.9,
-     "8": 2.0
-    }
-   },
-   {
-    "query": 66,
-    "seconds_by_scale": {
-     "1": 0.2,
-     "2": 0.4,
-     "4": 1.0,
-     "8": 1.8
-    }
-   },
-   {
-    "query": 10,
-    "seconds_by_scale": {
-     "1": 0.2,
-     "2": 0.3,
-     "4": 0.7,
-     "8": 1.4
+     "4": 1.2,
+     "8": 1.7
     }
    },
    {
@@ -353,17 +317,26 @@
     "seconds_by_scale": {
      "1": 0.1,
      "2": 0.3,
-     "4": 0.6,
+     "4": 0.5,
      "8": 1.1
     }
    },
    {
-    "query": 33,
+    "query": 66,
+    "seconds_by_scale": {
+     "1": 0.2,
+     "2": 0.4,
+     "4": 0.9,
+     "8": 1.1
+    }
+   },
+   {
+    "query": 54,
     "seconds_by_scale": {
      "1": 0.1,
      "2": 0.2,
-     "4": 0.5,
-     "8": 0.9
+     "4": 0.4,
+     "8": 1.0
     }
    },
    {
@@ -372,33 +345,60 @@
      "1": 0.1,
      "2": 0.2,
      "4": 0.6,
-     "8": 0.8
+     "8": 1.0
     }
    },
    {
-    "query": 54,
+    "query": 77,
     "seconds_by_scale": {
      "1": 0.1,
      "2": 0.2,
-     "4": 0.5,
+     "4": 0.4,
      "8": 0.7
+    }
+   },
+   {
+    "query": 8,
+    "seconds_by_scale": {
+     "1": 0.3,
+     "2": 0.5,
+     "4": 0.3,
+     "8": 0.6
+    }
+   },
+   {
+    "query": 33,
+    "seconds_by_scale": {
+     "1": 0.1,
+     "2": 0.1,
+     "4": 0.3,
+     "8": 0.4
+    }
+   },
+   {
+    "query": 7,
+    "seconds_by_scale": {
+     "1": 0.1,
+     "2": 0.2,
+     "4": 0.2,
+     "8": 0.2
     }
    },
    {
     "query": 82,
     "seconds_by_scale": {
-     "1": 0.0,
+     "1": 0.1,
      "2": 0.1,
      "4": 0.1,
-     "8": 0.7
+     "8": 0.2
     }
    }
   ],
   "interpretation": "Superlinear observed growth; buffer-pool misses, temporary spills, host swap and plan changes are candidate causes, not isolated effects.",
   "q70_measurements": "Remeasured after the correctness fix. It costs 3-6x: 0.7->3.4s at SF=1, 5.7->16.9s at SF=4, 40.0->239.8s at SF=8, where q70 becomes the second slowest query in the suite.",
   "use_in_submission_results": false,
-  "verification_note": "Superseded on 2026-11-04. The table now reports a fresh campaign: 40 tier-4/5 queries at SF=1,2,4,8, each scale run twice as two separated passes, 40/40 and zero errors in all eight runs, each asserting \"index set matches sql/ exactly (95 indexes)\" before measuring. Raw artifacts ARE committed for this campaign, at experiments/evidence/four_scale_twice_20261104/ with SHA256SUMS - the earlier note that the runs were unavailable applied to the 2026-10-29 campaign, whose artifacts were never committed because /results/ is gitignored. Worst run-to-run spread on a suite total is 16.6%, which bounds what these numbers can resolve. Not comparable to the 2026-10-29 figures: the same configuration measured 81.8s at SF=1 then and 139.8s now, on a host 50 days up with swap at 10.1 of 11.3 GiB. evidence_level, use_in_submission_results and raw_run_artifacts_available are deliberately left as set - whether this is submission evidence is the report owner's call, not the measurer's.",
-  "raw_run_artifacts": "experiments/evidence/four_scale_twice_20261104/"
+  "verification_note": "Replaced on 2026-11-05. Seven candidate rewrites adopted (q4, q5, q7, q11, q33, q57, q74) and 23 indexes added, giving 118. Eight runs, two separated passes per scale, 40/40 and zero errors in every run, each asserting \"index set matches sql/ exactly (118 indexes)\". Against the previous configuration: SF=1 139.8->125.4s, SF=2 291.2->241.9s, SF=4 741.2->579.5s, SF=8 2692.2->1599.6s. Measured per query at SF=4 the indexes are worth about -103s alone and the rewrites about -91s on top, so neither half should be credited with the whole gain. Three candidates were rejected: q46 returns 0 rows where the adopted returns 101, q8 is identically empty so equivalence is unproven, q10 measured 1.04x. Raw artifacts committed at experiments/evidence/four_scale_twice_20261105_adopted/ with SHA256SUMS. This configuration is now the default in reproduce.sh. evidence_level, use_in_submission_results and raw_run_artifacts_available left as set: that grading is the report owner's call.",
+  "raw_run_artifacts": "experiments/evidence/four_scale_twice_20261105_adopted/"
  },
  "verified_docker_99": {
   "evidence_level": "ARTIFACT_INTEGRITY_VERIFIED",

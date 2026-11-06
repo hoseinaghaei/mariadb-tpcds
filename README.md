@@ -28,7 +28,24 @@ a run cannot modify it. Results land in `./results/`.
 ./reproduce.sh smoke      # low-memory setup/execution check: 1G pool, four queries
 ./reproduce.sh            # quick: SF=1, 8G pool, 40 selected queries
 ./reproduce.sh full       # SF=4, 8G pool, 40 selected queries
+./reproduce.sh full SCALE=8   # or any other scale factor
 ```
+
+`quick` and `full` build the **recommended 118-index set** by default: the
+189 indexes defined in `sql/05`, `11`, `14` and `15`, minus the 71 that no
+query plan mentions at any scale factor. Measured against the previous
+configuration:
+
+| | SF=1 | SF=2 | SF=4 |
+|---|---:|---:|---:|
+| before | 139.8s | 291.2s | 741.2s |
+| **now** | **125.4s** | **241.9s** | **579.5s** |
+
+`PRUNE_INDEXES=0` builds all 189 instead — slower and about 6 GB larger at
+SF=4. The 71 are dropped on the strong test (no plan mentions them), not the
+weak one (nothing reads them); dropping on the weak test took SF=4 from
+735.2s to 1487.0s, which is why that list is not used. See
+[`report/28-what-indexes-are-for.md`](report/28-what-indexes-are-for.md).
 
 The same commands can be rerun against existing results and data volumes.
 Before a new query run, its previous results and log are moved to

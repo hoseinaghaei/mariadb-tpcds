@@ -16,7 +16,7 @@ construction. The headline table reports the **faster** of each query's two
 runs — the reading least penalised by a cold buffer pool. Both readings, the
 run-to-run spread, and the queries whose two runs disagree are below.
 
-**Totals: SF=8 2517.5s, SF=4 703.4s, SF=2 278.5s, SF=1 132.2s.** 40/40 at every scale, no errors.
+**Totals: SF=8 1517.0s, SF=4 551.9s, SF=2 234.3s, SF=1 124.0s.** 40/40 at every scale, no errors.
 
 > Note: 1 query returns fewer rows at a larger scale factor — q58 (SF=4 0 rows < SF=2 1). Usually worth a look, though not necessarily wrong: a query with a narrow filter band (q58 matches items whose revenue agrees within ±10% across three channels) has no reason to be monotonic in scale.
 
@@ -24,46 +24,46 @@ run-to-run spread, and the queries whose two runs disagree are below.
 
 | # | query | SF=8 | SF=4 | SF=2 | SF=1 | SF8/SF1 | optimized by |
 |---|---|---:|---:|---:|---:|---:|---|
-| 1 | q67 | 262.1s | 82.8s | 35.6s | 20.3s | 12.9x | Aysha |
-| 2 | q70 | 239.8s | 16.9s | 8.0s | 3.4s | 70.5x | Claude |
-| 3 | q14 | 236.3s | 33.4s | 12.0s | 5.2s | 45.4x | Aysha |
-| 4 | q74 | 213.4s | 45.0s | 18.3s | 10.0s | 21.3x | Nafiz |
-| 5 | q23 | 204.2s | 74.0s | 32.9s | 15.3s | 13.3x | Claude |
-| 6 | q4 | 190.7s | 67.3s | 30.8s | 12.6s | 15.1x | riccio |
-| 7 | q11 | 144.0s | 45.2s | 20.5s | 9.5s | 15.2x | Nafiz |
-| 8 | q51 | 130.2s | 60.9s | 19.7s | 8.1s | 16.1x | riccio |
-| 9 | q27 | 118.5s | 10.2s | 5.1s | 2.4s | 49.4x | Aysha |
-| 10 | q46 | 96.5s | 13.6s | 5.4s | 2.2s | 43.9x | Claude |
-| 11 | q71 | 90.4s | 10.6s | 1.7s | 0.9s | 100.4x | — |
-| 12 | q22 | 80.6s | 32.0s | 11.9s | 7.3s | 11.0x | Claude |
-| 13 | q78 | 60.0s | 31.9s | 12.2s | 4.5s | 13.3x | Claude |
-| 14 | q57 | 53.1s | 25.8s | 5.8s | 2.9s | 18.3x | Nafiz |
-| 15 | q68 | 51.8s | 8.1s | 2.2s | 1.1s | 47.1x | Claude |
-| 16 | q77 | 48.2s | 14.2s | 3.2s | 1.5s | 32.1x | — |
-| 17 | q47 | 47.3s | 20.6s | 9.0s | 4.1s | 11.5x | Aysha |
-| 18 | q7 | 43.9s | 11.3s | 5.7s | 2.2s | 20.0x | Nafiz |
-| 19 | q5 | 41.3s | 13.1s | 7.1s | 1.2s | 34.4x | riccio |
-| 20 | q72 | 34.1s | 23.4s | 3.1s | 1.4s | 24.4x | Claude |
-| 21 | q59 | 21.3s | 10.5s | 4.1s | 2.0s | 10.7x | Claude |
-| 22 | q2 | 18.3s | 10.4s | 5.6s | 4.2s | 4.4x | Claude |
-| 23 | q38 | 16.1s | 7.1s | 3.3s | 1.7s | 9.5x | — |
-| 24 | q97 | 11.6s | 6.5s | 2.7s | 1.2s | 9.7x | Aysha + Claude |
-| 25 | q8 | 11.1s | 2.6s | 1.5s | 0.5s | 22.2x | Nafiz |
-| 26 | q65 | 10.2s | 3.2s | 0.9s | 0.4s | 25.5x | classmate |
-| 27 | q39 | 7.6s | 2.6s | 1.1s | 0.8s | 9.5x | riccio |
-| 28 | q87 | 7.3s | 3.6s | 0.9s | 0.5s | 14.6x | classmate |
-| 29 | q35 | 5.5s | 3.9s | 2.9s | 2.1s | 2.6x | Claude |
-| 30 | q43 | 5.5s | 4.0s | 2.0s | 1.1s | 5.0x | Aysha |
-| 31 | q31 | 4.4s | 2.4s | 1.0s | 0.5s | 8.8x | riccio |
-| 32 | q21 | 2.8s | 1.4s | 0.6s | 0.3s | 9.3x | Aysha |
-| 33 | q37 | 2.0s | 0.9s | 0.0s | 0.0s | — | Nafiz |
-| 34 | q66 | 1.8s | 1.0s | 0.4s | 0.2s | 9.0x | — |
-| 35 | q10 | 1.4s | 0.7s | 0.3s | 0.2s | 7.0x | Nafiz |
-| 36 | q58 | 1.1s | 0.6s | 0.3s | 0.1s | 11.0x | — |
-| 37 | q33 | 0.9s | 0.5s | 0.2s | 0.1s | 9.0x | Nafiz |
-| 38 | q88 | 0.8s | 0.6s | 0.2s | 0.1s | 8.0x | Claude |
-| 39 | q54 | 0.7s | 0.5s | 0.2s | 0.1s | 7.0x | Aysha |
-| 40 | q82 | 0.7s | 0.1s | 0.1s | 0.0s | — | Claude |
+| 1 | q14 | 339.0s | 76.5s | 25.5s | 8.8s | 38.5x | Aysha |
+| 2 | q67 | 218.6s | 81.0s | 35.5s | 18.2s | 12.0x | Aysha |
+| 3 | q23 | 163.3s | 78.5s | 33.3s | 16.2s | 10.1x | Claude |
+| 4 | q27 | 114.6s | 15.8s | 4.7s | 2.4s | 47.8x | Aysha |
+| 5 | q51 | 103.5s | 52.5s | 19.5s | 8.3s | 12.5x | riccio |
+| 6 | q71 | 101.2s | 16.4s | 1.8s | 1.1s | 92.0x | — |
+| 7 | q22 | 77.5s | 27.3s | 39.7s | 29.6s | 2.6x | Claude |
+| 8 | q4 | 75.1s | 27.8s | 7.2s | 3.7s | 20.3x | Aysha |
+| 9 | q78 | 60.1s | 29.2s | 12.1s | 4.7s | 12.8x | Claude |
+| 10 | q68 | 51.1s | 11.2s | 2.1s | 1.3s | 39.3x | Claude |
+| 11 | q72 | 32.1s | 19.5s | 4.7s | 2.7s | 11.9x | Claude |
+| 12 | q47 | 31.0s | 22.6s | 8.8s | 4.0s | 7.8x | Aysha |
+| 13 | q11 | 17.5s | 10.3s | 3.9s | 2.0s | 8.8x | Nafiz |
+| 14 | q2 | 17.2s | 10.4s | 5.2s | 4.3s | 4.0x | Claude |
+| 15 | q59 | 15.3s | 8.8s | 4.0s | 2.0s | 7.7x | Claude |
+| 16 | q57 | 13.6s | 8.0s | 3.9s | 1.9s | 7.2x | Nafiz |
+| 17 | q97 | 12.1s | 6.2s | 2.6s | 1.2s | 10.1x | Aysha + Claude |
+| 18 | q38 | 10.5s | 8.1s | 3.3s | 1.7s | 6.2x | — |
+| 19 | q5 | 7.3s | 2.3s | 0.7s | 0.5s | 14.6x | Aysha |
+| 20 | q65 | 6.6s | 2.8s | 1.0s | 0.4s | 16.5x | classmate |
+| 21 | q87 | 6.6s | 4.0s | 1.0s | 0.5s | 13.2x | classmate |
+| 22 | q70 | 5.5s | 3.3s | 1.5s | 0.8s | 6.9x | Claude |
+| 23 | q35 | 5.4s | 5.6s | 2.6s | 2.0s | 2.7x | Claude |
+| 24 | q39 | 5.0s | 3.4s | 0.9s | 0.6s | 8.3x | riccio |
+| 25 | q43 | 4.9s | 4.5s | 1.9s | 1.2s | 4.1x | Aysha |
+| 26 | q46 | 3.6s | 3.6s | 1.5s | 0.6s | 6.0x | Claude |
+| 27 | q31 | 3.4s | 2.4s | 1.1s | 0.6s | 5.7x | riccio |
+| 28 | q74 | 2.9s | 2.3s | 0.9s | 0.9s | 3.2x | Nafiz |
+| 29 | q21 | 2.3s | 1.2s | 0.6s | 0.3s | 7.7x | Aysha |
+| 30 | q10 | 2.2s | 1.5s | 0.6s | 0.3s | 7.3x | Nafiz |
+| 31 | q37 | 1.7s | 1.2s | 0.0s | 0.0s | — | Nafiz |
+| 32 | q58 | 1.1s | 0.5s | 0.3s | 0.1s | 11.0x | — |
+| 33 | q66 | 1.1s | 0.9s | 0.4s | 0.2s | 5.5x | — |
+| 34 | q54 | 1.0s | 0.4s | 0.2s | 0.1s | 10.0x | Aysha |
+| 35 | q88 | 1.0s | 0.6s | 0.2s | 0.1s | 10.0x | Claude |
+| 36 | q77 | 0.7s | 0.4s | 0.2s | 0.1s | 7.0x | — |
+| 37 | q8 | 0.6s | 0.3s | 0.5s | 0.3s | 2.0x | Nafiz |
+| 38 | q33 | 0.4s | 0.3s | 0.1s | 0.1s | 4.0x | Nafiz |
+| 39 | q7 | 0.2s | 0.2s | 0.2s | 0.1s | 2.0x | Nafiz |
+| 40 | q82 | 0.2s | 0.1s | 0.1s | 0.1s | 2.0x | Claude |
 
 ### Both readings, per query
 
@@ -71,77 +71,74 @@ The table above is the **faster** of each query's two runs. Here are both, so th
 
 | query | SF=8 r1 | SF=8 r2 | SF=4 r1 | SF=4 r2 | SF=2 r1 | SF=2 r2 | SF=1 r1 | SF=1 r2 |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| q67 | 262.1s | 337.4s | 95.9s | 82.8s | 35.6s | 42.0s | 20.3s | 20.4s |
-| q70 | 257.0s | 239.8s | 16.9s | 18.0s | 12.4s | 8.0s | 3.7s | 3.4s |
-| q14 | 236.3s | 248.7s | 33.4s | 44.2s | 12.0s | 22.2s | 5.2s | 5.5s |
-| q74 | 267.7s | 213.4s | 45.0s | 50.3s | 19.9s | 18.3s | 10.2s | 10.0s |
-| q23 | 204.2s | 205.1s | 74.0s | 92.9s | 32.9s | 39.6s | 15.3s | 16.2s |
-| q4 | 205.6s | 190.7s | 67.3s | 67.3s | 30.8s | 31.4s | 12.6s | 13.3s |
-| q11 | 199.3s | 144.0s | 45.2s | 58.0s | 20.5s | 28.2s | 9.8s | 9.5s |
-| q51 | 130.2s | 142.3s | 63.4s | 60.9s | 19.7s | 28.5s | 8.1s | 9.8s |
-| q27 | 134.6s | 118.5s | 10.2s | 14.1s | 5.1s | 5.3s | 2.4s | 2.8s |
-| q46 | 104.7s | 96.5s | 13.6s | 18.2s | 5.4s | 5.7s | 2.2s | 3.0s |
-| q71 | 95.7s | 90.4s | 17.6s | 10.6s | 1.7s | 2.9s | 0.9s | 0.9s |
-| q22 | 80.6s | 100.6s | 32.0s | 38.7s | 11.9s | 15.1s | 7.3s | 7.3s |
-| q78 | 70.5s | 60.0s | 31.9s | 36.9s | 13.3s | 12.2s | 11.8s | 4.5s |
-| q57 | 53.1s | 82.8s | 34.5s | 25.8s | 5.8s | 7.8s | 2.9s | 3.0s |
-| q68 | 51.8s | 57.1s | 11.1s | 8.1s | 2.7s | 2.2s | 1.1s | 1.2s |
-| q77 | 48.2s | 48.5s | 14.2s | 21.0s | 4.5s | 3.2s | 2.6s | 1.5s |
-| q47 | 49.8s | 47.3s | 20.6s | 25.6s | 9.0s | 13.6s | 4.1s | 4.7s |
-| q7 | 47.0s | 43.9s | 11.3s | 11.6s | 6.3s | 5.7s | 2.2s | 2.3s |
-| q5 | 41.3s | 41.3s | 13.1s | 17.3s | 8.1s | 7.1s | 1.2s | 1.4s |
-| q72 | 37.0s | 34.1s | 23.9s | 23.4s | 3.3s | 3.1s | 1.5s | 1.4s |
-| q59 | 21.3s | 34.7s | 11.2s | 10.5s | 4.1s | 5.1s | 2.0s | 2.1s |
-| q2 | 18.4s | 18.3s | 10.4s | 10.7s | 7.6s | 5.6s | 4.2s | 4.6s |
-| q38 | 25.4s | 16.1s | 7.1s | 7.4s | 3.3s | 4.6s | 1.7s | 1.9s |
-| q97 | 21.3s | 11.6s | 6.5s | 6.5s | 2.7s | 3.5s | 1.4s | 1.2s |
-| q8 | 13.6s | 11.1s | 2.6s | 3.4s | 1.5s | 1.5s | 0.5s | 0.6s |
-| q65 | 10.2s | 11.4s | 4.8s | 3.2s | 0.9s | 1.1s | 0.4s | 0.5s |
-| q39 | 7.6s | 7.8s | 2.6s | 3.4s | 1.1s | 1.4s | 0.8s | 0.9s |
-| q87 | 8.3s | 7.3s | 3.6s | 3.9s | 0.9s | 1.9s | 0.5s | 0.5s |
-| q35 | 6.6s | 5.5s | 3.9s | 4.0s | 2.9s | 5.6s | 2.1s | 2.3s |
-| q43 | 6.0s | 5.5s | 4.0s | 4.4s | 2.0s | 2.3s | 1.2s | 1.1s |
-| q31 | 6.3s | 4.4s | 2.4s | 2.5s | 1.0s | 1.2s | 0.5s | 0.6s |
-| q21 | 4.5s | 2.8s | 1.4s | 2.0s | 0.6s | 1.1s | 0.3s | 0.4s |
-| q37 | 2.0s | 2.2s | 0.9s | 1.2s | 0.0s | 0.1s | 0.0s | 0.0s |
-| q66 | 1.8s | 2.8s | 1.4s | 1.0s | 0.4s | 0.5s | 0.3s | 0.2s |
-| q10 | 1.4s | 2.3s | 0.7s | 0.7s | 0.3s | 0.4s | 0.2s | 0.2s |
-| q58 | 1.1s | 2.2s | 0.6s | 0.6s | 0.3s | 0.3s | 0.1s | 0.2s |
-| q33 | 1.1s | 0.9s | 0.8s | 0.5s | 0.2s | 0.3s | 0.1s | 0.1s |
-| q88 | 1.2s | 0.8s | 0.6s | 0.7s | 0.2s | 0.7s | 0.1s | 0.1s |
-| q54 | 0.7s | 1.4s | 0.5s | 0.6s | 0.2s | 0.2s | 0.1s | 0.1s |
-| q82 | 0.7s | 0.7s | 0.1s | 0.2s | 0.1s | 0.1s | 0.0s | 0.1s |
+| q14 | 339.0s | 361.1s | 76.5s | 83.6s | 26.4s | 25.5s | 14.4s | 8.8s |
+| q67 | 236.3s | 218.6s | 81.0s | 83.4s | 36.2s | 35.5s | 18.2s | 18.3s |
+| q23 | 163.3s | 169.3s | 86.4s | 78.5s | 33.3s | 34.8s | 16.3s | 16.2s |
+| q27 | 114.6s | 119.2s | 19.3s | 15.8s | 4.8s | 4.7s | 2.4s | 2.4s |
+| q51 | 117.2s | 103.5s | 52.5s | 60.1s | 19.5s | 19.9s | 8.3s | 8.3s |
+| q71 | 101.2s | 114.5s | 16.4s | 19.9s | 1.8s | 1.9s | 1.5s | 1.1s |
+| q22 | 77.5s | 79.2s | 32.4s | 27.3s | 39.7s | 41.9s | 30.0s | 29.6s |
+| q4 | 88.0s | 75.1s | 31.6s | 27.8s | 7.2s | 10.3s | 4.9s | 3.7s |
+| q78 | 60.1s | 72.2s | 29.2s | 31.0s | 13.0s | 12.1s | 4.7s | 4.9s |
+| q68 | 51.1s | 61.3s | 11.2s | 11.2s | 2.1s | 2.1s | 1.3s | 1.3s |
+| q72 | 34.3s | 32.1s | 21.5s | 19.5s | 5.3s | 4.7s | 2.7s | 2.8s |
+| q47 | 43.4s | 31.0s | 22.6s | 22.6s | 8.8s | 9.0s | 4.0s | 4.1s |
+| q11 | 17.5s | 19.7s | 10.3s | 11.7s | 3.9s | 4.6s | 3.8s | 2.0s |
+| q2 | 19.2s | 17.2s | 10.4s | 10.7s | 5.2s | 5.6s | 4.9s | 4.3s |
+| q59 | 21.0s | 15.3s | 8.8s | 10.5s | 4.0s | 4.0s | 2.5s | 2.0s |
+| q57 | 18.7s | 13.6s | 10.3s | 8.0s | 3.9s | 4.1s | 1.9s | 1.9s |
+| q97 | 19.3s | 12.1s | 6.2s | 7.6s | 2.8s | 2.6s | 1.2s | 1.2s |
+| q38 | 14.6s | 10.5s | 8.1s | 9.0s | 3.7s | 3.3s | 1.7s | 1.7s |
+| q5 | 7.3s | 16.3s | 2.3s | 6.5s | 3.2s | 0.7s | 0.8s | 0.5s |
+| q65 | 9.0s | 6.6s | 2.8s | 3.2s | 1.0s | 1.0s | 0.5s | 0.4s |
+| q87 | 7.4s | 6.6s | 4.0s | 5.5s | 1.1s | 1.0s | 0.5s | 0.6s |
+| q70 | 5.9s | 5.5s | 3.3s | 3.5s | 1.5s | 1.5s | 1.1s | 0.8s |
+| q35 | 5.4s | 5.4s | 5.7s | 5.6s | 2.6s | 2.8s | 2.2s | 2.0s |
+| q39 | 7.4s | 5.0s | 4.0s | 3.4s | 1.0s | 0.9s | 0.6s | 0.6s |
+| q43 | 5.4s | 4.9s | 4.5s | 4.6s | 2.1s | 1.9s | 1.3s | 1.2s |
+| q46 | 4.2s | 3.6s | 3.6s | 4.0s | 2.1s | 1.5s | 0.6s | 0.8s |
+| q31 | 4.9s | 3.4s | 2.8s | 2.4s | 1.2s | 1.1s | 0.6s | 0.6s |
+| q74 | 2.9s | 3.0s | 2.4s | 2.3s | 0.9s | 1.2s | 0.9s | 1.3s |
+| q21 | 2.4s | 2.3s | 2.0s | 1.2s | 0.8s | 0.6s | 0.4s | 0.3s |
+| q10 | 2.2s | 2.3s | 1.9s | 1.5s | 0.6s | 0.6s | 0.6s | 0.3s |
+| q37 | 2.1s | 1.7s | 1.2s | 1.5s | 0.0s | 0.1s | 0.0s | 0.0s |
+| q58 | 1.3s | 1.1s | 0.5s | 0.9s | 0.3s | 0.3s | 0.1s | 0.2s |
+| q66 | 1.5s | 1.1s | 0.9s | 0.9s | 0.4s | 0.4s | 0.3s | 0.2s |
+| q54 | 1.0s | 1.4s | 0.5s | 0.4s | 0.2s | 0.2s | 0.1s | 0.1s |
+| q88 | 1.0s | 1.4s | 0.6s | 3.9s | 0.2s | 0.2s | 0.1s | 0.2s |
+| q77 | 0.7s | 0.9s | 0.4s | 0.4s | 0.2s | 0.2s | 0.1s | 0.1s |
+| q8 | 0.6s | 0.7s | 0.4s | 0.3s | 0.5s | 0.5s | 0.3s | 0.3s |
+| q33 | 0.5s | 0.4s | 0.5s | 0.3s | 0.1s | 0.1s | 0.1s | 0.1s |
+| q7 | 0.2s | 0.2s | 0.4s | 0.2s | 0.2s | 0.2s | 0.1s | 0.1s |
+| q82 | 0.2s | 0.3s | 0.1s | 0.3s | 0.1s | 0.1s | 0.1s | 0.1s |
 
 ### Run-to-run spread
 
 | scale | run 1 | run 2 | best | spread |
 |---|---:|---:|---:|---:|
-| SF=8 | 2736.2s | 2692.2s | **2692.2s** | +1.6% |
-| SF=4 | 741.2s | 793.1s | **741.2s** | +7.0% |
-| SF=2 | 291.2s | 339.6s | **291.2s** | +16.6% |
-| SF=1 | 141.9s | 139.8s | **139.8s** | +1.5% |
+| SF=8 | 1609.8s | 1599.6s | **1599.6s** | +0.6% |
+| SF=4 | 579.5s | 591.0s | **579.5s** | +2.0% |
+| SF=2 | 241.9s | 243.7s | **241.9s** | +0.7% |
+| SF=1 | 136.1s | 125.4s | **125.4s** | +8.5% |
 
-Worst run-to-run spread on a suite total: **16.6%**. Any per-query difference smaller than that, measured across runs rather than within an interleaved pair, is not resolvable by this benchmark.
+Worst run-to-run spread on a suite total: **8.5%**. Any per-query difference smaller than that, measured across runs rather than within an interleaved pair, is not resolvable by this benchmark.
 
 ### Queries whose two runs disagree by 1.5x or more
 
 | query | scale | fast | slow | ratio |
 |---|---|---:|---:|---:|
-| q78 | SF=1 | 4.5s | 11.8s | **2.6x** |
-| q87 | SF=2 | 0.9s | 1.9s | **2.1x** |
-| q58 | SF=8 | 1.1s | 2.2s | **2.0x** |
-| q54 | SF=8 | 0.7s | 1.4s | **2.0x** |
-| q35 | SF=2 | 2.9s | 5.6s | **1.9x** |
-| q14 | SF=2 | 12.0s | 22.2s | **1.8x** |
-| q97 | SF=8 | 11.6s | 21.3s | **1.8x** |
-| q21 | SF=2 | 0.6s | 1.1s | **1.8x** |
-| q77 | SF=1 | 1.5s | 2.6s | **1.7x** |
-| q71 | SF=2 | 1.7s | 2.9s | **1.7x** |
-| q71 | SF=4 | 10.6s | 17.6s | **1.7x** |
-| q10 | SF=8 | 1.4s | 2.3s | **1.6x** |
-| q59 | SF=8 | 21.3s | 34.7s | **1.6x** |
-| q21 | SF=8 | 2.8s | 4.5s | **1.6x** |
-| q33 | SF=4 | 0.5s | 0.8s | **1.6x** |
+| q88 | SF=4 | 0.6s | 3.9s | **6.5x** |
+| q5 | SF=2 | 0.7s | 3.2s | **4.6x** |
+| q5 | SF=4 | 2.3s | 6.5s | **2.8x** |
+| q5 | SF=8 | 7.3s | 16.3s | **2.2x** |
+| q10 | SF=1 | 0.3s | 0.6s | **2.0x** |
+| q11 | SF=1 | 2.0s | 3.8s | **1.9x** |
+| q58 | SF=4 | 0.5s | 0.9s | **1.8x** |
+| q33 | SF=4 | 0.3s | 0.5s | **1.7x** |
+| q21 | SF=4 | 1.2s | 2.0s | **1.7x** |
+| q14 | SF=1 | 8.8s | 14.4s | **1.6x** |
+| q5 | SF=1 | 0.5s | 0.8s | **1.6x** |
+| q97 | SF=8 | 12.1s | 19.3s | **1.6x** |
 
 These are the rows to distrust. A query that moves this much between identical runs cannot support a claim about a 10-20% optimization, and the cause is usually buffer-pool state rather than anything about the query.
 
@@ -150,7 +147,23 @@ These are the rows to distrust. A query that moves this much between identical r
 
 ## Each query
 
-### 1. q67 — 262.1s at SF=8, 82.8s at SF=4, 35.6s at SF=2, 20.3s at SF=1
+### 1. q14 — 339.0s at SF=8, 76.5s at SF=4, 25.5s at SF=2, 8.8s at SF=1
+
+**Optimized by Aysha** — `queries/optimized/Aysha/q14/Query-14-A/q14_A_Optimized.sql` and `Query-14-B/Q14-B-Optimized.sql`
+
+Replaces the repeated `date_dim` joins with `MIN/MAX(d_date_sk)` ranges, turns the eligibility check into `EXISTS`, and computes the average as `SUM/COUNT` rather than materialising a large UNION first.
+
+Verified at SF=4 after her 2026-10-25 update: original 240.1s → 57.6s, **4.17x**, output byte-for-byte identical (202 rows). Those absolute figures are inflated — an unrelated process held the machine at load 11 during the run — but the passes are interleaved, so the ratio holds.
+
+**She fixed the `i_braknd_id` typo at source**, so `build-tuned.py` no longer has to patch it; the guard stays in place in case it returns. Her files also no longer carry the stray `explain` prefix that the build had been stripping. One correction is still applied: part B emits 8 columns where TPC-DS requires 12.
+
+Her update also re-enabled three `SET SESSION` lines — `join_buffer_size` 256M (above our standing 64M) and `tmp_table_size`/`max_heap_table_size` 512M (*below* our standing 1536M). A/B-ed at SF=4 with and without them: **1.03x, no measurable difference**, output identical. They are left in place rather than stripped, since they neither help nor hurt under the standing configuration.
+
+> **Correction applied:** part B emitted 8 columns; TPC-DS requires 12 (the ty_/ly_ key columns are repeated per year) - expanded, and its ORDER BY updated to the new aliases
+
+*split materialisation OFF: measured -17.0s at SF=4*
+
+### 2. q67 — 218.6s at SF=8, 81.0s at SF=4, 35.5s at SF=2, 18.2s at SF=1
 
 **Optimized by Aysha** — `queries/optimized/Aysha/q67/q67-v2-Optimized.sql`
 
@@ -158,7 +171,191 @@ Pre-computes the date-key range into session variables, then drives the ROLLUP o
 
 Verified at SF=4: original 35.3s → 26.5s, **1.3x**, output byte-for-byte identical.
 
-### 2. q70 — 239.8s at SF=8, 16.9s at SF=4, 8.0s at SF=2, 3.4s at SF=1
+### 3. q23 — 163.3s at SF=8, 78.5s at SF=4, 33.3s at SF=2, 16.2s at SF=1
+
+**Optimized by Claude** — `queries/optimized/q23-sf4/query23_v3_densekeys.sql`
+
+Was the most expensive query in the suite by a factor of three. `ANALYZE FORMAT=JSON` showed its `frequent_ss_items` CTE being split-materialised **55,882 times** in one branch and 28,222 in the other — 99.1s of the 208.1s the query spent under instrumentation.
+
+`split_materialized=off` was the wrong lever and had already measured +54.0s *slower*: materialising that CTE once meant grouping four years of `store_sales` on a 30-character varchar. The fix was to make the CTE cheap instead — drop the `item` join (its `substr(i_item_desc,1,30)` is functionally dependent on the unique `i_item_sk`, so it splits no group), swap `d_date` for `d_date_sk`, and order the GROUP BY to match `idx_ss_date_item_store_cover`.
+
+Verified at SF=4: original 160.7s → 44.7s, **3.60x**, output byte-for-byte identical. The three CTEs were checked individually as well, since q23 returns a NULL and no rows at this scale and the final answer alone proves nothing. See `report/26-the-last-eleven.md`.
+
+**Nafiz also optimized q23**, pushed separately — `queries/optimized/Nafiz/q23/`, **38.0x at SF=1** (54.293s → 1.427s) using five `TEMPORARY TABLE`s. Re-expressed as CTEs (temporary tables are not accepted here) and measured at SF=4, his approach is **2.1x slower** than the adopted rewrite: 53.9s against 111.8s, output identical. His pruning is not weak but *perfect* — 9 best customers and 0 candidate items at SF=4 — and MariaDB simply does not exploit it: the driving scan stays at 11,535,675 index entries either way, with an eq_ref probe added per row. Kept as `queries/optimized/q23-sf4/query23_v4_nafiz_cte.sql` with the measurement.
+
+### 4. q27 — 114.6s at SF=8, 15.8s at SF=4, 4.7s at SF=2, 2.4s at SF=1
+
+**Optimized by Aysha** — `queries/optimized/Aysha/q27/q27_Optimized.sql`
+
+Forces the join order so the demographics and date filters apply before `store_sales` is read.
+
+Verified at SF=4: original 5.2s → 6.4s, **0.8x**, output byte-for-byte identical.
+
+*split materialisation OFF: measured -3.7s at SF=4*
+
+### 5. q51 — 103.5s at SF=8, 52.5s at SF=4, 19.5s at SF=2, 8.3s at SF=1
+
+**Optimized by riccio** — `queries/optimized/q51/query51_BEST.sql`
+
+Unifies the store and web daily series into one scan before the window functions, instead of building two full CTEs.
+
+Verified at SF=4: original 26.9s → 22.3s, **1.2x**, output byte-for-byte identical.
+
+### 6. q71 — 101.2s at SF=8, 16.4s at SF=4, 1.8s at SF=2, 1.1s at SF=1
+
+**Not optimized.** Replacing the three `date_dim` joins with key ranges measured **0.77x, slower**. The cost is the full scan of `item` to apply `i_manager_id = 1` — there is no index on that column — and the three-way union feeding a filesort; neither is touched.
+
+Separately, this query's **output order is not deterministic**: `order by ext_price desc, i_brand_id` is not a total order, and 3,948 result rows collapse to 3,934 distinct sort keys, leaving 24 rows free to permute. A byte-for-byte diff of q71 can therefore report a difference between two correct runs, which is why the suite hashes both `md5` and `md5_sorted`. Kept in `queries/optimized/q71-sf4/`.
+
+### 7. q22 — 77.5s at SF=8, 27.3s at SF=4, 39.7s at SF=2, 29.6s at SF=1
+
+**Optimized by Claude** — `queries/optimized/q22/query22_BEST.sql`
+
+Narrows the `date_dim` range and drives from `inventory` through a covering index rather than joining `date_dim` first.
+
+Verified at SF=4: original 28.5s → 22.9s, **1.2x**, output byte-for-byte identical.
+
+*split materialisation at default: -1.3s is inside this host's noise*
+
+### 8. q4 — 75.1s at SF=8, 27.8s at SF=4, 7.2s at SF=2, 3.7s at SF=1
+
+**Optimized by Aysha** — `queries/optimized/Aysha/q4/q4-Optimized.sql`
+
+Resolves the 2001/2002 year boundaries to `d_date_sk` values once into user variables, then aggregates each channel in a single pass with `CASE` instead of building the year-over-year CTE twice per channel. `HAVING` prunes customers with no first-year sales before any join.
+
+Adopted 2026-11-05 after measuring it against the previously adopted query with the new indexes present on both sides, interleaved best-of-3 at SF=4: 32.2s -> 5.7s, **5.66x**, output byte-for-byte identical.
+
+*Contribution to the SF=4 suite: -26.5s.*
+
+### 9. q78 — 60.1s at SF=8, 29.2s at SF=4, 12.1s at SF=2, 4.7s at SF=1
+
+**Optimized by Claude** — `queries/optimized/q78/query78_BEST.sql`
+
+Filters each of the three channels by year before the union, using a covering index on `store_sales`.
+
+Verified at SF=4: original 28.1s → 19.9s, **1.4x**, output byte-for-byte identical.
+
+*split materialisation left ON: disabling it measured +13.9s (slower)*
+
+### 10. q68 — 51.1s at SF=8, 11.2s at SF=4, 2.1s at SF=2, 1.3s at SF=1
+
+**Optimized by Claude** — `queries/optimized/q68-sf4/query68_v1_datefirst.sql`
+
+`STRAIGHT_JOIN` from `date_dim` so the selective date filter drives the join instead of the plan scanning `store_sales` and probing the dimension per row.
+
+Verified at SF=4: 12, 11, 11s → 2, 3, 2s, **4.9x**, output identical.
+
+### 11. q72 — 32.1s at SF=8, 19.5s at SF=4, 4.7s at SF=2, 2.7s at SF=1
+
+**Optimized by Claude** — `queries/optimized/q72/query72_BEST.sql`
+
+Fixes the join order with `JOIN_PREFIX` so the date dimensions filter before `catalog_sales` and `inventory` are reached.
+
+Verified at SF=4: original 40.1s → 10.1s, **4.0x**, output byte-for-byte identical.
+
+*split materialisation at default: -1.6s is inside this host's noise*
+
+### 12. q47 — 31.0s at SF=8, 22.6s at SF=4, 8.8s at SF=2, 4.0s at SF=1
+
+**Optimized by Aysha** — `queries/optimized/Aysha/q47/q47_Optimized_3secs.sql`
+
+Joins `date_dim` first, replaces the three-way self-join on `rn` with `LAG`/`LEAD` so `v1` is built once instead of three times, and pre-aggregates on integer keys.
+
+Verified at SF=4: original 27.5s → 9.1s, **3.0x**, output byte-for-byte identical.
+
+> **Correction applied:** named the select list: SELECT * had sum_sales and avg_monthly_sales transposed
+
+### 13. q11 — 17.5s at SF=8, 10.3s at SF=4, 3.9s at SF=2, 2.0s at SF=1
+
+**Optimized by Nafiz** — `queries/optimized/Nafiz/q11-SF4/query11_BEST.sql`
+
+Covering indexes on both `store_sales` and `web_sales` keyed to the year-total aggregation, so each channel's CTE is satisfied from the index.
+
+Adopted 2026-11-05 after measuring it against the previously adopted query with the new indexes present on both sides, interleaved best-of-3 at SF=4: 19.0s -> 6.5s, **2.93x**, output byte-for-byte identical.
+
+*Contribution to the SF=4 suite: -12.5s.*
+
+### 14. q2 — 17.2s at SF=8, 10.4s at SF=4, 5.2s at SF=2, 4.3s at SF=1
+
+**Optimized by Claude** — `queries/optimized/q2/query2_BEST.sql`
+
+Bounds the `wscs` CTE to the needed date range instead of unioning all of store, catalog and web sales across every year.
+
+Verified at SF=4: original 13.1s → 4.9s, **2.7x**, output byte-for-byte identical.
+
+*split materialisation OFF: measured -9.5s at SF=4*
+
+### 15. q59 — 15.3s at SF=8, 8.8s at SF=4, 4.0s at SF=2, 2.0s at SF=1
+
+**Optimized by Claude** — `queries/optimized/q59-sf4/query59_BEST.sql`
+
+Two changes: `split_materialized=off`, because one of its two CTE references was being re-materialised 7,665 times; and bounding the CTE to the 105 weeks the outer query can read, out of 262.
+
+Verified at SF=4: original 162.5s → 4.4s, **36.6x**, output byte-for-byte identical.
+
+*split materialisation OFF: measured -138.1s at SF=4*
+
+### 16. q57 — 13.6s at SF=8, 8.0s at SF=4, 3.9s at SF=2, 1.9s at SF=1
+
+**Optimized by Nafiz** — `queries/optimized/Nafiz/q57-SF4/query57_BEST.sql`
+
+A covering index on `catalog_sales` for the window-function CTE.
+
+Adopted 2026-11-05 after measuring it against the previously adopted query with the new indexes present on both sides, interleaved best-of-3 at SF=4: 9.0s -> 7.1s, **1.28x**, output byte-for-byte identical.
+
+*Contribution to the SF=4 suite: -1.9s.*
+
+### 17. q97 — 12.1s at SF=8, 6.2s at SF=4, 2.6s at SF=2, 1.2s at SF=1
+
+**Optimized by Aysha**, adapted — `queries/optimized/Aysha/q97/query97_BEST_no_temp_tables.sql`
+
+Aysha's insight is the valuable part: the original emulates a FULL OUTER JOIN as `(LEFT JOIN) UNION ALL (RIGHT JOIN ... WHERE a IS NULL)`, reading both sides twice. One LEFT JOIN suffices if the catalog-only count is derived arithmetically — `catalog_only = (rows in csci) - (rows of csci that matched)` — which is exact because both CTEs `GROUP BY (customer_sk, item_sk)`, so each pair occurs at most once per side.
+
+Her file built the two sets as **temporary tables**, which are not acceptable for this project, so they are expressed as CTEs here. Nothing else of hers changed.
+
+> **Defect found and fixed in this pass.** The arithmetic needs `where customer_sk is not null` in that count, and the first version omitted it. `ss_customer_sk` and `cs_bill_customer_sk` are nullable, so both CTEs contain rows grouped under a NULL customer — 2,569 of them in `csci` at SF=4. The original scores those as zero in all three columns (its case expressions all test `is not null`, and an equality join never matches NULL), so a bare `count(*)` added all 2,569 to `catalog_only`: **1,141,754 instead of 1,139,185**. Caught by `gen-25.py` comparing `md5_sorted` against the previous suite run.
+
+Verified at SF=4 after the fix: original 7.3s → 3.8s, **1.92x**, output byte-for-byte identical.
+
+### 18. q38 — 10.5s at SF=8, 8.1s at SF=4, 3.3s at SF=2, 1.7s at SF=1
+
+**Not optimized.** Aysha's file contains only `CREATE INDEX` statements, so there is no query to substitute; its indexes are in `sql/14_contributed_indexes.sql`.
+
+A rewrite was written and measured — intersecting on `d_date_sk` instead of `d_date`, which is exact because the two are a bijection on `date_dim` — and it was **0.80x, slower**. The per-row `date_dim` probes it removes are not where q38 spends its time; the cost is building and intersecting three large `DISTINCT` sets keyed on two name columns. Kept with its measurements in `queries/optimized/q38-sf4/`.
+
+### 19. q5 — 7.3s at SF=8, 2.3s at SF=4, 0.7s at SF=2, 0.5s at SF=1
+
+**Optimized by Aysha** — `queries/optimized/Aysha/q5/q5-OptimizedforDocker.sql`
+
+Pushes the date window into each returns branch and reads them through three new covering indexes (`idx_sr_date`, `idx_cr_date`, `idx_wr_date`), so each returns table is range-scanned on its own date key rather than scanned and filtered.
+
+Adopted 2026-11-05 after measuring it against the previously adopted query with the new indexes present on both sides, interleaved best-of-3 at SF=4: 1.3s -> 0.6s, **2.24x**, output byte-for-byte identical.
+
+*Contribution to the SF=4 suite: -0.7s.*
+
+### 20. q65 — 6.6s at SF=8, 2.8s at SF=4, 1.0s at SF=2, 0.4s at SF=1
+
+**Optimized by a classmate** — `queries/optimized/q65/query65_BEST.sql`
+
+One store/item aggregation instead of the duplicated derived table, a full-store window average, and early date-key filtering.
+
+Measured head to head at SF=4 against the rewrite attempted here, three interleaved passes with identical output (101 rows): **2.6, 2.7, 2.8s against 1.6, 1.7, 1.8s — 1.62x**, winning every pass.
+
+That is the right outcome. The attempt in `queries/optimized/q65-sf4/` measured **0.97x**, no change, because its premise was wrong: MariaDB already materialises the duplicated derived table once, so naming it as a CTE told the optimizer nothing it had not already worked out. Their version attacks the aggregation itself.
+
+Their own README measures on a very different machine — Ryzen 5 3500U, 6.7 GiB RAM, MariaDB 10.11.14, 2 GiB pool, primary keys only — where the original takes 91.7s against 3.3s here. Those figures do not transfer; the 1.62x above was measured in this environment.
+
+### 21. q87 — 6.6s at SF=8, 4.0s at SF=4, 1.0s at SF=2, 0.5s at SF=1
+
+**Optimized by a classmate** — `queries/optimized/q87/query87_BEST.sql`
+
+`STRAIGHT_JOIN` on each of the three `DISTINCT` branches, fixing the join order rather than changing what is computed.
+
+Measured head to head at SF=4 against the rewrite attempted here, three interleaved passes with identical output: **3.9, 3.9, 4.6s against 1.1, 1.1, 1.2s — 3.55x**, winning every pass.
+
+The attempt in `queries/optimized/q87-sf4/` measured **0.80x**, slower. Its diagnosis was right about where q87 spends its time — building and differencing three large `DISTINCT` sets keyed on two name columns — and wrong about the remedy: it replaced the `date_dim` joins with key ranges, which is not where the cost is. Their version leaves what is computed alone and fixes the order it is computed in.
+
+### 22. q70 — 5.5s at SF=8, 3.3s at SF=4, 1.5s at SF=2, 0.8s at SF=1
 
 **Optimized by Claude** — `queries/optimized/q70-sf4/query70_v1_nosubquery.sql`
 
@@ -194,239 +391,7 @@ candidate — it distinguishes a rollup NULL from a data NULL directly, which
 is exactly what the original idiom could not do — and it was not available
 to the rewrite that introduced the bug.
 
-### 3. q14 — 236.3s at SF=8, 33.4s at SF=4, 12.0s at SF=2, 5.2s at SF=1
-
-**Optimized by Aysha** — `queries/optimized/Aysha/q14/Query-14-A/q14_A_Optimized.sql` and `Query-14-B/Q14-B-Optimized.sql`
-
-Replaces the repeated `date_dim` joins with `MIN/MAX(d_date_sk)` ranges, turns the eligibility check into `EXISTS`, and computes the average as `SUM/COUNT` rather than materialising a large UNION first.
-
-Verified at SF=4 after her 2026-10-25 update: original 240.1s → 57.6s, **4.17x**, output byte-for-byte identical (202 rows). Those absolute figures are inflated — an unrelated process held the machine at load 11 during the run — but the passes are interleaved, so the ratio holds.
-
-**She fixed the `i_braknd_id` typo at source**, so `build-tuned.py` no longer has to patch it; the guard stays in place in case it returns. Her files also no longer carry the stray `explain` prefix that the build had been stripping. One correction is still applied: part B emits 8 columns where TPC-DS requires 12.
-
-Her update also re-enabled three `SET SESSION` lines — `join_buffer_size` 256M (above our standing 64M) and `tmp_table_size`/`max_heap_table_size` 512M (*below* our standing 1536M). A/B-ed at SF=4 with and without them: **1.03x, no measurable difference**, output identical. They are left in place rather than stripped, since they neither help nor hurt under the standing configuration.
-
-> **Correction applied:** part B emitted 8 columns; TPC-DS requires 12 (the ty_/ly_ key columns are repeated per year) - expanded, and its ORDER BY updated to the new aliases
-
-*split materialisation OFF: measured -17.0s at SF=4*
-
-### 4. q74 — 213.4s at SF=8, 45.0s at SF=4, 18.3s at SF=2, 10.0s at SF=1
-
-**Optimized by Nafiz** — `queries/optimized/Nafiz/tier5/q74/query74_BEST.sql`
-
-Wired in and verified identical at commit 942fa2f. No individual before/after timing was taken, so no speedup is quoted; its contribution shows in the suite total.
-
-### 5. q23 — 204.2s at SF=8, 74.0s at SF=4, 32.9s at SF=2, 15.3s at SF=1
-
-**Optimized by Claude** — `queries/optimized/q23-sf4/query23_v3_densekeys.sql`
-
-Was the most expensive query in the suite by a factor of three. `ANALYZE FORMAT=JSON` showed its `frequent_ss_items` CTE being split-materialised **55,882 times** in one branch and 28,222 in the other — 99.1s of the 208.1s the query spent under instrumentation.
-
-`split_materialized=off` was the wrong lever and had already measured +54.0s *slower*: materialising that CTE once meant grouping four years of `store_sales` on a 30-character varchar. The fix was to make the CTE cheap instead — drop the `item` join (its `substr(i_item_desc,1,30)` is functionally dependent on the unique `i_item_sk`, so it splits no group), swap `d_date` for `d_date_sk`, and order the GROUP BY to match `idx_ss_date_item_store_cover`.
-
-Verified at SF=4: original 160.7s → 44.7s, **3.60x**, output byte-for-byte identical. The three CTEs were checked individually as well, since q23 returns a NULL and no rows at this scale and the final answer alone proves nothing. See `report/26-the-last-eleven.md`.
-
-**Nafiz also optimized q23**, pushed separately — `queries/optimized/Nafiz/q23/`, **38.0x at SF=1** (54.293s → 1.427s) using five `TEMPORARY TABLE`s. Re-expressed as CTEs (temporary tables are not accepted here) and measured at SF=4, his approach is **2.1x slower** than the adopted rewrite: 53.9s against 111.8s, output identical. His pruning is not weak but *perfect* — 9 best customers and 0 candidate items at SF=4 — and MariaDB simply does not exploit it: the driving scan stays at 11,535,675 index entries either way, with an eq_ref probe added per row. Kept as `queries/optimized/q23-sf4/query23_v4_nafiz_cte.sql` with the measurement.
-
-### 6. q4 — 190.7s at SF=8, 67.3s at SF=4, 30.8s at SF=2, 12.6s at SF=1
-
-**Optimized by riccio** — `queries/optimized/q4/query4_BEST.sql`
-
-Aggregates the two years once per channel on narrow surrogate keys, rather than building the full year-over-year CTE three times.
-
-Verified at SF=4: original 61.8s → 18.4s, **3.4x**, output byte-for-byte identical.
-
-*split materialisation left ON: disabling it measured +14.6s (slower)*
-
-### 7. q11 — 144.0s at SF=8, 45.2s at SF=4, 20.5s at SF=2, 9.5s at SF=1
-
-**Optimized by Nafiz** — `queries/optimized/Nafiz/tier5/q11/query11_BEST.sql`
-
-Wired in and verified identical at commit 942fa2f. No individual before/after timing was taken, so no speedup is quoted; its contribution shows in the suite total.
-
-### 8. q51 — 130.2s at SF=8, 60.9s at SF=4, 19.7s at SF=2, 8.1s at SF=1
-
-**Optimized by riccio** — `queries/optimized/q51/query51_BEST.sql`
-
-Unifies the store and web daily series into one scan before the window functions, instead of building two full CTEs.
-
-Verified at SF=4: original 26.9s → 22.3s, **1.2x**, output byte-for-byte identical.
-
-### 9. q27 — 118.5s at SF=8, 10.2s at SF=4, 5.1s at SF=2, 2.4s at SF=1
-
-**Optimized by Aysha** — `queries/optimized/Aysha/q27/q27_Optimized.sql`
-
-Forces the join order so the demographics and date filters apply before `store_sales` is read.
-
-Verified at SF=4: original 5.2s → 6.4s, **0.8x**, output byte-for-byte identical.
-
-*split materialisation OFF: measured -3.7s at SF=4*
-
-### 10. q46 — 96.5s at SF=8, 13.6s at SF=4, 5.4s at SF=2, 2.2s at SF=1
-
-**Optimized by Claude** — `queries/optimized/q46-sf4/query46_v1_datefirst.sql`
-
-The same defect and the same fix as q68. Less headroom because q46's date predicate is less selective — the gain comes from the predicate, not from `STRAIGHT_JOIN` itself.
-
-Verified at SF=4: 13, 12, 12s → 7, 6, 6s, **1.9x**, output identical.
-
-### 11. q71 — 90.4s at SF=8, 10.6s at SF=4, 1.7s at SF=2, 0.9s at SF=1
-
-**Not optimized.** Replacing the three `date_dim` joins with key ranges measured **0.77x, slower**. The cost is the full scan of `item` to apply `i_manager_id = 1` — there is no index on that column — and the three-way union feeding a filesort; neither is touched.
-
-Separately, this query's **output order is not deterministic**: `order by ext_price desc, i_brand_id` is not a total order, and 3,948 result rows collapse to 3,934 distinct sort keys, leaving 24 rows free to permute. A byte-for-byte diff of q71 can therefore report a difference between two correct runs, which is why the suite hashes both `md5` and `md5_sorted`. Kept in `queries/optimized/q71-sf4/`.
-
-### 12. q22 — 80.6s at SF=8, 32.0s at SF=4, 11.9s at SF=2, 7.3s at SF=1
-
-**Optimized by Claude** — `queries/optimized/q22/query22_BEST.sql`
-
-Narrows the `date_dim` range and drives from `inventory` through a covering index rather than joining `date_dim` first.
-
-Verified at SF=4: original 28.5s → 22.9s, **1.2x**, output byte-for-byte identical.
-
-*split materialisation at default: -1.3s is inside this host's noise*
-
-### 13. q78 — 60.0s at SF=8, 31.9s at SF=4, 12.2s at SF=2, 4.5s at SF=1
-
-**Optimized by Claude** — `queries/optimized/q78/query78_BEST.sql`
-
-Filters each of the three channels by year before the union, using a covering index on `store_sales`.
-
-Verified at SF=4: original 28.1s → 19.9s, **1.4x**, output byte-for-byte identical.
-
-*split materialisation left ON: disabling it measured +13.9s (slower)*
-
-### 14. q57 — 53.1s at SF=8, 25.8s at SF=4, 5.8s at SF=2, 2.9s at SF=1
-
-**Optimized by Nafiz** — `queries/optimized/Nafiz/tier5/q57/query57_BEST.sql`
-
-Wired in and verified identical at commit 942fa2f. No individual before/after timing was taken, so no speedup is quoted; its contribution shows in the suite total.
-
-### 15. q68 — 51.8s at SF=8, 8.1s at SF=4, 2.2s at SF=2, 1.1s at SF=1
-
-**Optimized by Claude** — `queries/optimized/q68-sf4/query68_v1_datefirst.sql`
-
-`STRAIGHT_JOIN` from `date_dim` so the selective date filter drives the join instead of the plan scanning `store_sales` and probing the dimension per row.
-
-Verified at SF=4: 12, 11, 11s → 2, 3, 2s, **4.9x**, output identical.
-
-### 16. q77 — 48.2s at SF=8, 14.2s at SF=4, 3.2s at SF=2, 1.5s at SF=1
-
-**Not optimized.** A rewrite replacing all six `date_dim` joins with key ranges was measured at **0.73x on best-of-3**, with means of 6.8s against 7.0s — a wash inside very large variance (the original spanned 3.3–11.9s over three passes).
-
-The real cost is elsewhere: the plan reaches `store_sales` through `idx_ss_date_cust`, which carries neither `ss_store_sk` nor the two profit columns, so every qualifying row costs a base-table fetch. A covering index would fix it, but no DDL was possible under the read-only analysis policy, and adding indexes to this schema has backfired before. Kept in `queries/optimized/q77-sf4/`.
-
-### 17. q47 — 47.3s at SF=8, 20.6s at SF=4, 9.0s at SF=2, 4.1s at SF=1
-
-**Optimized by Aysha** — `queries/optimized/Aysha/q47/q47_Optimized_3secs.sql`
-
-Joins `date_dim` first, replaces the three-way self-join on `rn` with `LAG`/`LEAD` so `v1` is built once instead of three times, and pre-aggregates on integer keys.
-
-Verified at SF=4: original 27.5s → 9.1s, **3.0x**, output byte-for-byte identical.
-
-> **Correction applied:** named the select list: SELECT * had sum_sales and avg_monthly_sales transposed
-
-### 18. q7 — 43.9s at SF=8, 11.3s at SF=4, 5.7s at SF=2, 2.2s at SF=1
-
-**Optimized by Nafiz** — `queries/optimized/Nafiz/tier4/q7/query7_BEST.sql`
-
-Wired in and verified identical at commit 942fa2f. No individual before/after timing was taken, so no speedup is quoted; its contribution shows in the suite total.
-
-### 19. q5 — 41.3s at SF=8, 13.1s at SF=4, 7.1s at SF=2, 1.2s at SF=1
-
-**Optimized by riccio** — `queries/optimized/q5/query5_BEST.sql`
-
-Pushes the date filter into each of the six UNION branches, so every fact table is range-scanned instead of fully scanned then filtered.
-
-Verified at SF=4: original 32.9s → 4.0s, **8.2x**, output byte-for-byte identical.
-
-*split materialisation OFF: measured -8.9s at SF=4*
-
-### 20. q72 — 34.1s at SF=8, 23.4s at SF=4, 3.1s at SF=2, 1.4s at SF=1
-
-**Optimized by Claude** — `queries/optimized/q72/query72_BEST.sql`
-
-Fixes the join order with `JOIN_PREFIX` so the date dimensions filter before `catalog_sales` and `inventory` are reached.
-
-Verified at SF=4: original 40.1s → 10.1s, **4.0x**, output byte-for-byte identical.
-
-*split materialisation at default: -1.6s is inside this host's noise*
-
-### 21. q59 — 21.3s at SF=8, 10.5s at SF=4, 4.1s at SF=2, 2.0s at SF=1
-
-**Optimized by Claude** — `queries/optimized/q59-sf4/query59_BEST.sql`
-
-Two changes: `split_materialized=off`, because one of its two CTE references was being re-materialised 7,665 times; and bounding the CTE to the 105 weeks the outer query can read, out of 262.
-
-Verified at SF=4: original 162.5s → 4.4s, **36.6x**, output byte-for-byte identical.
-
-*split materialisation OFF: measured -138.1s at SF=4*
-
-### 22. q2 — 18.3s at SF=8, 10.4s at SF=4, 5.6s at SF=2, 4.2s at SF=1
-
-**Optimized by Claude** — `queries/optimized/q2/query2_BEST.sql`
-
-Bounds the `wscs` CTE to the needed date range instead of unioning all of store, catalog and web sales across every year.
-
-Verified at SF=4: original 13.1s → 4.9s, **2.7x**, output byte-for-byte identical.
-
-*split materialisation OFF: measured -9.5s at SF=4*
-
-### 23. q38 — 16.1s at SF=8, 7.1s at SF=4, 3.3s at SF=2, 1.7s at SF=1
-
-**Not optimized.** Aysha's file contains only `CREATE INDEX` statements, so there is no query to substitute; its indexes are in `sql/14_contributed_indexes.sql`.
-
-A rewrite was written and measured — intersecting on `d_date_sk` instead of `d_date`, which is exact because the two are a bijection on `date_dim` — and it was **0.80x, slower**. The per-row `date_dim` probes it removes are not where q38 spends its time; the cost is building and intersecting three large `DISTINCT` sets keyed on two name columns. Kept with its measurements in `queries/optimized/q38-sf4/`.
-
-### 24. q97 — 11.6s at SF=8, 6.5s at SF=4, 2.7s at SF=2, 1.2s at SF=1
-
-**Optimized by Aysha**, adapted — `queries/optimized/Aysha/q97/query97_BEST_no_temp_tables.sql`
-
-Aysha's insight is the valuable part: the original emulates a FULL OUTER JOIN as `(LEFT JOIN) UNION ALL (RIGHT JOIN ... WHERE a IS NULL)`, reading both sides twice. One LEFT JOIN suffices if the catalog-only count is derived arithmetically — `catalog_only = (rows in csci) - (rows of csci that matched)` — which is exact because both CTEs `GROUP BY (customer_sk, item_sk)`, so each pair occurs at most once per side.
-
-Her file built the two sets as **temporary tables**, which are not acceptable for this project, so they are expressed as CTEs here. Nothing else of hers changed.
-
-> **Defect found and fixed in this pass.** The arithmetic needs `where customer_sk is not null` in that count, and the first version omitted it. `ss_customer_sk` and `cs_bill_customer_sk` are nullable, so both CTEs contain rows grouped under a NULL customer — 2,569 of them in `csci` at SF=4. The original scores those as zero in all three columns (its case expressions all test `is not null`, and an equality join never matches NULL), so a bare `count(*)` added all 2,569 to `catalog_only`: **1,141,754 instead of 1,139,185**. Caught by `gen-25.py` comparing `md5_sorted` against the previous suite run.
-
-Verified at SF=4 after the fix: original 7.3s → 3.8s, **1.92x**, output byte-for-byte identical.
-
-### 25. q8 — 11.1s at SF=8, 2.6s at SF=4, 1.5s at SF=2, 0.5s at SF=1
-
-**Optimized by Nafiz** — `queries/optimized/Nafiz/tier4/q8/query8_BEST.sql`
-
-Wired in and verified identical at commit 942fa2f. No individual before/after timing was taken, so no speedup is quoted; its contribution shows in the suite total.
-
-### 26. q65 — 10.2s at SF=8, 3.2s at SF=4, 0.9s at SF=2, 0.4s at SF=1
-
-**Optimized by a classmate** — `queries/optimized/q65/query65_BEST.sql`
-
-One store/item aggregation instead of the duplicated derived table, a full-store window average, and early date-key filtering.
-
-Measured head to head at SF=4 against the rewrite attempted here, three interleaved passes with identical output (101 rows): **2.6, 2.7, 2.8s against 1.6, 1.7, 1.8s — 1.62x**, winning every pass.
-
-That is the right outcome. The attempt in `queries/optimized/q65-sf4/` measured **0.97x**, no change, because its premise was wrong: MariaDB already materialises the duplicated derived table once, so naming it as a CTE told the optimizer nothing it had not already worked out. Their version attacks the aggregation itself.
-
-Their own README measures on a very different machine — Ryzen 5 3500U, 6.7 GiB RAM, MariaDB 10.11.14, 2 GiB pool, primary keys only — where the original takes 91.7s against 3.3s here. Those figures do not transfer; the 1.62x above was measured in this environment.
-
-### 27. q39 — 7.6s at SF=8, 2.6s at SF=4, 1.1s at SF=2, 0.8s at SF=1
-
-**Optimized by riccio** — `queries/optimized/q39/query39_BEST.sql`
-
-Keeps each grouped inventory result ahead of its dimension lookups and keeps the two statements independent, so neither shares a materialised temp.
-
-Verified at SF=4: original 3.2s → 1.2s, **2.8x**, output byte-for-byte identical.
-
-### 28. q87 — 7.3s at SF=8, 3.6s at SF=4, 0.9s at SF=2, 0.5s at SF=1
-
-**Optimized by a classmate** — `queries/optimized/q87/query87_BEST.sql`
-
-`STRAIGHT_JOIN` on each of the three `DISTINCT` branches, fixing the join order rather than changing what is computed.
-
-Measured head to head at SF=4 against the rewrite attempted here, three interleaved passes with identical output: **3.9, 3.9, 4.6s against 1.1, 1.1, 1.2s — 3.55x**, winning every pass.
-
-The attempt in `queries/optimized/q87-sf4/` measured **0.80x**, slower. Its diagnosis was right about where q87 spends its time — building and differencing three large `DISTINCT` sets keyed on two name columns — and wrong about the remedy: it replaced the `date_dim` joins with key ranges, which is not where the cost is. Their version leaves what is computed alone and fixes the order it is computed in.
-
-### 29. q35 — 5.5s at SF=8, 3.9s at SF=4, 2.9s at SF=2, 2.1s at SF=1
+### 23. q35 — 5.4s at SF=8, 5.6s at SF=4, 2.6s at SF=2, 2.0s at SF=1
 
 **Optimized by Claude** — `queries/optimized/q35-sf4/query35_v1_keydate.sql`
 
@@ -436,7 +401,15 @@ The rewrite replaces the `date_dim` join inside each of the three `EXISTS` subqu
 
 Verified at SF=4: original 1.7s → 1.3s, **1.31x** (2.4x on a cold pass), output byte-for-byte identical.
 
-### 30. q43 — 5.5s at SF=8, 4.0s at SF=4, 2.0s at SF=2, 1.1s at SF=1
+### 24. q39 — 5.0s at SF=8, 3.4s at SF=4, 0.9s at SF=2, 0.6s at SF=1
+
+**Optimized by riccio** — `queries/optimized/q39/query39_BEST.sql`
+
+Keeps each grouped inventory result ahead of its dimension lookups and keeps the two statements independent, so neither shares a materialised temp.
+
+Verified at SF=4: original 3.2s → 1.2s, **2.8x**, output byte-for-byte identical.
+
+### 25. q43 — 4.9s at SF=8, 4.5s at SF=4, 1.9s at SF=2, 1.2s at SF=1
 
 **Optimized by Aysha** — `queries/optimized/Aysha/q43/q43_Optimized.sql`
 
@@ -446,7 +419,15 @@ Verified at SF=4: original 2.5s → 1.9s, **1.3x**, output byte-for-byte identic
 
 > **Correction applied:** removed index DDL: create index idx_date_year_sk_day on date_dim (d_year, d_dat; create index idx_ss_date_store_price on store_sales (ss_sold; analyze table date_dim, store_sales
 
-### 31. q31 — 4.4s at SF=8, 2.4s at SF=4, 1.0s at SF=2, 0.5s at SF=1
+### 26. q46 — 3.6s at SF=8, 3.6s at SF=4, 1.5s at SF=2, 0.6s at SF=1
+
+**Optimized by Claude** — `queries/optimized/q46-sf4/query46_v1_datefirst.sql`
+
+The same defect and the same fix as q68. Less headroom because q46's date predicate is less selective — the gain comes from the predicate, not from `STRAIGHT_JOIN` itself.
+
+Verified at SF=4: 13, 12, 12s → 7, 6, 6s, **1.9x**, output identical.
+
+### 27. q31 — 3.4s at SF=8, 2.4s at SF=4, 1.1s at SF=2, 0.6s at SF=1
 
 **Optimized by riccio** — `queries/optimized/q31/query31_BEST.sql`
 
@@ -454,7 +435,17 @@ Filters each quarter early and pivots the three store/web comparisons into one p
 
 Verified at SF=4: original 1.2s → 1.0s, **1.2x**, output byte-for-byte identical.
 
-### 32. q21 — 2.8s at SF=8, 1.4s at SF=4, 0.6s at SF=2, 0.3s at SF=1
+### 28. q74 — 2.9s at SF=8, 2.3s at SF=4, 0.9s at SF=2, 0.9s at SF=1
+
+**Optimized by Nafiz** — `queries/optimized/Nafiz/q74-SF4/query74_BEST.sql`
+
+The largest single win in this round. Four new indexes let both channels' year totals be read index-only and the customer identity resolved late, so the year-over-year self-join runs over a small aggregated relation instead of the fact tables.
+
+Adopted 2026-11-05 after measuring it against the previously adopted query with the new indexes present on both sides, interleaved best-of-3 at SF=4: 40.1s -> 0.6s, **64.4x**, output byte-for-byte identical.
+
+*Contribution to the SF=4 suite: -39.5s.*
+
+### 29. q21 — 2.3s at SF=8, 1.2s at SF=4, 0.6s at SF=2, 0.3s at SF=1
 
 **Optimized by Aysha** — `queries/optimized/Aysha/q21/query21_optimized.sql`
 
@@ -462,43 +453,29 @@ Stops the derived table being merged, forces the join order so `date_dim` and `i
 
 Verified at SF=4: original 2.1s → 0.6s, **3.5x**, output byte-for-byte identical.
 
-### 33. q37 — 2.0s at SF=8, 0.9s at SF=4, 0.0s at SF=2, 0.0s at SF=1
-
-**Optimized by Nafiz** — `queries/optimized/Nafiz/tier4/q37/query37_BEST.sql`
-
-Wired in and verified identical at commit 942fa2f. No individual before/after timing was taken, so no speedup is quoted; its contribution shows in the suite total.
-
-### 34. q66 — 1.8s at SF=8, 1.0s at SF=4, 0.4s at SF=2, 0.2s at SF=1
-
-**Not optimized.** Two rewrites were measured. Aggregating on `ws_warehouse_sk`/`cs_warehouse_sk` and joining `warehouse` afterwards is **1.01x** — a dead heat, because the inner aggregation produces about one group per warehouse and narrowing a GROUP BY key pays in proportion to the number of groups, not rows.
-
-Adding a redundant date range on top of that made it **0.91x, slower**. That predicate is genuinely redundant — every row it admits the join already admitted — so it reads like a free hint, and it is not. Kept in `queries/optimized/q66-sf4/`.
-
-### 35. q10 — 1.4s at SF=8, 0.7s at SF=4, 0.3s at SF=2, 0.2s at SF=1
+### 30. q10 — 2.2s at SF=8, 1.5s at SF=4, 0.6s at SF=2, 0.3s at SF=1
 
 **Optimized by Nafiz** — `queries/optimized/Nafiz/tier4/q10/query10_BEST.sql`
 
 Wired in and verified identical at commit 942fa2f. No individual before/after timing was taken, so no speedup is quoted; its contribution shows in the suite total.
 
-### 36. q58 — 1.1s at SF=8, 0.6s at SF=4, 0.3s at SF=2, 0.1s at SF=1
+### 31. q37 — 1.7s at SF=8, 1.2s at SF=4, 0.0s at SF=2, 0.0s at SF=1
 
-**Not optimized.** A rewrite resolving the week of 1998-03-14 to a key range at authoring time — replacing a join, an `IN` subquery and a scalar subquery over `date_dim`, three times over — measured **1.00x**. At 0.6s warm there was nothing to recover. Kept as a verified-equivalent alternative in `queries/optimized/q58-sf4/`.
-
-### 37. q33 — 0.9s at SF=8, 0.5s at SF=4, 0.2s at SF=2, 0.1s at SF=1
-
-**Optimized by Nafiz** — `queries/optimized/Nafiz/tier4/q33/query33_BEST.sql`
+**Optimized by Nafiz** — `queries/optimized/Nafiz/tier4/q37/query37_BEST.sql`
 
 Wired in and verified identical at commit 942fa2f. No individual before/after timing was taken, so no speedup is quoted; its contribution shows in the suite total.
 
-### 38. q88 — 0.8s at SF=8, 0.6s at SF=4, 0.2s at SF=2, 0.1s at SF=1
+### 32. q58 — 1.1s at SF=8, 0.5s at SF=4, 0.3s at SF=2, 0.1s at SF=1
 
-**Optimized by Claude** — `queries/optimized/q88/query88_BEST.sql`
+**Not optimized.** A rewrite resolving the week of 1998-03-14 to a key range at authoring time — replacing a join, an `IN` subquery and a scalar subquery over `date_dim`, three times over — measured **1.00x**. At 0.6s warm there was nothing to recover. Kept as a verified-equivalent alternative in `queries/optimized/q58-sf4/`.
 
-Collapses the eight separate time-bucket subqueries into one pass of `sum(case when ...)` over a single covering-index scan.
+### 33. q66 — 1.1s at SF=8, 0.9s at SF=4, 0.4s at SF=2, 0.2s at SF=1
 
-Verified at SF=4: original 0.9s → 0.1s, **6.2x**, output byte-for-byte identical.
+**Not optimized.** Two rewrites were measured. Aggregating on `ws_warehouse_sk`/`cs_warehouse_sk` and joining `warehouse` afterwards is **1.01x** — a dead heat, because the inner aggregation produces about one group per warehouse and narrowing a GROUP BY key pays in proportion to the number of groups, not rows.
 
-### 39. q54 — 0.7s at SF=8, 0.5s at SF=4, 0.2s at SF=2, 0.1s at SF=1
+Adding a redundant date range on top of that made it **0.91x, slower**. That predicate is genuinely redundant — every row it admits the join already admitted — so it reads like a free hint, and it is not. Kept in `queries/optimized/q66-sf4/`.
+
+### 34. q54 — 1.0s at SF=8, 0.4s at SF=4, 0.2s at SF=2, 0.1s at SF=1
 
 **Optimized by Aysha** — `queries/optimized/Aysha/q54/q54_Optimized_V2.sql`
 
@@ -506,7 +483,47 @@ Filters each fact table before the union, dedups before joining `customer`, and 
 
 Verified at SF=4: original 6.3s → 0.2s — ** EMPTY/ERROR **.
 
-### 40. q82 — 0.7s at SF=8, 0.1s at SF=4, 0.1s at SF=2, 0.0s at SF=1
+### 35. q88 — 1.0s at SF=8, 0.6s at SF=4, 0.2s at SF=2, 0.1s at SF=1
+
+**Optimized by Claude** — `queries/optimized/q88/query88_BEST.sql`
+
+Collapses the eight separate time-bucket subqueries into one pass of `sum(case when ...)` over a single covering-index scan.
+
+Verified at SF=4: original 0.9s → 0.1s, **6.2x**, output byte-for-byte identical.
+
+### 36. q77 — 0.7s at SF=8, 0.4s at SF=4, 0.2s at SF=2, 0.1s at SF=1
+
+**Not optimized.** A rewrite replacing all six `date_dim` joins with key ranges was measured at **0.73x on best-of-3**, with means of 6.8s against 7.0s — a wash inside very large variance (the original spanned 3.3–11.9s over three passes).
+
+The real cost is elsewhere: the plan reaches `store_sales` through `idx_ss_date_cust`, which carries neither `ss_store_sk` nor the two profit columns, so every qualifying row costs a base-table fetch. A covering index would fix it, but no DDL was possible under the read-only analysis policy, and adding indexes to this schema has backfired before. Kept in `queries/optimized/q77-sf4/`.
+
+### 37. q8 — 0.6s at SF=8, 0.3s at SF=4, 0.5s at SF=2, 0.3s at SF=1
+
+**Optimized by Nafiz** — `queries/optimized/Nafiz/tier4/q8/query8_BEST.sql`
+
+Wired in and verified identical at commit 942fa2f. No individual before/after timing was taken, so no speedup is quoted; its contribution shows in the suite total.
+
+### 38. q33 — 0.4s at SF=8, 0.3s at SF=4, 0.1s at SF=2, 0.1s at SF=1
+
+**Optimized by Nafiz** — `queries/optimized/Nafiz/q33-SF4/query33_BEST.sql`
+
+Defers the `item` join until after the per-channel aggregation.
+
+Adopted 2026-11-05 after measuring it against the previously adopted query with the new indexes present on both sides, interleaved best-of-3 at SF=4: 0.4s -> 0.2s, **1.56x**, output byte-for-byte identical.
+
+*Contribution to the SF=4 suite: -0.2s.*
+
+### 39. q7 — 0.2s at SF=8, 0.2s at SF=4, 0.2s at SF=2, 0.1s at SF=1
+
+**Optimized by Nafiz** — `queries/optimized/Nafiz/q7-SF4/query7_BEST.sql`
+
+`STRAIGHT_JOIN` with `FORCE INDEX` on both `item` and `store_sales`, driving from a covering index that carries the four measure columns the averages need, so the fact table is never visited.
+
+Adopted 2026-11-05 after measuring it against the previously adopted query with the new indexes present on both sides, interleaved best-of-3 at SF=4: 9.9s -> 0.2s, **47.0x**, output byte-for-byte identical.
+
+*Contribution to the SF=4 suite: -9.7s.*
+
+### 40. q82 — 0.2s at SF=8, 0.1s at SF=4, 0.1s at SF=2, 0.1s at SF=1
 
 **Optimized by Claude** — `queries/optimized/q82-sf4/query82_v1_exists.sql`
 
@@ -520,10 +537,10 @@ Verified at SF=4: original 0.8s → 0.1s, **8.00x** — the largest ratio in the
 
 | | queries | SF=8 total | share |
 |---|---:|---:|---:|
-| optimized | 35 | 2359.9s | 94% |
-| not optimized | 5 | 157.6s | 6% |
+| optimized | 35 | 1402.4s | 92% |
+| not optimized | 5 | 114.6s | 8% |
 
-Still on the TPC-DS original: q71, q77, q38, q66, q58. Every one of those was rewritten and measured in `report/26-the-last-eleven.md`; none of those rewrites measured faster, so the original is what runs.
+Still on the TPC-DS original: q71, q38, q58, q66, q77. Every one of those was rewritten and measured in `report/26-the-last-eleven.md`; none of those rewrites measured faster, so the original is what runs.
 
 ### What to look at next
 
@@ -564,21 +581,46 @@ Totals, and the growth between each step:
 
 | | SF=1 | SF=2 | SF=4 | SF=8 |
 |---|---:|---:|---:|---:|
-| total | 132.2s | 278.5s | 703.4s | 2517.5s |
-| vs previous | — | 2.11x | 2.53x | 3.58x |
+| total | 124.0s | 234.3s | 551.9s | 1517.0s |
+| vs previous | — | 1.89x | 2.36x | 2.75x |
 
 The data grows 2x at each step, so a total growing faster than 2x means the suite is degrading superlinearly.
+
+### Against the previous configuration
+
+The measurement before this one ran the earlier query set against 95
+indexes. This one runs seven newly adopted rewrites against 118 — the same
+95 plus the 23 those rewrites need. Both halves contribute, and the gain
+grows with scale:
+
+| | SF=1 | SF=2 | SF=4 | SF=8 |
+|---|---:|---:|---:|---:|
+| 95 indexes, previous queries | 139.8s | 291.2s | 741.2s | 2692.2s |
+| **118 indexes, 7 rewrites adopted** | **125.4s** | **241.9s** | **579.5s** | **1599.6s** |
+| | −10.3% | −16.9% | −21.8% | **−40.6%** |
+
+Measured per query at SF=4, the 23 indexes are worth about **−103s** on
+their own — they speed up queries nobody rewrote — and the seven rewrites
+about **−91s** on top of that. Attributing the whole gain to either half
+would be wrong.
+
+The indexes cost **4.63 GB** and 477s to build at SF=4.
+
+Three candidates were measured and **not** adopted. q46's returns 0 rows
+where the adopted query returns 101, so it is wrong rather than fast. q8's
+2.88x is on output that is identically *empty* at SF=4, which proves
+nothing. q10 measured 1.04x, inside noise.
 
 ### The SF=8 / SF=1 ratio
 
 | query | ratio | |
 |---|---:|---|
-| q71 | 100.4x | not optimized |
-| q70 | 70.5x | Claude |
-| q27 | 49.4x | Aysha |
-| q68 | 47.1x | Claude |
-| q14 | 45.4x | Aysha |
-| q35 | **2.6x** | the flattest — scales best of the 38 |
+| q71 | 92.0x | not optimized |
+| q27 | 47.8x | Aysha |
+| q68 | 39.3x | Claude |
+| q14 | 38.5x | Aysha |
+| q4 | 20.3x | Aysha |
+| q7 | **2.0x** | the flattest — scales best of the 39 |
 
 A high ratio means the query degrades faster than the data grows, usually because its working set stops fitting in the buffer pool.
 

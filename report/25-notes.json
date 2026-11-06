@@ -4,16 +4,16 @@
   "body": "**Optimized by Claude** — `queries/optimized/q2/query2_BEST.sql`\n\nBounds the `wscs` CTE to the needed date range instead of unioning all of store, catalog and web sales across every year.\n\nVerified at SF=4: original 13.1s → 4.9s, **2.7x**, output byte-for-byte identical.\n\n*split materialisation OFF: measured -9.5s at SF=4*"
  },
  "4": {
-  "author": "riccio",
-  "body": "**Optimized by riccio** — `queries/optimized/q4/query4_BEST.sql`\n\nAggregates the two years once per channel on narrow surrogate keys, rather than building the full year-over-year CTE three times.\n\nVerified at SF=4: original 61.8s → 18.4s, **3.4x**, output byte-for-byte identical.\n\n*split materialisation left ON: disabling it measured +14.6s (slower)*"
+  "author": "Aysha",
+  "body": "**Optimized by Aysha** — `queries/optimized/Aysha/q4/q4-Optimized.sql`\n\nResolves the 2001/2002 year boundaries to `d_date_sk` values once into user variables, then aggregates each channel in a single pass with `CASE` instead of building the year-over-year CTE twice per channel. `HAVING` prunes customers with no first-year sales before any join.\n\nAdopted 2026-11-05 after measuring it against the previously adopted query with the new indexes present on both sides, interleaved best-of-3 at SF=4: 32.2s -> 5.7s, **5.66x**, output byte-for-byte identical.\n\n*Contribution to the SF=4 suite: -26.5s.*"
  },
  "5": {
-  "author": "riccio",
-  "body": "**Optimized by riccio** — `queries/optimized/q5/query5_BEST.sql`\n\nPushes the date filter into each of the six UNION branches, so every fact table is range-scanned instead of fully scanned then filtered.\n\nVerified at SF=4: original 32.9s → 4.0s, **8.2x**, output byte-for-byte identical.\n\n*split materialisation OFF: measured -8.9s at SF=4*"
+  "author": "Aysha",
+  "body": "**Optimized by Aysha** — `queries/optimized/Aysha/q5/q5-OptimizedforDocker.sql`\n\nPushes the date window into each returns branch and reads them through three new covering indexes (`idx_sr_date`, `idx_cr_date`, `idx_wr_date`), so each returns table is range-scanned on its own date key rather than scanned and filtered.\n\nAdopted 2026-11-05 after measuring it against the previously adopted query with the new indexes present on both sides, interleaved best-of-3 at SF=4: 1.3s -> 0.6s, **2.24x**, output byte-for-byte identical.\n\n*Contribution to the SF=4 suite: -0.7s.*"
  },
  "7": {
   "author": "Nafiz",
-  "body": "**Optimized by Nafiz** — `queries/optimized/Nafiz/tier4/q7/query7_BEST.sql`\n\nWired in and verified identical at commit 942fa2f. No individual before/after timing was taken, so no speedup is quoted; its contribution shows in the suite total."
+  "body": "**Optimized by Nafiz** — `queries/optimized/Nafiz/q7-SF4/query7_BEST.sql`\n\n`STRAIGHT_JOIN` with `FORCE INDEX` on both `item` and `store_sales`, driving from a covering index that carries the four measure columns the averages need, so the fact table is never visited.\n\nAdopted 2026-11-05 after measuring it against the previously adopted query with the new indexes present on both sides, interleaved best-of-3 at SF=4: 9.9s -> 0.2s, **47.0x**, output byte-for-byte identical.\n\n*Contribution to the SF=4 suite: -9.7s.*"
  },
  "8": {
   "author": "Nafiz",
@@ -25,7 +25,7 @@
  },
  "11": {
   "author": "Nafiz",
-  "body": "**Optimized by Nafiz** — `queries/optimized/Nafiz/tier5/q11/query11_BEST.sql`\n\nWired in and verified identical at commit 942fa2f. No individual before/after timing was taken, so no speedup is quoted; its contribution shows in the suite total."
+  "body": "**Optimized by Nafiz** — `queries/optimized/Nafiz/q11-SF4/query11_BEST.sql`\n\nCovering indexes on both `store_sales` and `web_sales` keyed to the year-total aggregation, so each channel's CTE is satisfied from the index.\n\nAdopted 2026-11-05 after measuring it against the previously adopted query with the new indexes present on both sides, interleaved best-of-3 at SF=4: 19.0s -> 6.5s, **2.93x**, output byte-for-byte identical.\n\n*Contribution to the SF=4 suite: -12.5s.*"
  },
  "14": {
   "author": "Aysha",
@@ -53,7 +53,7 @@
  },
  "33": {
   "author": "Nafiz",
-  "body": "**Optimized by Nafiz** — `queries/optimized/Nafiz/tier4/q33/query33_BEST.sql`\n\nWired in and verified identical at commit 942fa2f. No individual before/after timing was taken, so no speedup is quoted; its contribution shows in the suite total."
+  "body": "**Optimized by Nafiz** — `queries/optimized/Nafiz/q33-SF4/query33_BEST.sql`\n\nDefers the `item` join until after the per-channel aggregation.\n\nAdopted 2026-11-05 after measuring it against the previously adopted query with the new indexes present on both sides, interleaved best-of-3 at SF=4: 0.4s -> 0.2s, **1.56x**, output byte-for-byte identical.\n\n*Contribution to the SF=4 suite: -0.2s.*"
  },
  "35": {
   "author": "Claude",
@@ -93,7 +93,7 @@
  },
  "57": {
   "author": "Nafiz",
-  "body": "**Optimized by Nafiz** — `queries/optimized/Nafiz/tier5/q57/query57_BEST.sql`\n\nWired in and verified identical at commit 942fa2f. No individual before/after timing was taken, so no speedup is quoted; its contribution shows in the suite total."
+  "body": "**Optimized by Nafiz** — `queries/optimized/Nafiz/q57-SF4/query57_BEST.sql`\n\nA covering index on `catalog_sales` for the window-function CTE.\n\nAdopted 2026-11-05 after measuring it against the previously adopted query with the new indexes present on both sides, interleaved best-of-3 at SF=4: 9.0s -> 7.1s, **1.28x**, output byte-for-byte identical.\n\n*Contribution to the SF=4 suite: -1.9s.*"
  },
  "58": {
   "author": "",
@@ -133,7 +133,7 @@
  },
  "74": {
   "author": "Nafiz",
-  "body": "**Optimized by Nafiz** — `queries/optimized/Nafiz/tier5/q74/query74_BEST.sql`\n\nWired in and verified identical at commit 942fa2f. No individual before/after timing was taken, so no speedup is quoted; its contribution shows in the suite total."
+  "body": "**Optimized by Nafiz** — `queries/optimized/Nafiz/q74-SF4/query74_BEST.sql`\n\nThe largest single win in this round. Four new indexes let both channels' year totals be read index-only and the customer identity resolved late, so the year-over-year self-join runs over a small aggregated relation instead of the fact tables.\n\nAdopted 2026-11-05 after measuring it against the previously adopted query with the new indexes present on both sides, interleaved best-of-3 at SF=4: 40.1s -> 0.6s, **64.4x**, output byte-for-byte identical.\n\n*Contribution to the SF=4 suite: -39.5s.*"
  },
  "77": {
   "author": "",

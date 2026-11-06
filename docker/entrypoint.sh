@@ -311,11 +311,21 @@ if [[ "$PROFILE" == smoke ]]; then
   note "smoke skips secondary-index creation and pruning (dedicated volume by default)"
 else
 
-# DEFAULT: the full historical set (sql/05, 11, 14).  It is the fastest
-# configuration measured at SF=4 by a wide margin: 735.2-805.8s in the
-# container against 1487.0s when the 129 unread indexes were dropped.
-# (491.4s also appears in older notes -- that was the macOS host, not this
-# container, and the two are not comparable.)
+# DEFAULT: PRUNE_INDEXES=1, which builds 118 indexes -- the 189 defined in
+# sql/05, 11, 14 and 15, minus the 71 that no query plan mentions at any
+# scale factor.  That is the measured recommendation:
+#
+#   SF=1  139.8s -> 125.4s      SF=2  291.2s -> 241.9s
+#   SF=4  741.2s -> 579.5s      (-21.8%)
+#
+# against the previous 95-index set with the older query set.  Both halves
+# contribute: at SF=4 the 23 added indexes are worth about -103s on their own
+# and the seven adopted rewrites about -91s on top.
+#
+# PRUNE_INDEXES=0 builds all 189.  It is slower and about 6 GB larger: the 71
+# are not merely unread, no plan at either scale factor mentions them, which
+# is a stronger test -- see report/28.  Dropping on the weaker "never read"
+# test took SF=4 from 735.2s to 1487.0s, which is why that list is not used.
 #
 # That regression is the finding, not a mishap.  "This index was read" and
 # "the optimizer needs this index to cost a good plan" are different things.
