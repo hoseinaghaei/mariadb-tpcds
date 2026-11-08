@@ -24,6 +24,34 @@ query candidates, measurement protocol and remaining submission work.
 Everything runs in a Linux container; the repository is mounted read-only, so
 a run cannot modify it. Results land in `./results/`.
 
+### One command, any operating system
+
+```
+python benchmark.py --scale 4
+```
+
+Windows, macOS or Linux. **Docker is the only prerequisite** — MariaDB, the
+TPC-DS toolkit and every dependency live inside the container, so the host
+needs no database, no compiler and no Python packages.
+
+It generates the data, loads it, builds the indexes, runs the 40 tier-4/5
+queries and writes a report. Scale factor 1, 2, 4 and 8 have all been
+measured; the first run at a scale generates and loads the data, later runs
+at the same scale reuse it.
+
+| output | |
+|---|---|
+| `results/sf<N>/REPORT.md` | every query's time, its share of the run, and the total |
+| `results/sf<N>/report.csv` | the same, for a spreadsheet |
+| `results/sf<N>/tuned/` | per-query JSON including answer checksums |
+
+`--fresh` rebuilds from scratch, `--results DIR` writes elsewhere. The
+script checks Docker's memory and disk against what the scale factor needs
+*before* starting, and says which setting to change if either is short.
+
+The bash entry point below remains for the shell-based workflows; it runs
+the same pipeline.
+
 ```sh
 ./reproduce.sh smoke      # low-memory setup/execution check: 1G pool, four queries
 ./reproduce.sh            # quick: SF=1, 8G pool, 40 selected queries

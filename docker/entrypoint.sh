@@ -738,4 +738,16 @@ else:
 print(f"\nPer-query JSON and logs are in {res}")
 PY
 
+# The professor's report: per-query times and the total, written here rather
+# than on the host so there is one implementation instead of one per OS.
+if [[ -f "$PROJECT/docker/report.py" ]]; then
+  say "Report"
+  # TUNED selects which tag ran: "tuned", "baseline", or both.  Report the
+  # tuned one when it exists, since that is the configuration being measured.
+  RTAG=tuned
+  [[ -d "$RESULTS/tuned" ]] || RTAG=baseline
+  python3 "$PROJECT/docker/report.py" "$RESULTS" "$RTAG" "$SCALE" || \
+    note "report generation failed (the raw results are still in $RESULTS)"
+fi
+
 say "Done"
