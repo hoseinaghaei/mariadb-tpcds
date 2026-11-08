@@ -740,7 +740,10 @@ PY
 
 # The professor's report: per-query times and the total, written here rather
 # than on the host so there is one implementation instead of one per OS.
-if [[ -f "$PROJECT/docker/report.py" ]]; then
+# ${PROJECT:-} rather than $PROJECT: scripts/test_reproduce.py executes the
+# slice of this file that ends at `say "Done"` on its own, with a minimal
+# environment that does not define PROJECT, and `set -u` would abort it.
+if [[ -n "${PROJECT:-}" && -f "$PROJECT/docker/report.py" ]]; then
   say "Report"
   # TUNED selects which tag ran: "tuned", "baseline", or both.  Report the
   # tuned one when it exists, since that is the configuration being measured.
