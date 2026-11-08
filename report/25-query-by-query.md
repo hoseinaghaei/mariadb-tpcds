@@ -271,7 +271,7 @@ Verified at SF=4: original 27.5s → 9.1s, **3.0x**, output byte-for-byte identi
 
 Covering indexes on both `store_sales` and `web_sales` keyed to the year-total aggregation, so each channel's CTE is satisfied from the index.
 
-Adopted 2026-11-05 after measuring it against the previously adopted query with the new indexes present on both sides, interleaved best-of-3 at SF=4: 19.0s -> 6.5s, **2.93x**, output byte-for-byte identical.
+Adopted 2026-11-05 after measuring it against the previously adopted query with the new indexes present on both sides, interleaved best-of-3 at SF=4: 19.0s -> 6.5s, **2.92x**, output byte-for-byte identical.
 
 *Contribution to the SF=4 suite: -12.5s.*
 
@@ -291,7 +291,7 @@ Verified at SF=4: original 13.1s → 4.9s, **2.7x**, output byte-for-byte identi
 
 Two changes: `split_materialized=off`, because one of its two CTE references was being re-materialised 7,665 times; and bounding the CTE to the 105 weeks the outer query can read, out of 262.
 
-Verified at SF=4: original 162.5s → 4.4s, **36.6x**, output byte-for-byte identical.
+Verified at SF=4: original 162.5s → 4.4s, **36.93x**, output byte-for-byte identical.
 
 *split materialisation OFF: measured -138.1s at SF=4*
 

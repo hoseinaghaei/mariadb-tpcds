@@ -63,7 +63,33 @@ being timed, with both sides seeing the new indexes — otherwise an index
 gets credited to a rewrite. Report 19 is the reason: q72 once looked like
 719x and was 1.1x once the original had the index too.
 
-Two separated passes over all four scales, not two adjacent runs per scale.
+Two passes, intended to be separated by a full sweep of the other scales so
+that adjacent runs could not agree with each other by sharing buffer-pool
+state.
+
+**That intent was met for SF=1, 2 and 4, and not for SF=8.** The actual
+sequence was SF4, SF1, SF2, SF8 and then the same again; SF=8 failed both
+times with `table 'store_sales' is full`, and was rerun only after the
+Docker VM disk was raised from 180 to 220 GiB. Its two passes then ran
+**back to back**, 20:46 and 21:29, with nothing between them.
+
+| | pass a | pass b |
+|---|---|---|
+| SF=4 | 17:49 | 18:17 |
+| SF=1 | 18:00 | 18:28 |
+| SF=2 | 18:05 | 18:31 |
+| SF=8 | 18:12 failed | 18:35 failed |
+| SF=8 rerun | **20:46** | **21:29** |
+
+This is visible in the spreads above: SF=8's two passes differ by 0.6%, the
+tightest of the four, while the genuinely separated SF=1 differs by 8.5%.
+**SF=8's error bar is therefore the least trustworthy of the four, and it
+carries the largest reduction (−40.6%).** SF=8 also ran at a different VM
+disk allocation from the other three scales.
+
+An earlier version of this file claimed "two separated passes over all four
+scales, not two adjacent runs per scale" without qualification. That was
+wrong for SF=8, and the statement propagated into the submitted report.
 
 ## Not comparable across sessions
 

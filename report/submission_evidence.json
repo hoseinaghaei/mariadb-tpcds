@@ -3,7 +3,7 @@
  "reported_scaling_campaign": {
   "evidence_level": "UNVERIFIED_TABLE_NOT_USED",
   "source": "report/25-query-by-query.md",
-  "source_sha256": "06af6ccc4c4b11da3c3c9be61c77f4f2665d9766ff3685ef430d5ac0b2e6960e",
+  "source_sha256": "6282cf8564d8f27e27839f9a23d826400b87c924b7b2302b077c75e657739e49",
   "publication_commit": "912bfef",
   "execution_commit": null,
   "raw_run_artifacts_available": false,
@@ -2251,6 +2251,7 @@
    "disk_note": "The VM disk changed mid-sequence. SF=1, 2 and 4 ran at 180 GiB; SF=8 failed both passes with \"table 'store_sales' is full\" and was rerun after raising it to 220 GiB. Memory and CPU were untouched, so timings remain comparable, but SF=8 is not at the same disk allocation as the other three."
   },
   "caveat_host_swap": "The host swapped heavily throughout (10-14 GiB of swap in use on a 16 GiB machine). This is why report 25 quotes run-to-run spread and why absolute totals from different sessions must not be compared: the same configuration measured 81.8s and 139.8s at SF=1 weeks apart. Paired within-session comparisons hold; cross-session absolutes do not.",
-  "raw_artifacts": "experiments/evidence/four_scale_twice_20261105_adopted/"
+  "raw_artifacts": "experiments/evidence/four_scale_twice_20261105_adopted/",
+  "caveat_sf8_passes": "SF=8's two passes were NOT separated by a sweep of the other scales, unlike SF=1, 2 and 4. It failed both scheduled passes with \"table 'store_sales' is full\", and was rerun back to back at 20:46 and 21:29 after the Docker VM disk was raised from 180 to 220 GiB. Its two readings therefore differ by only 0.6% - the tightest of the four scales, and a flattering error bar - while the genuinely separated SF=1 differs by 8.5%. SF=8 carries the largest recorded reduction (-40.6%), so this is the measurement whose variability is least well established."
  }
 }
