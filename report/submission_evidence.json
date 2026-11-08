@@ -2224,5 +2224,33 @@
    "sql_changed_query_ids": [],
    "recorded_setting_changes": {}
   }
- ]
+ ],
+ "measurement_environment": {
+  "applies_to": "the four-scale campaign in reported_scaling_campaign (SF=1,2,4,8, two passes each, 2026-11-05)",
+  "source_revision": "cea5223",
+  "source_revision_note": "The runs executed from a working tree equal to 912bfef plus uncommitted changes; cea5223 is the first commit whose tree reproduces that configuration. Nothing affecting a run changed between cea5223 and HEAD - verified over queries/tuned/, sql/, docker/, build-tuned.py and emit-index-ddl.py - so either revision reproduces these numbers.",
+  "host": {
+   "model": "MacBook Pro",
+   "model_identifier": "MacBookPro17,1",
+   "chip": "Apple M1",
+   "cpu_cores": "8 (4 performance, 4 efficiency)",
+   "ram_gib": 16,
+   "os": "macOS 26.6.2 (build 25G83)",
+   "storage": "internal SSD (Apple Fabric); datadir and tmpdir both on it; no external storage involved"
+  },
+  "docker": {
+   "engine_version": "29.8.1",
+   "product": "Docker Desktop",
+   "virtualisation": "Apple Virtualization framework with VirtioFS",
+   "storage_driver": "overlay2",
+   "kernel": "7.0.14-linuxkit",
+   "cpus_allocated": 8,
+   "memory_configured_mib": 12288,
+   "memory_reported_bytes": 12526637056,
+   "memory_note": "Configured 12288 MiB (12 GiB); docker info reports 11.67 GiB and each run's own header recorded 'memory 11G'. Quote as 12 GiB allocated, about 11.7 GiB usable. CPU and memory were identical across all eight runs - checked against every run's recorded header.",
+   "disk_note": "The VM disk changed mid-sequence. SF=1, 2 and 4 ran at 180 GiB; SF=8 failed both passes with \"table 'store_sales' is full\" and was rerun after raising it to 220 GiB. Memory and CPU were untouched, so timings remain comparable, but SF=8 is not at the same disk allocation as the other three."
+  },
+  "caveat_host_swap": "The host swapped heavily throughout (10-14 GiB of swap in use on a 16 GiB machine). This is why report 25 quotes run-to-run spread and why absolute totals from different sessions must not be compared: the same configuration measured 81.8s and 139.8s at SF=1 weeks apart. Paired within-session comparisons hold; cross-session absolutes do not.",
+  "raw_artifacts": "experiments/evidence/four_scale_twice_20261105_adopted/"
+ }
 }
